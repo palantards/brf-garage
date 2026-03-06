@@ -104,9 +104,9 @@ export default async function DashboardPage() {
                   <p className="text-sm text-gray-500">
                     Bjud in och hantera boende.
                   </p>
-                  <button className="mt-3 text-sm font-medium text-blue-600 hover:underline">
+                  <a href="/dashboard/residents" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
                     Hantera boende →
-                  </button>
+                  </a>
                 </CardContent>
               </Card>
 
