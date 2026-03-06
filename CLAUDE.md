@@ -27,6 +27,10 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - Migration files go in `src/db/migrations/` (numbered sequentially, e.g. `001_`, `002_`).
 - **Every database change (ALTER TABLE, CREATE TABLE, etc.) must be done in two places: run it on Neon AND add a migration file. Never do one without the other.**
 
+### UI
+- Use shadcn/ui for all components. The latest shadcn uses Base UI as its primitive layer internally.
+- Always add `type="submit"` explicitly to shadcn `Button` components inside forms — Base UI defaults to `type="button"`, which prevents form submission.
+
 ### Auth
 - Invite-based: admin adds resident emails, residents receive a magic link / set password.
 - Auth.js config is in `src/lib/auth.ts`.

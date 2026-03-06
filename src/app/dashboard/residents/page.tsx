@@ -137,7 +137,7 @@ export default async function ResidentsPage() {
                         {(status === "pending" || status === "expired") && (
                           <form action={withdrawInviteAction}>
                             <input type="hidden" name="userId" value={r.id} />
-                            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                            <Button type="submit" variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
                               Återkalla
                             </Button>
                           </form>
@@ -145,7 +145,7 @@ export default async function ResidentsPage() {
                         {status === "active" && r.role === "resident" && (
                           <form action={removeResidentAction}>
                             <input type="hidden" name="userId" value={r.id} />
-                            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                            <Button type="submit" variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
                               Ta bort
                             </Button>
                           </form>
