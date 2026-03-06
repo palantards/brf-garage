@@ -12,7 +12,7 @@ export async function sendInviteEmail({
   associationName: string;
   inviteUrl: string;
 }) {
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from,
     to,
     subject: `Du har bjudits in till ${associationName} – BRF Garage`,
@@ -37,4 +37,6 @@ export async function sendInviteEmail({
       </div>
     `,
   });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
 }

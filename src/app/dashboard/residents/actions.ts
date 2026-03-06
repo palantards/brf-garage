@@ -61,7 +61,12 @@ export async function inviteResidentAction(
   `;
 
   const inviteUrl = `${process.env.AUTH_URL}/invite/${token.token}`;
-  await sendInviteEmail({ to: email, associationName: "din förening", inviteUrl });
+  try {
+    await sendInviteEmail({ to: email, associationName: "din förening", inviteUrl });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Okänt fel";
+    return { error: `Användaren skapades men mejlet misslyckades: ${message}` };
+  }
 
   revalidatePath("/dashboard/residents");
   return { success: `Inbjudan skickad till ${email}.` };
