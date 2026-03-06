@@ -26,6 +26,7 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - DB client is initialized in `src/db/client.ts`.
 - Schema is in `src/db/schema.sql`.
 - Migration files go in `src/db/migrations/`.
+- **Every database change (ALTER TABLE, CREATE TABLE, etc.) must be done in three places simultaneously: run it on Neon, add a migration file in `src/db/migrations/`, and update `src/db/schema.sql` to match. Never do one without the others.**
 
 ### Auth
 - Invite-based: admin adds resident emails, residents receive a magic link / set password.

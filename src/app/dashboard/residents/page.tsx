@@ -22,16 +22,37 @@ interface Resident {
   joined_at: string | null;
 }
 
+interface Invite {
+  token: string;
+  email: string;
+  name: string | null;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+}
+
 export default async function ResidentsPage() {
   const session = await auth();
   if (!session?.user || session.user.role !== "admin") redirect("/dashboard");
 
-  const residents = await sql<Resident[]>`
-    SELECT id, email, name, role, invited_at, joined_at
-    FROM users
-    WHERE association_id = ${session.user.associationId}
-    ORDER BY invited_at DESC
-  `;
+  const associationId = session.user.associationId;
+  const now = new Date().toISOString();
+
+  const [residents, invites] = await Promise.all([
+    sql<Resident[]>`
+      SELECT id, email, name, role, invited_at, joined_at
+      FROM users
+      WHERE association_id = ${associationId}
+      ORDER BY invited_at DESC
+    `,
+    sql<Invite[]>`
+      SELECT it.token, u.email, u.name, it.created_at, it.expires_at, it.used_at
+      FROM invite_tokens it
+      JOIN users u ON u.id = it.user_id
+      WHERE u.association_id = ${associationId}
+      ORDER BY it.created_at DESC
+    `,
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -113,6 +134,67 @@ export default async function ResidentsPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+        {/* Invites table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Inbjudningar ({invites.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Mottagare</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Skickad</TableHead>
+                  <TableHead>Går ut</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invites.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-gray-400 py-8">
+                      Inga inbjudningar skickade ännu.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {invites.map((inv) => {
+                  const expired = !inv.used_at && inv.expires_at < now;
+                  return (
+                    <TableRow key={inv.token}>
+                      <TableCell>
+                        <div className="font-medium text-gray-900">
+                          {inv.name ?? <span className="text-gray-400 italic">Ej angivet</span>}
+                        </div>
+                        <div className="text-sm text-gray-500">{inv.email}</div>
+                      </TableCell>
+                      <TableCell>
+                        {inv.used_at ? (
+                          <Badge variant="outline" className="text-green-600 border-green-200">
+                            Aktiverad
+                          </Badge>
+                        ) : expired ? (
+                          <Badge variant="outline" className="text-red-500 border-red-200">
+                            Utgången
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-yellow-600 border-yellow-200">
+                            Väntar
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-500">
+                        {new Date(inv.created_at).toLocaleDateString("sv-SE")}
+                      </TableCell>
+                      <TableCell className="text-sm text-gray-500">
+                        {new Date(inv.expires_at).toLocaleDateString("sv-SE")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>
