@@ -12,6 +12,10 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - **Auth**: Auth.js v5 (`next-auth@beta`) — invite-based email auth
 - **Styling**: Tailwind CSS
 
+## Git
+- Repo: `https://github.com/palantards/brf-garage`
+- Main branch: `master`
+
 ## Key Conventions
 
 ### Database
