@@ -64,8 +64,8 @@ export async function inviteResidentAction(
   try {
     await sendInviteEmail({ to: email, associationName: "din förening", inviteUrl });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Okänt fel";
-    return { error: `Användaren skapades men mejlet misslyckades: ${message}` };
+    console.error("Failed to send invite email:", err);
+    return { error: "Användaren skapades men inbjudningsmejlet misslyckades. Försök igen." };
   }
 
   revalidatePath("/dashboard/residents");

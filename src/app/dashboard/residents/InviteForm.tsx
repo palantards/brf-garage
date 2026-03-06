@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { inviteResidentAction } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,14 @@ export default function InviteForm() {
     inviteResidentAction,
     undefined
   );
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!state?.success) return;
+    setShowSuccess(true);
+    const timer = setTimeout(() => setShowSuccess(false), 4000);
+    return () => clearTimeout(timer);
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -60,7 +68,7 @@ export default function InviteForm() {
       {state?.error && (
         <p className="text-sm text-red-600">{state.error}</p>
       )}
-      {state?.success && (
+      {showSuccess && state?.success && (
         <p className="text-sm text-green-600">{state.success}</p>
       )}
 
