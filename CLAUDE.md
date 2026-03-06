@@ -24,9 +24,8 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - Use PostgreSQL transactions for any queue operations.
 - All mutations that affect queue state must write to the `audit_log` table.
 - DB client is initialized in `src/db/client.ts`.
-- Schema is in `src/db/schema.sql`.
-- Migration files go in `src/db/migrations/`.
-- **Every database change (ALTER TABLE, CREATE TABLE, etc.) must be done in three places simultaneously: run it on Neon, add a migration file in `src/db/migrations/`, and update `src/db/schema.sql` to match. Never do one without the others.**
+- Migration files go in `src/db/migrations/` (numbered sequentially, e.g. `001_`, `002_`).
+- **Every database change (ALTER TABLE, CREATE TABLE, etc.) must be done in two places: run it on Neon AND add a migration file. Never do one without the other.**
 
 ### Auth
 - Invite-based: admin adds resident emails, residents receive a magic link / set password.
