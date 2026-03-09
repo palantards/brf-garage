@@ -43,25 +43,60 @@
 
 ---
 
-## Prio 3 — Spot Management (Admin)
+## Prio 3 — Spot Management + Upcoming Availability (Admin)
 
-**Goal:** Admin can create/edit/delete garage spots and mark them available/unavailable.
+**Goal:** Admin can manage spots and record when an assigned spot is being vacated
+(3-month notice period / uppsägningstid), making it visible as "upcoming" to queue members.
 
 **Tasks:**
-- [ ] Admin: list all spots
-- [ ] Admin: add spot (identifier, description, coordinates if map is set up)
+- [ ] Admin: list all spots with current status
+- [ ] Admin: add spot (identifier, description)
 - [ ] Admin: toggle spot availability (e.g. spot under renovation)
 - [ ] Admin: delete spot
+- [ ] Add `ending_at` to `spot_assignments` — admin sets this when resident gives notice
+- [ ] Map: show spots with a future `ending_at` as "upcoming" (distinct color)
+- [ ] Residents in queue: can see which spots are upcoming (identifier + approx. free date)
 
 ---
 
-## Prio 4 — Offer Flow
+## Prio 4 — Spot Preferences
 
-**Goal:** When a spot becomes free, an offer is automatically sent to #1 in queue.
-They have a deadline to accept. If declined or expired → next in queue.
+**Goal:** Queue members can express interest in specific spots. When a spot becomes free,
+the offer goes to the highest queue position among those who want it — falling back to
+normal FIFO if nobody expressed a preference.
+
+**Why:** In practice admins show upcoming spots to queue members who then choose to wait
+for a specific one rather than taking whatever comes first. This formalises that flow.
+
+**Data model:**
+```sql
+CREATE TABLE spot_preferences (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  association_id UUID REFERENCES associations(id),
+  user_id        UUID REFERENCES users(id),
+  spot_id        UUID REFERENCES spots(id),
+  created_at     TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (user_id, spot_id)
+);
+```
 
 **Tasks:**
-- [ ] Trigger: when spot marked free → find #1 in queue → create `spot_offer`
+- [ ] DB migration: create `spot_preferences` table
+- [ ] Resident: view upcoming spots + toggle preference (want / don't want)
+- [ ] Resident: see their own preference list
+- [ ] Offer trigger: prefer highest-queue-position preferring the spot; fall back to FIFO
+- [ ] Admin: see who has expressed interest in each spot
+
+---
+
+## Prio 5 — Offer Flow
+
+**Goal:** When a spot becomes free, an offer is automatically sent to the right person
+in queue (respecting preferences from Prio 4). They have a deadline to accept.
+If declined or expired → next in queue.
+
+**Tasks:**
+- [ ] Trigger: spot marked free → find next eligible person → create `spot_offer`
 - [ ] Resident: view active offer (with deadline countdown)
 - [ ] Resident: accept offer → creates `spot_assignment`, removes from queue
 - [ ] Resident: decline offer → offer marked declined → triggers next in queue
@@ -70,7 +105,7 @@ They have a deadline to accept. If declined or expired → next in queue.
 
 ---
 
-## Prio 5 — Email Notifications
+## Prio 6 — Email Notifications
 
 **Goal:** Residents get emails for key events.
 
@@ -83,7 +118,7 @@ They have a deadline to accept. If declined or expired → next in queue.
 
 ---
 
-## Prio 6 — Audit Log View (Admin)
+## Prio 7 — Audit Log View (Admin)
 
 **Goal:** Admin can see a full history of queue events for transparency.
 
@@ -94,7 +129,7 @@ They have a deadline to accept. If declined or expired → next in queue.
 
 ---
 
-## Prio 7 — Security Hardening
+## Prio 8 — Security Hardening
 
 **Tasks:**
 - [ ] Add Content-Security-Policy headers in `next.config.ts` before go-live
@@ -103,7 +138,7 @@ They have a deadline to accept. If declined or expired → next in queue.
 
 ---
 
-## Prio 8 — Production Deploy
+## Prio 9 — Production Deploy
 
 **Tasks:**
 - [ ] Set up Vercel project, connect repo
