@@ -42,7 +42,7 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - Admin routes are under `src/app/api/admin/` and check for `admin` role.
 
 ### Environment Variables
-Required in `.env.local`:
+Required in `.env.local` (copy from `env.example`):
 ```
 DATABASE_URL=
 AUTH_SECRET=
