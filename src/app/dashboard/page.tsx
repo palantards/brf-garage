@@ -65,15 +65,10 @@ export default async function DashboardPage() {
               <p className="text-sm text-gray-500">
                 Se vilka platser som är lediga, upptagna eller erbjudna.
               </p>
-              <div className="mt-3 flex gap-4">
+              <div className="mt-3">
                 <a href="/dashboard/map" className="text-sm font-medium text-blue-600 hover:underline">
                   Visa garageplan →
                 </a>
-                {isAdmin && (
-                  <a href="/dashboard/map/editor" className="text-sm font-medium text-gray-500 hover:underline">
-                    Redigera karta →
-                  </a>
-                )}
               </div>
             </CardContent>
           </Card>

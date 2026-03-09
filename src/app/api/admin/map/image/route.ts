@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
 import { Resend } from "resend";
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const assocId = session.user.associationId;
 
   const blob = await put(`garage-maps/${assocId}/floorplan.${ext}`, file, {
-    access: "public",
+    access: "private",
     allowOverwrite: true,
   });
 
@@ -50,14 +50,38 @@ export async function POST(req: NextRequest) {
           <h2>Ny garageplan uppladdad</h2>
           <p><strong>Förening:</strong> ${assoc?.name ?? assocId}</p>
           <p><strong>Bild:</strong> <a href="${blob.url}">${blob.url}</a></p>
-          <p>Kör detekteringsskriptet och importera resultatet:</p>
-          <pre style="background:#f1f5f9;padding:12px;border-radius:6px;font-size:13px;">curl -o floorplan.png "${blob.url}"
-python3 scripts/detect_spots.py floorplan.png --format json > spots.json
-npx tsx scripts/import-spots.ts ${assocId} spots.json</pre>
+          <p>Kör pipeline-skriptet (en rad):</p>
+          <pre style="background:#f1f5f9;padding:12px;border-radius:6px;font-size:13px;">npx tsx scripts/process-map.ts ${assocId}</pre>
         </div>
       `,
     }).catch(() => {}); // non-fatal — don't fail the upload if email fails
   }
 
   return NextResponse.json({ url: blob.url });
+}
+
+// DELETE /api/admin/map/image — remove uploaded floor plan and reset to unconfigured
+export async function DELETE() {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "admin") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const assocId = session.user.associationId;
+
+  const [assoc] = await sql<{ map_image_url: string | null }[]>`
+    SELECT map_image_url FROM associations WHERE id = ${assocId}
+  `;
+
+  if (assoc?.map_image_url) {
+    await del(assoc.map_image_url).catch(() => {}); // non-fatal if already gone
+  }
+
+  await sql`
+    UPDATE associations
+    SET map_image_url = NULL, map_status = 'unconfigured'
+    WHERE id = ${assocId}
+  `;
+
+  return NextResponse.json({ ok: true });
 }

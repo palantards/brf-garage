@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -46,21 +47,21 @@ function handleStyle(dir: HandleDir): React.CSSProperties {
 export default function MapEditor({
   initialSpots,
   initialImageUrl,
+  mapStatus,
 }: {
   initialSpots: EditorSpot[];
   initialImageUrl: string | null;
+  mapStatus: string;
 }) {
+  const router = useRouter();
   const [spots, setSpots] = useState<EditorSpot[]>(initialSpots);
   const [selected, setSelected] = useState<string | null>(null);
   const [labelInput, setLabelInput] = useState("");
-  const [imageUrl, setImageUrl] = useState(initialImageUrl ?? "");
+  const imageUrl = initialImageUrl ?? "";
   const [aspectRatio, setAspectRatio] = useState(52.69);
   const [drawPreview, setDrawPreview] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-  const [importOpen, setImportOpen] = useState(false);
-  const [importText, setImportText] = useState("");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [publishStatus, setPublishStatus] = useState<"idle" | "saving" | "error">("idle");
 
   // Refs — used by mouse handlers to avoid stale closures
   const containerRef = useRef<HTMLDivElement>(null);
@@ -172,8 +173,7 @@ export default function MapEditor({
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if ((e.key === "Delete" || e.key === "Backspace") && selectedRef.current) {
         e.preventDefault(); deleteSelected();
-      } else if (e.key === "v" || e.key === "V") { splitSelected("v"); }
-        else if (e.key === "h" || e.key === "H") { splitSelected("h"); }
+      }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -186,28 +186,6 @@ export default function MapEditor({
     spotsRef.current = spotsRef.current.filter(s => s.id !== id);
     setSpots(spotsRef.current);
     selectSpot(null);
-  }
-
-  function splitSelected(axis: "v" | "h") {
-    const id = selectedRef.current;
-    if (!id) return;
-    const idx = spotsRef.current.findIndex(s => s.id === id);
-    if (idx === -1) return;
-    const sp = spotsRef.current[idx];
-    const newId = String(nextIdRef.current++);
-    let a: EditorSpot, b: EditorSpot;
-    if (axis === "v") {
-      const half = r(sp.width / 2);
-      a = { ...sp, width: half };
-      b = { ...sp, id: newId, label: "", ocr: false, x: r(sp.x + half), width: half };
-    } else {
-      const half = r(sp.height / 2);
-      a = { ...sp, height: half };
-      b = { ...sp, id: newId, label: "", ocr: false, y: r(sp.y + half), height: half };
-    }
-    spotsRef.current = [...spotsRef.current.slice(0, idx), a, b, ...spotsRef.current.slice(idx + 1)];
-    setSpots(spotsRef.current);
-    selectSpot(newId);
   }
 
   function confirmAllOcr() {
@@ -230,45 +208,6 @@ export default function MapEditor({
     if (next) selectSpot(next.id);
   }
 
-  function handleImport() {
-    try {
-      const parsed = JSON.parse(importText);
-      if (!Array.isArray(parsed)) throw new Error();
-      const imported: EditorSpot[] = parsed.map((s: Record<string, unknown>) => ({
-        id: String(nextIdRef.current++),
-        label: String(s.label ?? ""),
-        ocr: Boolean(s.ocr),
-        x: Number(s.x), y: Number(s.y),
-        width: Number(s.width), height: Number(s.height),
-      }));
-      spotsRef.current = imported;
-      setSpots(imported);
-      setImportOpen(false);
-      setImportText("");
-    } catch {
-      alert("Ogiltigt JSON. Klistra in resultatet från: python3 scripts/detect_spots.py bild.png --format json");
-    }
-  }
-
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch("/api/admin/map/image", { method: "POST", body: form });
-      if (!res.ok) throw new Error();
-      const { url } = await res.json() as { url: string };
-      setImageUrl(url);
-    } catch {
-      alert("Uppladdningen misslyckades. Kontrollera att BLOB_READ_WRITE_TOKEN är konfigurerat.");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  }
-
   async function handleSave() {
     setSaveStatus("saving");
     try {
@@ -276,7 +215,6 @@ export default function MapEditor({
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageUrl: imageUrl || null,
           spots: spots.map(s => ({ label: s.label, x: s.x, y: s.y, width: s.width, height: s.height })),
         }),
       });
@@ -285,6 +223,24 @@ export default function MapEditor({
       setTimeout(() => setSaveStatus("idle"), 2500);
     } catch {
       setSaveStatus("error");
+    }
+  }
+
+  async function handlePublish() {
+    setPublishStatus("saving");
+    try {
+      const res = await fetch("/api/admin/map", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          spots: spots.map(s => ({ label: s.label, x: s.x, y: s.y, width: s.width, height: s.height })),
+          publish: true,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      router.push("/dashboard/map");
+    } catch {
+      setPublishStatus("error");
     }
   }
 
@@ -297,34 +253,6 @@ export default function MapEditor({
 
       {/* ── Toolbar ── */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex flex-wrap gap-2 items-center">
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 whitespace-nowrap">Bild</span>
-          <Input
-            value={imageUrl}
-            onChange={e => setImageUrl(e.target.value)}
-            placeholder="/garage-mock.png eller https://…"
-            className="h-7 text-xs w-56"
-          />
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 text-xs"
-            disabled={uploading}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploading ? "Laddar upp…" : "↑ Ladda upp"}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            className="hidden"
-            onChange={handleImageUpload}
-          />
-        </div>
-
-        <div className="w-px bg-gray-200 h-6" />
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">Märkning</span>
@@ -340,8 +268,6 @@ export default function MapEditor({
 
         <div className="w-px bg-gray-200 h-6" />
 
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => splitSelected("v")} disabled={!selected}>✂ Dela V</Button>
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => splitSelected("h")} disabled={!selected}>✂ Dela H</Button>
         <Button size="sm" variant="outline" className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50" onClick={deleteSelected} disabled={!selected}>✕ Ta bort</Button>
 
         <div className="w-px bg-gray-200 h-6" />
@@ -363,18 +289,30 @@ export default function MapEditor({
         <div className="w-px bg-gray-200 h-6" />
 
         <Button size="sm" variant="outline" className="h-7 text-xs" onClick={confirmAllOcr}>✓ Bekräfta OCR</Button>
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setImportOpen(true)}>↑ Importera JSON</Button>
 
         <Button
           size="sm"
+          variant="outline"
           className="h-7 text-xs"
           onClick={handleSave}
-          disabled={saveStatus === "saving"}
+          disabled={saveStatus === "saving" || publishStatus === "saving"}
         >
           {saveStatus === "saving" ? "Sparar…"
             : saveStatus === "saved" ? "✓ Sparat!"
             : saveStatus === "error" ? "Fel — försök igen"
             : "Spara"}
+        </Button>
+
+        <Button
+          size="sm"
+          className="h-7 text-xs bg-green-600 hover:bg-green-700"
+          onClick={handlePublish}
+          disabled={publishStatus === "saving" || saveStatus === "saving"}
+        >
+          {publishStatus === "saving" ? "Publicerar…"
+            : publishStatus === "error" ? "Fel — försök igen"
+            : mapStatus === "published" ? "Uppdatera publicerad karta"
+            : "Publicera karta"}
         </Button>
 
         <span className="text-xs text-gray-400 ml-auto">
@@ -482,27 +420,6 @@ export default function MapEditor({
         </div>
       </div>
 
-      {/* ── Import modal ── */}
-      {importOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 space-y-4">
-            <h2 className="font-semibold text-gray-900">Importera platser från JSON</h2>
-            <p className="text-sm text-gray-500">
-              Kör <code className="bg-gray-100 px-1 rounded text-xs">python3 scripts/detect_spots.py bild.png --format json</code> och klistra in resultatet nedan.
-            </p>
-            <textarea
-              value={importText}
-              onChange={e => setImportText(e.target.value)}
-              className="w-full h-40 font-mono text-xs border border-gray-200 rounded-lg p-3 resize-none outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder={'[{"x": 35.5, "y": 50.78, "width": 2.24, "height": 10.21, "label": "57"}, ...]'}
-            />
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => { setImportOpen(false); setImportText(""); }}>Avbryt</Button>
-              <Button onClick={handleImport}>Importera</Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

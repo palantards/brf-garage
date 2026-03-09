@@ -95,11 +95,11 @@ async function main() {
   }
 
   await sql`
-    UPDATE associations SET map_status = 'ready' WHERE id = ${assocId}
+    UPDATE associations SET map_status = 'review' WHERE id = ${assocId}
   `;
 
   console.log(`Done. ${inserted} spots imported, ${skipped} skipped (no label).`);
-  console.log(`Map status → ready`);
+  console.log(`Map status → review (admin can now open the editor and publish)`);
   await sql.end();
 }
 

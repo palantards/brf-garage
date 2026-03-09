@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
 
-// PUT /api/admin/map — save spot coordinates + optional image URL
+// PUT /api/admin/map — save spot coordinates; pass publish:true to go live
 export async function PUT(req: NextRequest) {
   const session = await auth();
   if (!session?.user || session.user.role !== "admin") {
@@ -12,7 +12,6 @@ export async function PUT(req: NextRequest) {
   const assocId = session.user.associationId;
 
   const body = await req.json() as {
-    imageUrl?: string | null;
     spots: Array<{
       label: string;
       x: number;
@@ -21,18 +20,13 @@ export async function PUT(req: NextRequest) {
       height: number;
       type?: string;
     }>;
+    publish?: boolean;
   };
 
-  const { imageUrl, spots } = body;
+  const { spots, publish } = body;
 
   if (!Array.isArray(spots)) {
     return NextResponse.json({ error: "spots must be an array" }, { status: 400 });
-  }
-
-  if (imageUrl !== undefined) {
-    await sql`
-      UPDATE associations SET map_image_url = ${imageUrl} WHERE id = ${assocId}
-    `;
   }
 
   for (const spot of spots) {
@@ -49,10 +43,9 @@ export async function PUT(req: NextRequest) {
     `;
   }
 
-  // Mark map as ready once spots have been saved
-  if (spots.some(s => s.label)) {
+  if (publish) {
     await sql`
-      UPDATE associations SET map_status = 'ready' WHERE id = ${assocId}
+      UPDATE associations SET map_status = 'published' WHERE id = ${assocId}
     `;
   }
 

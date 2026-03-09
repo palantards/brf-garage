@@ -55,13 +55,20 @@ export default async function MapEditorPage() {
         {mapStatus === "pending" && initialSpots.length === 0 && (
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-800">
             <strong>Planritning uppladdad —</strong> vi bearbetar den och lägger till platser inom kort.
-            Du kan redan nu ladda upp en ny bild om du laddade upp fel fil.
+            Du kan importera JSON manuellt via &quot;Importera JSON&quot; om du vill komma igång direkt.
+          </div>
+        )}
+        {mapStatus === "review" && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <strong>Redo att granska —</strong> justera platser vid behov och klicka sedan på{" "}
+            <strong>Publicera karta</strong> för att göra den synlig för boende.
           </div>
         )}
 
         <MapEditor
           initialSpots={initialSpots}
-          initialImageUrl={assoc?.map_image_url ?? null}
+          initialImageUrl={assoc?.map_image_url ? "/api/map/image" : null}
+          mapStatus={mapStatus}
         />
       </main>
     </div>
