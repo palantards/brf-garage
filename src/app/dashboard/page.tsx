@@ -32,10 +32,12 @@ export default async function DashboardPage() {
 
   const queuePosition = queueEntry
     ? await sql<{ position: number }[]>`
-        SELECT COUNT(*)::int AS position FROM queue_entries
-        WHERE association_id = ${user.associationId}
-          AND left_at IS NULL
-          AND queue_entries.joined_at <= ${queueEntry.joined_at}
+        SELECT position FROM (
+          SELECT user_id, ROW_NUMBER() OVER (ORDER BY joined_at) AS position
+          FROM queue_entries
+          WHERE association_id = ${user.associationId} AND left_at IS NULL
+        ) ranked
+        WHERE user_id = ${user.id}
       `.then(rows => rows[0]?.position ?? null)
     : null;
 

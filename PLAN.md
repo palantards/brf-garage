@@ -7,6 +7,7 @@
 - [x] Admin: withdraw pending invites, remove residents
 - [x] Dashboard with role-based cards
 - [x] Garage map — full flow (see below)
+- [x] Queue join/leave + position display
 
 ---
 
@@ -30,16 +31,16 @@
 
 ---
 
-## Prio 2 — Queue Join/Leave + Position
+## Prio 2 — Queue Join/Leave + Position ✅
 
 **Goal:** Residents can join/leave the queue and see their current position.
 
 **Tasks:**
-- [ ] Resident: join queue (insert into `queue_entries`)
-- [ ] Resident: leave queue (set `left_at`)
-- [ ] Resident: see queue position (count entries with earlier `joined_at`)
-- [ ] Admin: view full queue (ordered list)
-- [ ] Wire up "Min köplats" card on dashboard with real data
+- [x] Resident: join queue (insert into `queue_entries`)
+- [x] Resident: leave queue (set `left_at`) — requires inline confirmation
+- [x] Resident: see queue position (ROW_NUMBER window function)
+- [x] Admin: view full queue (ordered list) at `/dashboard/queue`
+- [x] Wire up "Min köplats" card on dashboard with real data
 
 ---
 
