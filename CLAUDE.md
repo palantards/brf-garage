@@ -11,6 +11,7 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 - **Email**: Resend
 - **Auth**: Auth.js v5 (`next-auth@beta`) — invite-based email auth
 - **Styling**: Tailwind CSS
+- **File storage**: Vercel Blob (private access) — floor plan images stored at `garage-maps/{assocId}/floorplan.{ext}`
 
 ## Git
 - Repo: `https://github.com/palantards/brf-garage`
@@ -47,6 +48,9 @@ DATABASE_URL=
 AUTH_SECRET=
 AUTH_URL=
 RESEND_API_KEY=
+RESEND_FROM=
+BLOB_READ_WRITE_TOKEN=
+OPS_EMAIL=           # where map upload notifications are sent
 ```
 
 ## Business Rules
@@ -56,11 +60,20 @@ RESEND_API_KEY=
 - If declined or expired → automatically offer to next in queue.
 - All queue events are logged to `audit_log` for transparency.
 
-## MVP Feature Scope
-1. Queue join/leave + position display (residents)
-2. Automated offer → accept/decline flow with deadlines
-3. Email notifications (Resend)
-4. Admin dashboard: manage residents, view queue, assign spots, view audit log
-5. Audit log (immutable append-only)
+### Garage Map
+`map_status` lifecycle on the `associations` table:
+- `unconfigured` → admin uploads floor plan image → `pending`
+- Ops runs `npx tsx scripts/process-map.ts <assocId>` locally → `review`
+- Admin opens editor, adjusts spots, clicks "Publicera karta" → `published`
 
-**Not in MVP**: BankID, garage map, self-service association onboarding.
+Floor plan images are private blobs. Serve them via `/api/map/image` (proxies with token), never expose the raw blob URL in the UI.
+
+## MVP Feature Scope
+1. Garage map — upload, process, review, publish ✅
+2. Queue join/leave + position display (residents)
+3. Automated offer → accept/decline flow with deadlines
+4. Email notifications (Resend)
+5. Admin dashboard: manage residents, view queue, assign spots, view audit log
+6. Audit log (immutable append-only)
+
+**Not in MVP**: BankID, self-service association onboarding.

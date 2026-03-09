@@ -6,39 +6,27 @@
 - [x] Admin: invite residents, residents table with status
 - [x] Admin: withdraw pending invites, remove residents
 - [x] Dashboard with role-based cards
+- [x] Garage map — full flow (see below)
 
 ---
 
-## Prio 1 — Garage Map 🗺️
+## Prio 1 — Garage Map 🗺️ ✅
 
-**Goal:** Visual overview of all spots — which are free, occupied, or offered.
-Admin can click a spot to assign it or mark it as free.
+**Status:** Complete.
 
-**Approach — manual now, auto-ready later:**
+**Flow:**
+1. Admin uploads floor plan image via drag-and-drop modal → stored as private Vercel Blob → `map_status = pending`
+2. Ops notified by email → runs `npx tsx scripts/process-map.ts <assocId>` locally → downloads image, runs `detect_spots.py` (EasyOCR), upserts spots → `map_status = review`
+3. Admin opens editor → drag/resize spots, label them → clicks "Publicera karta" → `map_status = published`
+4. Map visible to all users with color-coded spots (free/occupied/offered)
 
-Spots are stored with optional canvas coordinates in the DB:
-- `map_x`, `map_y` — position as percentage of the map image (0–100)
-- `map_width`, `map_height` — size as percentage
-- `map_image_url` on `associations` table — the background garage image
-
-Rendering: SVG overlay on top of the garage image. Each spot = a colored rectangle.
-Colors: green (free), red (occupied), yellow (offered/pending).
-
-Manual setup: admin uploads a garage image, then places spots by dragging them
-onto the image (simple drag-to-position editor).
-
-**Future automation path (no code changes needed to the map renderer):**
-Upload garage image → AI/OCR detects parking spot outlines → auto-fills
-`map_x/y/width/height` for each spot. The renderer is identical; only the
-data entry changes.
-
-**Tasks:**
-- [ ] DB migration: add `map_x`, `map_y`, `map_width`, `map_height` to `spots`
-- [ ] DB migration: add `map_image_url` to `associations`
-- [ ] Admin: upload garage image (Vercel Blob)
-- [ ] Admin: spot placement editor (drag spots onto image, save coordinates)
-- [ ] Map view component (SVG overlay, color-coded by status)
-- [ ] Embed map on dashboard + admin queue view
+**Key files:**
+- `scripts/process-map.ts` — end-to-end pipeline (download + OCR + import)
+- `scripts/detect_spots.py` — EasyOCR-based spot detection
+- `src/app/dashboard/map/` — map page, upload modal, delete button, GarageMap component
+- `src/app/dashboard/map/editor/` — spot editor (draw, drag, resize, label, publish)
+- `src/app/api/admin/map/` — PUT (save/publish spots), image POST/DELETE
+- `src/app/api/map/image/` — private blob proxy
 
 ---
 
@@ -120,8 +108,7 @@ They have a deadline to accept. If declined or expired → next in queue.
 ## Deferred (post-MVP)
 - BankID authentication
 - Self-service association onboarding
-- Automated garage map generation (AI/OCR)
-- Garage map auto-generation from uploaded floor plan
+- Fully automated garage map generation (host detect_spots.py on Modal or similar — currently ops-assisted)
 - Waiting list priority rules (e.g. seniority, disability)
 - Resident portal (view assignment history)
 - Multi-spot households
