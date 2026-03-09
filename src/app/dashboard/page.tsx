@@ -35,7 +35,7 @@ export default async function DashboardPage() {
         SELECT COUNT(*)::int AS position FROM queue_entries
         WHERE association_id = ${user.associationId}
           AND left_at IS NULL
-          AND joined_at <= ${queueEntry.joined_at}
+          AND queue_entries.joined_at <= ${queueEntry.joined_at}
       `.then(rows => rows[0]?.position ?? null)
     : null;
 
