@@ -17,7 +17,7 @@ export default async function QueuePage() {
     joined_at: string;
   }[]>`
     SELECT
-      ROW_NUMBER() OVER (ORDER BY joined_at) AS position,
+      ROW_NUMBER() OVER (ORDER BY qe.joined_at) AS position,
       u.name,
       u.email,
       qe.joined_at
