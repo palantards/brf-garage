@@ -94,7 +94,16 @@ They have a deadline to accept. If declined or expired → next in queue.
 
 ---
 
-## Prio 7 — Production Deploy
+## Prio 7 — Security Hardening
+
+**Tasks:**
+- [ ] Add Content-Security-Policy headers in `next.config.ts` before go-live
+- [ ] Review all API routes for missing auth checks
+- [ ] Ensure rate limiting on auth endpoints (login, invite)
+
+---
+
+## Prio 8 — Production Deploy
 
 **Tasks:**
 - [ ] Set up Vercel project, connect repo
