@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import sql from "@/db/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import SignOutButton from "./SignOutButton";
+import QueueCard from "./QueueCard";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -21,6 +23,26 @@ export default async function DashboardPage() {
     : user.email?.[0]?.toUpperCase() ?? "?";
 
   const isAdmin = user.role === "admin";
+
+  // Queue status for the current user
+  const [queueEntry] = await sql<{ id: string; joined_at: string }[]>`
+    SELECT id, joined_at FROM queue_entries
+    WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND left_at IS NULL
+  `;
+
+  const queuePosition = queueEntry
+    ? await sql<{ position: number }[]>`
+        SELECT COUNT(*)::int AS position FROM queue_entries
+        WHERE association_id = ${user.associationId}
+          AND left_at IS NULL
+          AND joined_at <= ${queueEntry.joined_at}
+      `.then(rows => rows[0]?.position ?? null)
+    : null;
+
+  const [assignment] = await sql<{ id: string }[]>`
+    SELECT id FROM spot_assignments
+    WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND ended_at IS NULL
+  `;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -73,16 +95,20 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between">
               <CardTitle className="text-base">Min köplats</CardTitle>
+              {isAdmin && (
+                <a href="/dashboard/queue" className="text-sm text-gray-400 hover:text-gray-600">
+                  Visa kö →
+                </a>
+              )}
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-500">
-                Du står inte i kön just nu.
-              </p>
-              <button className="mt-3 text-sm font-medium text-blue-600 hover:underline">
-                Gå med i kön →
-              </button>
+              <QueueCard
+                position={queuePosition}
+                joinedAt={queueEntry?.joined_at ?? null}
+                hasAssignment={!!assignment}
+              />
             </CardContent>
           </Card>
 

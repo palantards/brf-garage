@@ -22,7 +22,7 @@ SaaS system for managing garage/parking queues for Swedish bostadsrättsförenin
 ### Database
 - Never use an ORM. Write raw SQL using `postgres.js`.
 - All tables have an `association_id` column for multi-tenancy.
-- Use PostgreSQL transactions for any queue operations.
+- Use PostgreSQL transactions for any queue operations. **Known issue:** `sql.begin(async tx => { await tx\`...\` })` causes a TypeScript error ("TransactionSql has no call signatures") — use sequential `await sql\`...\`` calls instead as a workaround.
 - All mutations that affect queue state must write to the `audit_log` table.
 - DB client is initialized in `src/db/client.ts`.
 - Migration files go in `src/db/migrations/` (numbered sequentially, e.g. `001_`, `002_`).
