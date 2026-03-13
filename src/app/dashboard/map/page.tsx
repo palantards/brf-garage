@@ -32,6 +32,7 @@ export default async function MapPage() {
       map_type: string;
       status: string;
       resident_name: string | null;
+      ending_at: string | null;
     }[]>`
       SELECT
         s.id,
@@ -42,17 +43,20 @@ export default async function MapPage() {
         s.map_height,
         s.map_type,
         CASE
-          WHEN sa.id IS NOT NULL THEN 'occupied'
-          WHEN so.id IS NOT NULL THEN 'offered'
+          WHEN sa.id IS NOT NULL AND sa.ending_at IS NOT NULL THEN 'upcoming'
+          WHEN sa.id IS NOT NULL                              THEN 'occupied'
+          WHEN so.id IS NOT NULL                              THEN 'offered'
           ELSE 'free'
         END AS status,
-        u.name AS resident_name
+        u.name     AS resident_name,
+        sa.ending_at
       FROM spots s
       LEFT JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
-      LEFT JOIN spot_offers     so ON so.spot_id = s.id AND so.status = 'pending'
-      LEFT JOIN users            u ON u.id = sa.user_id
+      LEFT JOIN spot_offers      so ON so.spot_id = s.id AND so.status = 'pending'
+      LEFT JOIN users             u  ON u.id = sa.user_id
       WHERE s.association_id = ${assocId}
         AND s.map_x IS NOT NULL
+        AND s.available = true
       ORDER BY s.identifier
     `;
     spots = rows.map(r => ({
@@ -65,6 +69,7 @@ export default async function MapPage() {
       height: Number(r.map_height),
       type: r.map_type as Spot["type"],
       residentName: r.resident_name ?? undefined,
+      endingAt: r.ending_at ?? undefined,
     }));
   }
 

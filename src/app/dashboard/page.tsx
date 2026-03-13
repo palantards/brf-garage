@@ -46,6 +46,34 @@ export default async function DashboardPage() {
     WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND ended_at IS NULL
   `;
 
+  // Upcoming spots — visible to queue members and used for the admin stats card
+  const upcomingSpots = await sql<{
+    identifier: string;
+    map_type: string;
+    ending_at: string;
+  }[]>`
+    SELECT s.identifier, s.map_type, sa.ending_at
+    FROM spots s
+    JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
+    WHERE s.association_id = ${user.associationId}
+      AND sa.ending_at IS NOT NULL
+      AND s.available = true
+    ORDER BY sa.ending_at ASC, s.identifier ASC
+  `;
+
+  // Admin spot stats
+  const spotStats = isAdmin
+    ? await sql<{ total: number; free: number }[]>`
+        SELECT
+          COUNT(*)                                                                       AS total,
+          COUNT(*) FILTER (WHERE s.available = true AND sa.id IS NULL AND so.id IS NULL) AS free
+        FROM spots s
+        LEFT JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
+        LEFT JOIN spot_offers      so ON so.spot_id = s.id AND so.status = 'pending'
+        WHERE s.association_id = ${user.associationId}
+      `.then(rows => rows[0])
+    : null;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top nav */}
@@ -110,6 +138,7 @@ export default async function DashboardPage() {
                 position={queuePosition}
                 joinedAt={queueEntry?.joined_at ?? null}
                 hasAssignment={!!assignment}
+                upcomingSpots={upcomingSpots}
               />
             </CardContent>
           </Card>
@@ -149,6 +178,26 @@ export default async function DashboardPage() {
                   </p>
                   <a href="/dashboard/residents" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
                     Hantera boende →
+                  </a>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Platser</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {spotStats && (
+                    <p className="text-sm text-gray-500">
+                      {Number(spotStats.total)} platser totalt &middot;{" "}
+                      <span className="text-green-600 font-medium">{Number(spotStats.free)} lediga</span>
+                      {upcomingSpots.length > 0 && (
+                        <> &middot; <span className="text-orange-500 font-medium">{upcomingSpots.length} kommande</span></>
+                      )}
+                    </p>
+                  )}
+                  <a href="/dashboard/spots" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
+                    Hantera platser →
                   </a>
                 </CardContent>
               </Card>

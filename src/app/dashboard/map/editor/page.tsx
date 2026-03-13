@@ -37,6 +37,13 @@ export default async function MapEditorPage() {
     height: Number(r.map_height),
   }));
 
+  const unplacedRows = await sql<{ identifier: string }[]>`
+    SELECT identifier FROM spots
+    WHERE association_id = ${assocId} AND map_x IS NULL
+    ORDER BY identifier
+  `;
+  const unplacedSpots = unplacedRows.map(r => r.identifier);
+
   const mapStatus = assoc?.map_status ?? "unconfigured";
 
   return (
@@ -69,6 +76,7 @@ export default async function MapEditorPage() {
           initialSpots={initialSpots}
           initialImageUrl={assoc?.map_image_url ? "/api/map/image" : null}
           mapStatus={mapStatus}
+          unplacedSpots={unplacedSpots}
         />
       </main>
     </div>

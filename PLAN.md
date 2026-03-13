@@ -8,6 +8,7 @@
 - [x] Dashboard with role-based cards
 - [x] Garage map — full flow (see below)
 - [x] Queue join/leave + position display
+- [x] Spot management + upcoming availability
 
 ---
 
@@ -44,19 +45,21 @@
 
 ---
 
-## Prio 3 — Spot Management + Upcoming Availability (Admin)
+## Prio 3 — Spot Management + Upcoming Availability (Admin) ✅
 
 **Goal:** Admin can manage spots and record when an assigned spot is being vacated
 (3-month notice period / uppsägningstid), making it visible as "upcoming" to queue members.
 
 **Tasks:**
-- [ ] Admin: list all spots with current status
-- [ ] Admin: add spot (identifier, description)
-- [ ] Admin: toggle spot availability (e.g. spot under renovation)
-- [ ] Admin: delete spot
-- [ ] Add `ending_at` to `spot_assignments` — admin sets this when resident gives notice
-- [ ] Map: show spots with a future `ending_at` as "upcoming" (distinct color)
-- [ ] Residents in queue: can see which spots are upcoming (identifier + approx. free date)
+- [x] Admin: list all spots with current status
+- [x] Admin: add spot (identifier, description)
+- [x] Admin: toggle spot availability (e.g. spot under renovation)
+- [x] Admin: delete spot
+- [x] Add `ending_at` to `spot_assignments` — admin sets this when resident gives notice
+- [x] Map: show spots with a future `ending_at` as "upcoming" (distinct color)
+- [x] Residents in queue: can see which spots are upcoming (identifier + approx. free date)
+- [x] Spots table: surface "Ej placerad på karta →" link for manually added spots missing map coordinates
+- [x] Map editor: show unplaced spots as clickable chips so admin knows what to draw and can pre-fill the label
 
 ---
 
@@ -147,6 +150,20 @@ If declined or expired → next in queue.
 - [ ] Verify Resend domain for production email
 - [ ] Set up Neon production branch (or keep single DB for now)
 - [ ] Test full flow end-to-end in production
+
+---
+
+## Prio 10 — Landing Page
+
+**Goal:** A polished public-facing `/` page that clearly communicates what BRF Garage is,
+who it's for, and how to get started — replacing the current placeholder.
+
+**Tasks:**
+- [ ] Hero section: headline, subheadline, CTA button ("Logga in" / "Kom igång")
+- [ ] Feature highlights: queue management, garage map, offer flow, audit log
+- [ ] How it works: 3-step flow (admin sets up → residents join queue → offers sent automatically)
+- [ ] Pricing / target audience blurb (bostadsrättsföreningar)
+- [ ] Footer with contact / copyright
 
 ---
 

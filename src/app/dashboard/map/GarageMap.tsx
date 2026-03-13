@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
-export type SpotStatus = "free" | "occupied" | "offered";
+export type SpotStatus = "free" | "occupied" | "offered" | "upcoming";
 export type SpotType = "car" | "mc";
 
 export interface Spot {
@@ -20,18 +20,22 @@ export interface Spot {
   rotation?: number;
   type?: SpotType;
   residentName?: string;
+  /** ISO timestamp — set when a resident has given notice; status will be "upcoming" */
+  endingAt?: string;
 }
 
 const STATUS_COLOR: Record<SpotStatus, string> = {
-  free: "#22c55e",
+  free:     "#22c55e",
   occupied: "#ef4444",
-  offered: "#eab308",
+  offered:  "#eab308",
+  upcoming: "#f97316",
 };
 
 const STATUS_LABEL: Record<SpotStatus, string> = {
-  free: "Ledig",
+  free:     "Ledig",
   occupied: "Upptagen",
-  offered: "Erbjuden",
+  offered:  "Erbjuden",
+  upcoming: "Kommande",
 };
 
 interface Props {
@@ -55,7 +59,7 @@ export default function GarageMap({
     <div className="space-y-4">
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-        {(["free", "occupied", "offered"] as SpotStatus[]).map((s) => (
+        {(["free", "occupied", "upcoming", "offered"] as SpotStatus[]).map((s) => (
           <span key={s} className="flex items-center gap-1.5">
             <span
               className="inline-block w-3 h-3 rounded-sm border border-white/40 shadow-sm"
@@ -141,6 +145,15 @@ export default function GarageMap({
             {selected.residentName && (
               <p className="text-sm text-gray-500 mt-0.5">{selected.residentName}</p>
             )}
+            {selected.endingAt && (
+              <p className="text-sm text-orange-600 mt-0.5">
+                Beräknat ledigt:{" "}
+                {new Date(selected.endingAt).toLocaleDateString("sv-SE", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            )}
             <Badge
               variant="outline"
               className="mt-2"
@@ -170,8 +183,8 @@ export default function GarageMap({
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 text-center">
-        {(["free", "occupied", "offered"] as SpotStatus[]).map((s) => {
+      <div className="grid grid-cols-4 gap-3 text-center">
+        {(["free", "occupied", "upcoming", "offered"] as SpotStatus[]).map((s) => {
           const count = spots.filter((sp) => sp.status === s).length;
           return (
             <div key={s} className="rounded-lg border border-gray-200 bg-white py-3 px-2">

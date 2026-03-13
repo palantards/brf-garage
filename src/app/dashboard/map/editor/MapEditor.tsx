@@ -48,10 +48,12 @@ export default function MapEditor({
   initialSpots,
   initialImageUrl,
   mapStatus,
+  unplacedSpots = [],
 }: {
   initialSpots: EditorSpot[];
   initialImageUrl: string | null;
   mapStatus: string;
+  unplacedSpots?: string[];
 }) {
   const router = useRouter();
   const [spots, setSpots] = useState<EditorSpot[]>(initialSpots);
@@ -319,6 +321,37 @@ export default function MapEditor({
           {confirmed} bekräftade · {ocrGuesses} OCR · {spots.length} totalt
         </span>
       </div>
+
+      {/* ── Unplaced spots ── */}
+      {unplacedSpots.length > 0 && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-amber-800">
+            Ej placerade ({unplacedSpots.length}):
+          </span>
+          {unplacedSpots.map(identifier => (
+            <button
+              key={identifier}
+              type="button"
+              className="text-xs px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 hover:bg-amber-200 font-mono"
+              onClick={() => {
+                setLabelInput(identifier);
+                const id = selectedRef.current;
+                if (id) {
+                  const sp = spotsRef.current.find(s => s.id === id);
+                  if (sp) { sp.label = identifier; sp.ocr = false; }
+                  setSpots(prev => prev.map(s => s.id === id ? { ...s, label: identifier, ocr: false } : s));
+                }
+              }}
+              title="Klicka för att fylla i märkning. Rita sedan platsen på kartan."
+            >
+              {identifier}
+            </button>
+          ))}
+          <span className="text-xs text-amber-600 ml-1">
+            Rita platsen på kartan, klicka sedan på rätt knapp för att sätta märkning.
+          </span>
+        </div>
+      )}
 
       {/* ── Map canvas ── */}
       <div className="p-4 bg-gray-50">
