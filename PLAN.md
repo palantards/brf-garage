@@ -9,6 +9,7 @@
 - [x] Garage map — full flow (see below)
 - [x] Queue join/leave + position display
 - [x] Spot management + upcoming availability
+- [x] Spot preferences (queue member interest + admin interest count)
 
 ---
 
@@ -63,7 +64,7 @@
 
 ---
 
-## Prio 4 — Spot Preferences
+## Prio 4 — Spot Preferences ✅
 
 **Goal:** Queue members can express interest in specific spots. When a spot becomes free,
 the offer goes to the highest queue position among those who want it — falling back to
@@ -85,11 +86,11 @@ CREATE TABLE spot_preferences (
 ```
 
 **Tasks:**
-- [ ] DB migration: create `spot_preferences` table
-- [ ] Resident: view upcoming spots + toggle preference (want / don't want)
-- [ ] Resident: see their own preference list
-- [ ] Offer trigger: prefer highest-queue-position preferring the spot; fall back to FIFO
-- [ ] Admin: see who has expressed interest in each spot
+- [x] DB migration: create `spot_preferences` table (`006_spot_preferences.sql`)
+- [x] Resident: view upcoming spots + toggle preference (want / don't want) — QueueCard upcoming table with optimistic toggle
+- [x] API: POST/DELETE `/api/queue/preferences` — idempotent via `ON CONFLICT DO NOTHING`, scoped DELETE
+- [x] Admin: see interest count per spot in spots table (`preference_count` column)
+- [ ] Offer trigger: prefer highest-queue-position preferring the spot; fall back to FIFO (part of Prio 5)
 
 ---
 

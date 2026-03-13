@@ -16,6 +16,7 @@ export interface SpotRow {
   assignment_id: string | null;
   ending_at: string | null;
   map_x: number | null;
+  preference_count: number;
 }
 
 export default async function SpotsPage() {
@@ -40,12 +41,15 @@ export default async function SpotsPage() {
       u.name  AS resident_name,
       sa.id   AS assignment_id,
       sa.ending_at,
-      s.map_x
+      s.map_x,
+      COUNT(sp.id) AS preference_count
     FROM spots s
     LEFT JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
     LEFT JOIN spot_offers      so ON so.spot_id = s.id AND so.status = 'pending'
     LEFT JOIN users             u  ON u.id = sa.user_id
+    LEFT JOIN spot_preferences  sp ON sp.spot_id = s.id
     WHERE s.association_id = ${assocId}
+    GROUP BY s.id, sa.id, so.id, u.name
     ORDER BY s.identifier
   `;
 

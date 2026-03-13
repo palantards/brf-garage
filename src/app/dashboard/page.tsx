@@ -48,11 +48,12 @@ export default async function DashboardPage() {
 
   // Upcoming spots — visible to queue members and used for the admin stats card
   const upcomingSpots = await sql<{
+    spot_id: string;
     identifier: string;
     map_type: string;
     ending_at: string;
   }[]>`
-    SELECT s.identifier, s.map_type, sa.ending_at
+    SELECT s.id AS spot_id, s.identifier, s.map_type, sa.ending_at
     FROM spots s
     JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
     WHERE s.association_id = ${user.associationId}
@@ -60,6 +61,15 @@ export default async function DashboardPage() {
       AND s.available = true
     ORDER BY sa.ending_at ASC, s.identifier ASC
   `;
+
+  // Current user's spot preferences (spot IDs they've expressed interest in)
+  const userPreferenceRows = queueEntry
+    ? await sql<{ spot_id: string }[]>`
+        SELECT spot_id FROM spot_preferences
+        WHERE user_id = ${user.id} AND association_id = ${user.associationId}
+      `
+    : [];
+  const userPreferences = userPreferenceRows.map(r => r.spot_id);
 
   // Admin spot stats
   const spotStats = isAdmin
@@ -139,6 +149,7 @@ export default async function DashboardPage() {
                 joinedAt={queueEntry?.joined_at ?? null}
                 hasAssignment={!!assignment}
                 upcomingSpots={upcomingSpots}
+                userPreferences={userPreferences}
               />
             </CardContent>
           </Card>

@@ -167,6 +167,7 @@ export default function SpotsTable({ initialSpots }: Props) {
           assignment_id: null,
           ending_at: null,
           map_x: null,
+          preference_count: 0,
         },
       ].sort((a, b) => a.identifier.localeCompare(b.identifier, "sv")));
 
@@ -215,13 +216,14 @@ export default function SpotsTable({ initialSpots }: Props) {
             <TableHead className="w-36">Status</TableHead>
             <TableHead>Boende</TableHead>
             <TableHead className="w-44">Slutdatum</TableHead>
+            <TableHead className="w-24 text-right">Intresserade</TableHead>
             <TableHead className="text-right w-72">Åtgärder</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {spots.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-gray-400 py-10">
+              <TableCell colSpan={7} className="text-center text-gray-400 py-10">
                 Inga platser ännu. Lägg till en plats nedan.
               </TableCell>
             </TableRow>
@@ -295,6 +297,13 @@ export default function SpotsTable({ initialSpots }: Props) {
                   ) : (
                     <span className="text-gray-300">—</span>
                   )}
+                </TableCell>
+
+                <TableCell className="text-right text-sm text-gray-500">
+                  {Number(spot.preference_count) > 0
+                    ? <span className="font-medium text-gray-700">{Number(spot.preference_count)}</span>
+                    : <span className="text-gray-300">—</span>
+                  }
                 </TableCell>
 
                 <TableCell className="text-right">

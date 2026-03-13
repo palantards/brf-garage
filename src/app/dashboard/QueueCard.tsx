@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type UpcomingSpot = {
+  spot_id: string;
   identifier: string;
   map_type: string;
   ending_at: string;
@@ -15,13 +16,24 @@ type Props = {
   joinedAt: string | null;    // ISO string
   hasAssignment: boolean;
   upcomingSpots: UpcomingSpot[];
+  userPreferences: string[];  // spot IDs the user has expressed interest in
 };
 
-export default function QueueCard({ position, joinedAt, hasAssignment, upcomingSpots }: Props) {
+export default function QueueCard({
+  position,
+  joinedAt,
+  hasAssignment,
+  upcomingSpots,
+  userPreferences,
+}: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Preference state — optimistically updated on toggle
+  const [preferences, setPreferences] = useState<Set<string>>(new Set(userPreferences));
+  const [prefLoading, setPrefLoading] = useState<string | null>(null); // spotId being toggled
 
   async function join() {
     setLoading(true);
@@ -55,6 +67,48 @@ export default function QueueCard({ position, joinedAt, hasAssignment, upcomingS
       setError(e instanceof Error ? e.message : "Något gick fel");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function togglePreference(spotId: string) {
+    if (prefLoading) return;
+    setPrefLoading(spotId);
+
+    const isAdding = !preferences.has(spotId);
+
+    // Optimistic update
+    setPreferences(prev => {
+      const next = new Set(prev);
+      isAdding ? next.add(spotId) : next.delete(spotId);
+      return next;
+    });
+
+    try {
+      const res = await fetch("/api/queue/preferences", {
+        method: isAdding ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ spotId }),
+      });
+      if (!res.ok) {
+        // Roll back optimistic update on failure
+        setPreferences(prev => {
+          const next = new Set(prev);
+          isAdding ? next.delete(spotId) : next.add(spotId);
+          return next;
+        });
+        const data = await res.json() as { error?: string };
+        setError(data.error ?? "Något gick fel");
+      }
+    } catch {
+      // Roll back
+      setPreferences(prev => {
+        const next = new Set(prev);
+        isAdding ? next.delete(spotId) : next.add(spotId);
+        return next;
+      });
+      setError("Något gick fel");
+    } finally {
+      setPrefLoading(null);
     }
   }
 
@@ -109,7 +163,7 @@ export default function QueueCard({ position, joinedAt, hasAssignment, upcomingS
           </button>
         )}
 
-        {/* Upcoming spots — only shown when in queue */}
+        {/* Upcoming spots with preference toggles */}
         {upcomingSpots.length > 0 && (
           <div className="pt-1 border-t border-gray-100">
             <p className="text-xs font-medium text-gray-500 mb-2">Kommande lediga platser</p>
@@ -118,22 +172,42 @@ export default function QueueCard({ position, joinedAt, hasAssignment, upcomingS
                 <tr className="text-left text-xs text-gray-400">
                   <th className="pb-1 font-medium">Plats</th>
                   <th className="pb-1 font-medium">Typ</th>
-                  <th className="pb-1 font-medium text-right">Beräknat ledigt</th>
+                  <th className="pb-1 font-medium">Beräknat ledigt</th>
+                  <th className="pb-1 font-medium text-right">Intresse</th>
                 </tr>
               </thead>
               <tbody>
-                {upcomingSpots.map(s => (
-                  <tr key={s.identifier} className="border-t border-gray-50">
-                    <td className="py-1 font-mono font-semibold text-gray-800">{s.identifier}</td>
-                    <td className="py-1 text-gray-500">{s.map_type === "mc" ? "MC" : "Bil"}</td>
-                    <td className="py-1 text-right text-orange-600">
-                      {new Date(s.ending_at).toLocaleDateString("sv-SE", {
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </td>
-                  </tr>
-                ))}
+                {upcomingSpots.map(s => {
+                  const interested = preferences.has(s.spot_id);
+                  const toggling = prefLoading === s.spot_id;
+                  return (
+                    <tr key={s.spot_id} className="border-t border-gray-50">
+                      <td className="py-1.5 font-mono font-semibold text-gray-800">{s.identifier}</td>
+                      <td className="py-1.5 text-gray-500">{s.map_type === "mc" ? "MC" : "Bil"}</td>
+                      <td className="py-1.5 text-orange-600">
+                        {new Date(s.ending_at).toLocaleDateString("sv-SE", {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="py-1.5 text-right">
+                        <button
+                          type="button"
+                          disabled={toggling}
+                          onClick={() => togglePreference(s.spot_id)}
+                          className={[
+                            "text-xs px-2 py-0.5 rounded border transition-colors disabled:opacity-50",
+                            interested
+                              ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100"
+                              : "bg-white border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-700",
+                          ].join(" ")}
+                        >
+                          {toggling ? "…" : interested ? "Intresserad ✓" : "Markera intresse"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
