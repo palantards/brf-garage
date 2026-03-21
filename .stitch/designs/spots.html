@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="sv"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Platser | BRF Garage Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#dbe4e7",
+              "on-background": "#2b3437",
+              "on-secondary-fixed-variant": "#5b5b5f",
+              "outline": "#737c7f",
+              "on-primary": "#f8f7ff",
+              "tertiary-container": "#dfd5f7",
+              "on-primary-fixed-variant": "#0050d4",
+              "tertiary-fixed-dim": "#d0c7e8",
+              "primary": "#0053db",
+              "primary-dim": "#0048c1",
+              "on-tertiary-fixed-variant": "#59526e",
+              "inverse-primary": "#618bff",
+              "on-error-container": "#752121",
+              "secondary-fixed-dim": "#d5d3d8",
+              "outline-variant": "#abb3b7",
+              "on-secondary-fixed": "#3f3f43",
+              "on-secondary-container": "#515155",
+              "surface-container": "#eaeff1",
+              "on-tertiary": "#fdf7ff",
+              "on-surface": "#2b3437",
+              "surface-dim": "#d1dce0",
+              "secondary-container": "#e4e2e6",
+              "background": "#f8f9fa",
+              "surface-container-high": "#e2e9ec",
+              "secondary-dim": "#535356",
+              "surface-container-highest": "#dbe4e7",
+              "tertiary-fixed": "#dfd5f7",
+              "on-tertiary-container": "#4f4964",
+              "on-primary-fixed": "#003798",
+              "on-surface-variant": "#586064",
+              "on-tertiary-fixed": "#3c3650",
+              "on-secondary": "#faf8fc",
+              "primary-container": "#dbe1ff",
+              "secondary": "#5f5f62",
+              "error": "#9f403d",
+              "tertiary": "#625b77",
+              "surface-container-lowest": "#ffffff",
+              "surface-tint": "#0053db",
+              "secondary-fixed": "#e4e2e6",
+              "inverse-surface": "#0c0f10",
+              "tertiary-dim": "#564f6b",
+              "error-dim": "#4e0309",
+              "on-primary-container": "#0048bf",
+              "surface-container-low": "#f1f4f6",
+              "primary-fixed": "#dbe1ff",
+              "surface-bright": "#f8f9fa",
+              "surface": "#f8f9fa",
+              "inverse-on-surface": "#9b9d9e",
+              "on-error": "#fff7f6",
+              "error-container": "#fe8983"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.25rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+        }
+        
+        /* The "Architectural Ledger" spacing */
+        .section-gap { margin-bottom: 4rem; }
+        
+        /* Custom Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #abb3b7;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #0053db; }
+        input:checked + .slider:before { transform: translateX(16px); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#f8f9fa] dark:bg-slate-900 flex flex-col p-6 space-y-2 z-50">
+<div class="mb-8">
+<h1 class="text-2xl font-black text-[#2b3437] dark:text-white tracking-tight">BRF Garage</h1>
+<p class="text-xs font-medium text-on-surface-variant opacity-70">Adminportal</p>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center px-4 py-3 text-sm font-medium text-[#2b3437] dark:text-slate-400 hover:text-[#2563eb] hover:bg-[#e2e9ec] dark:hover:bg-slate-800 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 group-active:translate-x-1 transition-transform" data-icon="dashboard">dashboard</span>
+                Översikt
+            </a>
+<a class="flex items-center px-4 py-3 text-sm font-medium text-[#2b3437] dark:text-slate-400 hover:text-[#2563eb] hover:bg-[#e2e9ec] dark:hover:bg-slate-800 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 group-active:translate-x-1 transition-transform" data-icon="hourglass_empty">hourglass_empty</span>
+                Kö
+            </a>
+<a class="flex items-center px-4 py-3 text-sm font-medium text-[#2b3437] dark:text-slate-400 hover:text-[#2563eb] hover:bg-[#e2e9ec] dark:hover:bg-slate-800 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 group-active:translate-x-1 transition-transform" data-icon="group">group</span>
+                Boende
+            </a>
+<a class="flex items-center px-4 py-3 text-sm font-bold text-[#2563eb] dark:text-blue-400 bg-[#ffffff] dark:bg-slate-800 rounded-lg shadow-sm transition-all group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="directions_car" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+                Platser
+            </a>
+<a class="flex items-center px-4 py-3 text-sm font-medium text-[#2b3437] dark:text-slate-400 hover:text-[#2563eb] hover:bg-[#e2e9ec] dark:hover:bg-slate-800 rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined mr-3 group-active:translate-x-1 transition-transform" data-icon="map">map</span>
+                Garageplan
+            </a>
+</nav>
+<div class="mt-auto pt-6">
+<div class="p-4 bg-surface-container-low rounded-xl">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-1">Systemstatus</p>
+<div class="flex items-center text-xs font-semibold text-primary">
+<span class="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                    Alla system gröna
+                </div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-12 py-6 sticky top-0 z-40 bg-[#f8f9fa] dark:bg-slate-900/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-low px-4 py-2 rounded-full flex items-center group transition-all focus-within:ring-2 ring-primary">
+<span class="material-symbols-outlined text-on-surface-variant mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-outline-variant" placeholder="Sök plats eller namn..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-gradient-to-br from-primary to-primary-dim text-on-primary px-6 py-2.5 rounded-full font-bold text-sm shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Lägg till plats
+                </button>
+</div>
+</header>
+<div class="px-12 py-8">
+<!-- Hero Header Section -->
+<div class="section-gap flex flex-col md:flex-row justify-between items-end gap-8">
+<div class="max-w-2xl">
+<h2 class="text-6xl font-extrabold font-headline tracking-tighter text-on-surface mb-4">Platser</h2>
+<p class="text-xl text-on-surface-variant leading-relaxed">Hantering av parkeringsplatser och avtal</p>
+</div>
+<!-- Stats Row (Bento Style) -->
+<div class="grid grid-cols-3 gap-4 w-full md:w-auto">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(43,52,55,0.04)] min-w-[160px]">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2">Totalt</p>
+<p class="text-4xl font-headline font-extrabold text-on-surface">24</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(43,52,55,0.04)] min-w-[160px]">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2">Lediga</p>
+<p class="text-4xl font-headline font-extrabold text-primary">3</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(43,52,55,0.04)] min-w-[160px]">
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-2">Kommande</p>
+<p class="text-4xl font-headline font-extrabold text-on-surface">2</p>
+</div>
+</div>
+</div>
+<!-- Content Area: The Architectural Ledger -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_rgba(43,52,55,0.06)] overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-none">
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Plats</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Typ</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Status</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Tilldelad till</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant text-center">Tillgänglig</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">Avtal upphör</th>
+<th class="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant text-right">Åtgärder</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center">
+<span class="text-lg font-bold font-headline text-on-surface">A1</span>
+<span class="ml-3 px-2 py-0.5 rounded text-[10px] bg-secondary-container text-on-secondary-container font-bold">VÅNING 1</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-base" data-icon="electric_car">electric_car</span>
+<span class="text-sm font-medium">Laddplats</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Uthyrd</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Erik Andersson</span>
+<span class="text-xs text-on-surface-variant">Lägenhet 1201</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</td>
+<td class="px-8 py-6">
+<span class="text-sm text-on-surface-variant font-medium">2024-12-31</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center">
+<span class="text-lg font-bold font-headline text-on-surface">A2</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-base" data-icon="directions_car">directions_car</span>
+<span class="text-sm font-medium">Normalstor</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary-container text-primary">Ledig</span>
+</td>
+<td class="px-8 py-6">
+<span class="text-sm text-outline-variant">—</span>
+</td>
+<td class="px-8 py-6 text-center">
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</td>
+<td class="px-8 py-6">
+<span class="text-sm text-outline-variant">—</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center">
+<span class="text-lg font-bold font-headline text-on-surface">B4</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-base" data-icon="accessible">accessible</span>
+<span class="text-sm font-medium">Handikappsanpassad</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Kommande</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Karin Holm</span>
+<span class="text-xs text-on-surface-variant">Lägenhet 1104</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</td>
+<td class="px-8 py-6">
+<span class="text-sm text-on-error font-semibold bg-error px-2 py-0.5 rounded">2024-08-31</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center">
+<span class="text-lg font-bold font-headline text-on-surface">C12</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-base" data-icon="directions_car">directions_car</span>
+<span class="text-sm font-medium">Normalstor</span>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Uthyrd</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Johan Nilsson</span>
+<span class="text-xs text-on-surface-variant">Lägenhet 1502</span>
+</div>
+</td>
+<td class="px-8 py-6 text-center">
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</td>
+<td class="px-8 py-6">
+<span class="text-sm text-on-surface-variant font-medium">2025-06-30</span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-8 py-4 bg-surface-container-low flex justify-between items-center">
+<p class="text-xs text-on-surface-variant font-medium">Visar 4 av 24 platser</p>
+<div class="flex gap-2">
+<button class="p-2 bg-surface-container-lowest rounded-lg text-on-surface-variant hover:text-primary transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 bg-surface-container-lowest rounded-lg text-on-surface-variant hover:text-primary transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Asymmetric Utility Section -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="md:col-span-2 bg-primary p-8 rounded-xl relative overflow-hidden group">
+<div class="relative z-10">
+<h3 class="text-on-primary text-2xl font-headline font-bold mb-2">Snabbanalys: Beläggning</h3>
+<p class="text-on-primary/80 mb-6 max-w-sm">Din nuvarande beläggningsgrad är 88%. Tre platser förväntas bli lediga under nästa kvartal.</p>
+<button class="bg-surface-container-lowest text-primary px-6 py-2 rounded-full font-bold text-sm hover:bg-white transition-all">Visa rapport</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-white/10 group-hover:scale-110 transition-transform duration-700" data-icon="analytics">analytics</span>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col justify-center items-center text-center">
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="help_outline">help_outline</span>
+</div>
+<h4 class="font-headline font-bold text-lg mb-1">Behöver du hjälp?</h4>
+<p class="text-sm text-on-surface-variant mb-4">Läs våra guider om avtalshantering.</p>
+<a class="text-primary font-bold text-sm underline underline-offset-4 decoration-primary/30 hover:decoration-primary transition-all" href="#">Gå till hjälpcentret</a>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Quick Actions (Glassmorphism) -->
+<div class="fixed bottom-8 right-8 flex flex-col gap-3 z-50">
+<button class="glass-panel w-14 h-14 rounded-full flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+</button>
+<button class="glass-panel w-14 h-14 rounded-full flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</body></html>

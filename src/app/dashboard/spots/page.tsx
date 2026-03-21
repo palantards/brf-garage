@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import SpotsTable from "./SpotsTable";
+import SpotsClient from "./SpotsClient";
 
 export type SpotStatus = "free" | "occupied" | "upcoming" | "offered" | "unavailable";
 
@@ -53,33 +52,16 @@ export default async function SpotsPage() {
     ORDER BY s.identifier
   `;
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-2">
-          <a href="/dashboard" className="text-sm text-gray-500 hover:text-gray-900">
-            ← Tillbaka
-          </a>
-          <span className="text-gray-300">/</span>
-          <span className="font-semibold text-gray-900">Platser</span>
-        </div>
-      </header>
+  const total = spots.length;
+  const free = spots.filter((s) => s.status === "free").length;
+  const upcoming = spots.filter((s) => s.status === "upcoming").length;
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              Platser
-              <span className="ml-2 text-sm font-normal text-gray-400">
-                {spots.length} {spots.length === 1 ? "plats" : "platser"}
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <SpotsTable initialSpots={spots} />
-          </CardContent>
-        </Card>
-      </main>
-    </div>
+  return (
+    <SpotsClient
+      initialSpots={spots}
+      total={total}
+      free={free}
+      upcoming={upcoming}
+    />
   );
 }

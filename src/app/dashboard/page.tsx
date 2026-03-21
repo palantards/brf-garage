@@ -1,30 +1,44 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import SignOutButton from "./SignOutButton";
+import { Button } from "@/components/ui/button";
 import QueueCard from "./QueueCard";
+
+const eventMeta: Record<string, { label: string; icon: string }> = {
+  "queue.join":              { label: "Ny köanmälan",         icon: "login" },
+  "queue.leave":             { label: "Lämnade kön",          icon: "logout" },
+  "queue.preference.add":    { label: "Intresse markerat",    icon: "bookmark" },
+  "queue.preference.remove": { label: "Intresse borttaget",   icon: "bookmark_remove" },
+  "spot.created":            { label: "Ny plats skapad",      icon: "directions_car" },
+  "spot.updated":            { label: "Plats uppdaterad",     icon: "edit" },
+  "spot.deleted":            { label: "Plats borttagen",      icon: "delete" },
+  "invite.accepted":         { label: "Inbjudan accepterad",  icon: "person_add" },
+  "resident.invited":        { label: "Boende inbjuden",      icon: "mail" },
+  "resident.deactivated":    { label: "Boende avaktiverad",   icon: "person_off" },
+};
+
+function formatEventDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const eventStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const time = date.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+  if (eventStart === todayStart) return `Idag ${time}`;
+  if (eventStart === todayStart - 86400000) return `Igår ${time}`;
+  return date.toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
+}
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
   const { user } = session;
-  const initials = user.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : user.email?.[0]?.toUpperCase() ?? "?";
-
   const isAdmin = user.role === "admin";
 
-  // Queue status for the current user
+  // Shared queries
   const [queueEntry] = await sql<{ id: string; joined_at: string }[]>`
     SELECT id, joined_at FROM queue_entries
     WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND left_at IS NULL
@@ -38,7 +52,7 @@ export default async function DashboardPage() {
           WHERE association_id = ${user.associationId} AND left_at IS NULL
         ) ranked
         WHERE user_id = ${user.id}
-      `.then(rows => rows[0]?.position ?? null)
+      `.then((rows) => rows[0]?.position ?? null)
     : null;
 
   const [assignment] = await sql<{ id: string }[]>`
@@ -46,7 +60,6 @@ export default async function DashboardPage() {
     WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND ended_at IS NULL
   `;
 
-  // Upcoming spots — visible to queue members and used for the admin stats card
   const upcomingSpots = await sql<{
     spot_id: string;
     identifier: string;
@@ -62,174 +75,280 @@ export default async function DashboardPage() {
     ORDER BY sa.ending_at ASC, s.identifier ASC
   `;
 
-  // Current user's spot preferences (spot IDs they've expressed interest in)
-  const userPreferenceRows = queueEntry
+  const userPreferences = queueEntry
     ? await sql<{ spot_id: string }[]>`
         SELECT spot_id FROM spot_preferences
         WHERE user_id = ${user.id} AND association_id = ${user.associationId}
-      `
+      `.then((rows) => rows.map((r) => r.spot_id))
     : [];
-  const userPreferences = userPreferenceRows.map(r => r.spot_id);
 
-  // Admin spot stats
-  const spotStats = isAdmin
-    ? await sql<{ total: number; free: number }[]>`
-        SELECT
-          COUNT(*)                                                                       AS total,
-          COUNT(*) FILTER (WHERE s.available = true AND sa.id IS NULL AND so.id IS NULL) AS free
-        FROM spots s
-        LEFT JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
-        LEFT JOIN spot_offers      so ON so.spot_id = s.id AND so.status = 'pending'
-        WHERE s.association_id = ${user.associationId}
-      `.then(rows => rows[0])
-    : null;
+  // Admin-only queries
+  const [spotStats, queueCount, residentCount, offerCount, recentEvents] = isAdmin
+    ? await Promise.all([
+        sql<{ total: number; free: number }[]>`
+          SELECT
+            COUNT(*)                                                                       AS total,
+            COUNT(*) FILTER (WHERE s.available = true AND sa.id IS NULL AND so.id IS NULL) AS free
+          FROM spots s
+          LEFT JOIN spot_assignments sa ON sa.spot_id = s.id AND sa.ended_at IS NULL
+          LEFT JOIN spot_offers      so ON so.spot_id = s.id AND so.status = 'pending'
+          WHERE s.association_id = ${user.associationId}
+        `.then((rows) => rows[0]),
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top nav */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="font-semibold text-gray-900">BRF Garage</span>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <SignOutButton />
-          </div>
-        </div>
-      </header>
+        sql<{ count: number }[]>`
+          SELECT COUNT(*) AS count FROM queue_entries
+          WHERE association_id = ${user.associationId} AND left_at IS NULL
+        `.then((rows) => Number(rows[0]?.count ?? 0)),
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+        sql<{ count: number }[]>`
+          SELECT COUNT(*) AS count FROM users
+          WHERE association_id = ${user.associationId}
+        `.then((rows) => Number(rows[0]?.count ?? 0)),
+
+        sql<{ count: number }[]>`
+          SELECT COUNT(*) AS count FROM spot_offers
+          WHERE association_id = ${user.associationId} AND status = 'pending'
+        `.then((rows) => Number(rows[0]?.count ?? 0)),
+
+        sql<{ id: string; event_type: string; created_at: string }[]>`
+          SELECT id, event_type, created_at FROM audit_log
+          WHERE association_id = ${user.associationId}
+          ORDER BY created_at DESC LIMIT 8
+        `,
+      ])
+    : [null, 0, 0, 0, [] as { id: string; event_type: string; created_at: string }[]];
+
+  // ── Admin view ──────────────────────────────────────────────────────────────
+  if (isAdmin) {
+    const total = Number(spotStats?.total ?? 0);
+    const free = Number(spotStats?.free ?? 0);
+    const occupied = total - free - upcomingSpots.length;
+    const occupancyPct = total > 0 ? Math.round((occupied / total) * 100) : 0;
+    const upcomingPct = total > 0 ? Math.round((upcomingSpots.length / total) * 100) : 0;
+
+    return (
+      <div className="p-12">
         {/* Welcome */}
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">
+        <header className="mb-14">
+          <div className="flex items-baseline gap-4 mb-2">
+            <h1 className="font-[var(--font-manrope)] text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none">
               Hej, {user.name ?? user.email}
             </h1>
-            <p className="text-sm text-gray-500">{user.email}</p>
+            <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
+              Administratör
+            </Badge>
           </div>
-          <Badge variant={isAdmin ? "default" : "secondary"} className="ml-1">
-            {isAdmin ? "Administratör" : "Boende"}
-          </Badge>
-        </div>
+          <p className="text-[#586064] max-w-xl">
+            Välkommen tillbaka. Här är en sammanfattning av fastighetens aktuella status.
+          </p>
+        </header>
 
-        <Separator />
+        {/* Bento stats grid */}
+        <section className="grid grid-cols-2 gap-6 mb-12">
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card className="sm:col-span-2">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Garageplan</CardTitle>
+          {/* Kö */}
+          <Card className="rounded-xl border-none shadow-none bg-white relative overflow-hidden">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Kö
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500">
-                Se vilka platser som är lediga, upptagna eller erbjudna.
-              </p>
-              <div className="mt-3">
-                <a href="/dashboard/map" className="text-sm font-medium text-blue-600 hover:underline">
-                  Visa garageplan →
-                </a>
+            <CardContent className="pt-4">
+              <div className="flex justify-between items-start">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                  {queueCount} i kö
+                </p>
+                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                  <span className="material-symbols-outlined">format_list_numbered</span>
+                </div>
+              </div>
+              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" asChild>
+                <Link href="/dashboard/queue">Hantera kölista</Link>
+              </Button>
+            </CardContent>
+            {/* Watermark */}
+            <span
+              className="material-symbols-outlined absolute -bottom-4 -right-4 text-[#0053db] select-none pointer-events-none"
+              style={{ fontSize: 120, opacity: 0.04 }}
+            >
+              format_list_numbered
+            </span>
+          </Card>
+
+          {/* Platser */}
+          <Card className="rounded-xl border-none shadow-none bg-white border-l-4 border-[#0053db]" style={{ borderLeft: "4px solid #0053db" }}>
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Platser
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex items-baseline gap-4 mb-6">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                  {total} totalt
+                </p>
+                <span className="text-sm text-[#586064]">
+                  · {free} lediga{upcomingSpots.length > 0 && ` · ${upcomingSpots.length} kommande`}
+                </span>
+              </div>
+              {/* Occupancy bar */}
+              <div className="w-full h-2 bg-[#dbe4e7] rounded-full overflow-hidden flex">
+                <div className="h-full bg-[#0053db]" style={{ width: `${occupancyPct}%` }} />
+                <div className="h-full bg-[#dbe1ff]" style={{ width: `${upcomingPct}%` }} />
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-[11px] text-[#586064]">{occupancyPct}% beläggning</span>
+                <Button variant="link" className="px-0 text-[11px] text-[#0053db] font-bold h-auto" asChild>
+                  <Link href="/dashboard/spots">Hantera platser</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-base">Min köplats</CardTitle>
-              {isAdmin && (
-                <a href="/dashboard/queue" className="text-sm text-gray-400 hover:text-gray-600">
-                  Visa kö →
-                </a>
-              )}
+
+          {/* Boende */}
+          <Card className="rounded-xl border-none shadow-none bg-white">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Boende
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <QueueCard
-                position={queuePosition}
-                joinedAt={queueEntry?.joined_at ?? null}
-                hasAssignment={!!assignment}
-                upcomingSpots={upcomingSpots}
-                userPreferences={userPreferences}
-              />
+            <CardContent className="pt-4">
+              <div className="flex justify-between items-start">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                  {residentCount} aktiva
+                </p>
+                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                  <span className="material-symbols-outlined">group</span>
+                </div>
+              </div>
+              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" asChild>
+                <Link href="/dashboard/residents">Hantera boende</Link>
+              </Button>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Aktiva erbjudanden</CardTitle>
+          {/* Aktiva erbjudanden */}
+          <Card className="rounded-xl border-none shadow-none bg-white">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Aktiva erbjudanden
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500">Inga aktiva erbjudanden.</p>
-            </CardContent>
-          </Card>
-
-          {isAdmin && (
-            <>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Kö</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500">
-                    Se och hantera kön för din förening.
+            <CardContent className="pt-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                    {offerCount} {offerCount === 1 ? "aktivt" : "aktiva"}
                   </p>
-                  <button className="mt-3 text-sm font-medium text-blue-600 hover:underline">
-                    Hantera kö →
-                  </button>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Boende</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500">
-                    Bjud in och hantera boende.
-                  </p>
-                  <a href="/dashboard/residents" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
-                    Hantera boende →
-                  </a>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Platser</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {spotStats && (
-                    <p className="text-sm text-gray-500">
-                      {Number(spotStats.total)} platser totalt &middot;{" "}
-                      <span className="text-green-600 font-medium">{Number(spotStats.free)} lediga</span>
-                      {upcomingSpots.length > 0 && (
-                        <> &middot; <span className="text-orange-500 font-medium">{upcomingSpots.length} kommande</span></>
-                      )}
-                    </p>
+                  {offerCount === 0 && (
+                    <p className="text-sm text-[#586064] mt-2 italic">Inga väntande erbjudanden</p>
                   )}
-                  <a href="/dashboard/spots" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
-                    Hantera platser →
-                  </a>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                  <span className="material-symbols-outlined">local_offer</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
 
-              <Card className="sm:col-span-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Händelselogg</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500">
-                    Alla köhändelser loggas här för transparens.
-                  </p>
-                  <button className="mt-3 text-sm font-medium text-blue-600 hover:underline">
-                    Visa logg →
-                  </button>
-                </CardContent>
-              </Card>
-            </>
-          )}
+        {/* Activity log */}
+        <Card className="rounded-xl border-none shadow-none bg-white">
+          <CardHeader>
+            <CardTitle className="font-[var(--font-manrope)] text-xl font-bold text-[#2b3437]">
+              Händelselogg
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentEvents.length === 0 ? (
+              <p className="text-sm text-[#586064]">Inga händelser ännu.</p>
+            ) : (
+              <div>
+                {recentEvents.map((event, i) => {
+                  const meta = eventMeta[event.event_type] ?? { label: event.event_type, icon: "history" };
+                  return (
+                    <div
+                      key={event.id}
+                      className="flex items-center justify-between py-5 px-4 -mx-4 rounded-lg hover:bg-[#f8f9fa] transition-colors"
+                      style={{ borderBottom: i < recentEvents.length - 1 ? "1px solid rgba(171,179,183,0.12)" : "none" }}
+                    >
+                      <div className="flex items-center gap-5">
+                        <div className="w-10 h-10 rounded-full bg-[#0053db]/10 flex items-center justify-center text-[#0053db] shrink-0">
+                          <span className="material-symbols-outlined text-[20px]">{meta.icon}</span>
+                        </div>
+                        <span className="text-sm font-semibold text-[#2b3437]">{meta.label}</span>
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[#586064] whitespace-nowrap">
+                        {formatEventDate(event.created_at)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // ── Resident view ────────────────────────────────────────────────────────────
+  return (
+    <div className="p-12">
+      <header className="mb-10">
+        <div className="flex items-baseline gap-3 mb-1">
+          <h1 className="font-[var(--font-manrope)] text-4xl font-extrabold tracking-tight text-[#2b3437] leading-tight">
+            Hej, {user.name ?? user.email}
+          </h1>
+          <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
+            Boende
+          </Badge>
         </div>
-      </main>
+        <p className="text-[#586064]">Välkommen tillbaka till garageportalen.</p>
+      </header>
+
+      <div className="grid grid-cols-2 gap-6">
+        {/* Queue card */}
+        <Card className="rounded-xl border-none shadow-none bg-white">
+          <CardHeader className="pb-0">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              Min köplats
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <QueueCard
+              position={queuePosition}
+              joinedAt={queueEntry?.joined_at ?? null}
+              hasAssignment={!!assignment}
+              upcomingSpots={upcomingSpots}
+              userPreferences={userPreferences}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Map card */}
+        <Card className="rounded-xl border-none shadow-none bg-white">
+          <CardHeader className="pb-0">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              Garageplan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <p className="text-sm text-[#586064] mb-5">
+              Se vilka platser som är lediga, upptagna eller erbjudna.
+            </p>
+            <Button
+              className="bg-[#0053db] hover:bg-[#0048c1] text-white font-semibold rounded-lg gap-2"
+              asChild
+            >
+              <Link href="/dashboard/map">
+                <span className="material-symbols-outlined text-[18px]">map</span>
+                Visa garageplan
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="sv"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#d1dce0",
+              "on-secondary-fixed": "#3f3f43",
+              "on-tertiary": "#fdf7ff",
+              "inverse-primary": "#618bff",
+              "background": "#f8f9fa",
+              "tertiary": "#625b77",
+              "on-secondary-fixed-variant": "#5b5b5f",
+              "surface-container-highest": "#dbe4e7",
+              "tertiary-fixed": "#dfd5f7",
+              "on-primary-fixed": "#003798",
+              "outline-variant": "#abb3b7",
+              "on-error-container": "#752121",
+              "on-surface": "#2b3437",
+              "surface-bright": "#f8f9fa",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#f8f9fa",
+              "tertiary-container": "#dfd5f7",
+              "inverse-on-surface": "#9b9d9e",
+              "tertiary-dim": "#564f6b",
+              "secondary-dim": "#535356",
+              "on-secondary-container": "#515155",
+              "inverse-surface": "#0c0f10",
+              "surface-container-high": "#e2e9ec",
+              "on-tertiary-fixed": "#3c3650",
+              "surface-container": "#eaeff1",
+              "on-primary-fixed-variant": "#0050d4",
+              "primary-fixed": "#dbe1ff",
+              "on-primary-container": "#0048bf",
+              "surface-tint": "#0053db",
+              "secondary-fixed": "#e4e2e6",
+              "secondary-container": "#e4e2e6",
+              "primary-container": "#dbe1ff",
+              "on-tertiary-container": "#4f4964",
+              "on-secondary": "#faf8fc",
+              "outline": "#737c7f",
+              "on-primary": "#f8f7ff",
+              "tertiary-fixed-dim": "#d0c7e8",
+              "on-tertiary-fixed-variant": "#59526e",
+              "on-background": "#2b3437",
+              "primary-dim": "#0048c1",
+              "primary": "#0053db",
+              "surface-variant": "#dbe4e7",
+              "error": "#9f403d",
+              "secondary": "#5f5f62",
+              "on-error": "#fff7f6",
+              "surface-container-low": "#f1f4f6",
+              "error-container": "#fe8983",
+              "on-surface-variant": "#586064",
+              "error-dim": "#4e0309",
+              "secondary-fixed-dim": "#d5d3d8",
+              "primary-fixed-dim": "#c7d3ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.25rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #2b3437;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Manrope', sans-serif;
+        }
+        .bg-primary-gradient {
+            background: linear-gradient(135deg, #0053db 0%, #0048c1 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-slate-50 dark:bg-slate-950 flex flex-col p-4 space-y-2 z-50">
+<div class="mb-8 px-4">
+<h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100 font-manrope">BRF Garage</h1>
+<p class="text-[10px] tracking-widest uppercase text-slate-500 font-inter mt-1">Management Portal</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Översikt</span>
+</a>
+<!-- Active State: KÖ -->
+<a class="flex items-center gap-3 px-4 py-3 text-blue-700 dark:text-blue-400 font-bold bg-white dark:bg-slate-900 rounded-lg shadow-sm translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="format_list_bulleted">format_list_bulleted</span>
+<span class="text-sm">KÖ</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-sm font-medium">Boende</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="directions_car">directions_car</span>
+<span class="text-sm font-medium">Platser</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="text-sm font-medium">Garageplan</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-slate-200/50 dark:border-slate-800/50 mt-auto">
+<button class="w-full bg-primary-gradient text-white py-3 px-4 rounded-full font-semibold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 mb-6">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                Skapa Ny Post
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Inställningar</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="text-sm font-medium">Support</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-md flex justify-between items-center h-16 px-8 ml-64">
+<div class="flex items-center gap-4">
+<span class="text-slate-400 material-symbols-outlined">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder-slate-400" placeholder="Sök efter medlem..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-slate-500 hover:text-blue-500 transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-xs font-bold font-manrope text-on-surface">Admin User</p>
+<p class="text-[10px] text-slate-500 font-inter">Superadmin</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPdJD7v3yG9kcFQtFE2ey3-EssALo6qbq-FTIVtBc1KldixTEMGtoSBj6x3xbNJHoybwth1oiIzJimfV_7eXG237RhjwYYRbLpjXryT-FP4BDxWGhGq7WSupFykaF4S8VXZLgTIDztN0KY4oFPuLPbMM9-GIZF__TUk4DQ7VIpx10gT42NuKCXGb0kbVE9qwoeyr4jhKP2Wa-Tp34ITt3au9mWsyPme-jr_dAnwYCpZdPhcLkQwc7GDUyS5Z6pVmCToEmIqJZ4cLY"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-12 min-h-screen">
+<!-- Header Section -->
+<header class="mb-12 flex items-end justify-between">
+<div class="space-y-1">
+<h2 class="text-4xl font-extrabold font-headline tracking-tight text-on-surface">Kö</h2>
+<div class="flex items-center gap-3">
+<span class="px-2.5 py-0.5 rounded bg-primary-container text-on-primary-container text-[11px] font-bold tracking-widest uppercase">Status: Aktiv</span>
+<p class="text-sm text-on-surface-variant font-medium">12 medlemmar väntar på plats</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-surface-container-high text-primary rounded-full text-sm font-semibold hover:bg-slate-200 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="file_download">file_download</span>
+                    Exportera Lista
+                </button>
+</div>
+</header>
+<!-- Bento Stats -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+<div class="p-8 bg-surface-container-lowest rounded-xl border-0 shadow-sm border-l-4 border-primary">
+<p class="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">Totalt i kö</p>
+<p class="text-5xl font-headline font-extrabold text-on-surface">12</p>
+<p class="text-xs text-on-surface-variant mt-2 font-medium">Genomsnittlig väntetid: 4 mån</p>
+</div>
+<div class="p-8 bg-surface-container-lowest rounded-xl border-0 shadow-sm">
+<p class="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">Nya denna månad</p>
+<p class="text-5xl font-headline font-extrabold text-on-surface text-primary">3</p>
+<p class="text-xs text-on-surface-variant mt-2 font-medium">+15% från föregående månad</p>
+</div>
+<div class="p-8 bg-surface-container-lowest rounded-xl border-0 shadow-sm overflow-hidden relative group">
+<p class="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-2">Lediga Platser</p>
+<p class="text-5xl font-headline font-extrabold text-on-surface">2</p>
+<p class="text-xs text-on-surface-variant mt-2 font-medium">Garageplan A &amp; B</p>
+<!-- Decorative element -->
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-8xl" data-icon="directions_car">directions_car</span>
+</div>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-slate-500 font-label">Position</th>
+<th class="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-slate-500 font-label">Namn</th>
+<th class="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-slate-500 font-label">E-post</th>
+<th class="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-slate-500 font-label">Gick med</th>
+<th class="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-slate-500 font-label">Preferenser</th>
+<th class="px-6 py-4 text-right"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-50">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-6">
+<span class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-sm">1</span>
+</td>
+<td class="px-6 py-6">
+<p class="font-bold text-on-surface">Anders Johansson</p>
+<p class="text-xs text-slate-400">Medlems-ID: #1042</p>
+</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">anders.j@example.se</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">2024-01-15</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-slate-600 text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="ev_station">ev_station</span>
+                                2 val
+                            </span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="p-2 text-slate-400 hover:text-error transition-colors flex items-center justify-center ml-auto group-hover:bg-error-container/20 rounded-full">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+<span class="sr-only">Ta bort</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-6">
+<span class="w-8 h-8 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-sm">2</span>
+</td>
+<td class="px-6 py-6">
+<p class="font-bold text-on-surface">Maria Lindberg</p>
+<p class="text-xs text-slate-400">Medlems-ID: #1088</p>
+</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">maria.l@fastighet.se</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">2024-02-10</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-slate-600 text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="garage">garage</span>
+                                1 val
+                            </span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="p-2 text-slate-400 hover:text-error transition-colors flex items-center justify-center ml-auto group-hover:bg-error-container/20 rounded-full">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+<span class="sr-only">Ta bort</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-6">
+<span class="w-8 h-8 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-sm">3</span>
+</td>
+<td class="px-6 py-6">
+<p class="font-bold text-on-surface">Erik Bergqvist</p>
+<p class="text-xs text-slate-400">Medlems-ID: #1105</p>
+</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">e.bergqvist@outlook.com</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">2024-02-28</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-slate-600 text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="map">map</span>
+                                5 val
+                            </span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="p-2 text-slate-400 hover:text-error transition-colors flex items-center justify-center ml-auto group-hover:bg-error-container/20 rounded-full">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+<span class="sr-only">Ta bort</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-6">
+<span class="w-8 h-8 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-sm">4</span>
+</td>
+<td class="px-6 py-6">
+<p class="font-bold text-on-surface">Sofia Nilsson</p>
+<p class="text-xs text-slate-400">Medlems-ID: #1123</p>
+</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">sofia.nilsson@telia.se</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">2024-03-05</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-slate-600 text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="bolt">bolt</span>
+                                3 val
+                            </span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="p-2 text-slate-400 hover:text-error transition-colors flex items-center justify-center ml-auto group-hover:bg-error-container/20 rounded-full">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+<span class="sr-only">Ta bort</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-slate-50 transition-colors group border-b-0">
+<td class="px-6 py-6">
+<span class="w-8 h-8 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-bold text-sm">5</span>
+</td>
+<td class="px-6 py-6">
+<p class="font-bold text-on-surface">Olof Westerlund</p>
+<p class="text-xs text-slate-400">Medlems-ID: #1150</p>
+</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">olof@westerlund.pro</td>
+<td class="px-6 py-6 text-sm text-on-surface-variant">2024-03-12</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-slate-600 text-xs font-semibold">
+<span class="material-symbols-outlined text-[14px]" data-icon="all_out">all_out</span>
+                                0 val
+                            </span>
+</td>
+<td class="px-6 py-6 text-right">
+<button class="p-2 text-slate-400 hover:text-error transition-colors flex items-center justify-center ml-auto group-hover:bg-error-container/20 rounded-full">
+<span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>
+<span class="sr-only">Ta bort</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination / Load More -->
+<div class="px-8 py-6 border-t border-slate-100 flex items-center justify-between">
+<p class="text-xs text-slate-500">Visar 5 av 12 medlemmar</p>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded bg-surface-container hover:bg-surface-container-high transition-colors text-xs font-semibold text-on-surface disabled:opacity-50" disabled="">Föregående</button>
+<button class="px-4 py-2 rounded bg-primary text-white hover:bg-primary-dim transition-colors text-xs font-semibold">Nästa</button>
+</div>
+</div>
+</div>
+<!-- Occupancy Ribbon Concept -->
+<div class="mt-12">
+<div class="flex justify-between items-end mb-2">
+<p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 font-label">Status Garageplan Beläggning</p>
+<p class="text-[10px] font-bold tracking-widest uppercase text-primary font-label">88% Belagt</p>
+</div>
+<div class="h-2 w-full flex rounded-full overflow-hidden bg-surface-container-highest">
+<div class="h-full bg-primary" style="width: 88%"></div>
+</div>
+</div>
+</main>
+<!-- FAB for quick action - suppressed as per logic for queue details context but adding a subtle floating support button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-surface-container-lowest shadow-2xl flex items-center justify-center text-primary hover:scale-110 transition-transform z-50 border border-slate-100">
+<span class="material-symbols-outlined" data-icon="question_answer">question_answer</span>
+</button>
+</body></html>

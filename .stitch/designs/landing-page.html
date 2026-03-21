@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="sv"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-fixed-variant": "#003ea8",
+              "surface-dim": "#d8dadc",
+              "on-secondary-fixed": "#00174b",
+              "on-primary-container": "#eeefff",
+              "primary-fixed": "#dbe1ff",
+              "on-tertiary": "#ffffff",
+              "surface-tint": "#0053db",
+              "secondary-container": "#acbfff",
+              "secondary-fixed": "#dbe1ff",
+              "inverse-primary": "#b4c5ff",
+              "background": "#f7f9fb",
+              "tertiary": "#943700",
+              "outline": "#737686",
+              "primary-container": "#2563eb",
+              "on-tertiary-container": "#ffede6",
+              "on-secondary": "#ffffff",
+              "surface-container-highest": "#e0e3e5",
+              "on-secondary-fixed-variant": "#31447b",
+              "on-tertiary-fixed-variant": "#7d2d00",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb596",
+              "outline-variant": "#c3c6d7",
+              "tertiary-fixed": "#ffdbcd",
+              "on-primary-fixed": "#00174b",
+              "on-error-container": "#93000a",
+              "on-background": "#191c1e",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#f7f9fb",
+              "primary": "#004ac6",
+              "on-surface": "#191c1e",
+              "surface-bright": "#f7f9fb",
+              "error": "#ba1a1a",
+              "surface-variant": "#e0e3e5",
+              "secondary": "#495c95",
+              "inverse-on-surface": "#eff1f3",
+              "tertiary-container": "#bc4800",
+              "inverse-surface": "#2d3133",
+              "on-error": "#ffffff",
+              "on-secondary-container": "#394c84",
+              "surface-container-low": "#f2f4f6",
+              "surface-container-high": "#e6e8ea",
+              "on-tertiary-fixed": "#360f00",
+              "error-container": "#ffdad6",
+              "on-surface-variant": "#434655",
+              "surface-container": "#eceef0",
+              "primary-fixed-dim": "#b4c5ff",
+              "secondary-fixed-dim": "#b4c5ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f7f9fb;
+        color: #191c1e;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+      .glass-nav {
+        background-color: rgba(247, 249, 251, 0.8);
+        backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Section 1: TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-md shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-6 md:px-12 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold text-slate-900 dark:text-white font-['Manrope'] tracking-tight">BRF Garage</div>
+<div class="flex items-center gap-8">
+<a class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors active:scale-95 duration-200" href="#">Logga in</a>
+</div>
+</div>
+</nav>
+<main class="pt-24">
+<!-- Section 2: Hero -->
+<section class="px-6 md:px-12 max-w-7xl mx-auto pt-12 pb-24 lg:pt-20">
+<div class="grid lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<h1 class="text-5xl lg:text-7xl font-extrabold text-on-surface tracking-tight leading-[1.1]">
+                        Hantera garageköer enkelt och rättvist.
+                    </h1>
+<p class="text-xl text-on-surface-variant leading-relaxed max-w-xl">
+                        BRF Garage hjälper din bostadsrättsförening att digitalisera kön, garagekartan och tilldelningen av parkeringsplatser — helt automatiskt.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="px-8 py-4 bg-primary-container bg-gradient-to-br from-primary to-primary-container text-on-primary font-semibold rounded-xl shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                            Kom igång
+                        </button>
+<button class="px-8 py-4 border-2 border-outline-variant text-on-surface font-semibold rounded-xl hover:bg-surface-container-low transition-all active:scale-95">
+                            Logga in
+                        </button>
+</div>
+</div>
+<div class="relative">
+<div class="bg-surface-container-low rounded-3xl p-4 shadow-2xl">
+<img alt="Garage map dashboard illustration" class="rounded-2xl w-full h-auto object-cover aspect-[4/3]" data-alt="Screenshot of a modern digital garage map interface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfekCCit6tKMqAXTyZgtjWh7sKk_jD7fBmcwyiQH-LrvyVEDyCsxCkxWsE9U7B_0HeQnBoZmGM5HI8uSVqNHURIjBAKCUvkj3bK0TbcFaEwBaAqRAvziQg5OJ-93l-HtXYlsGpN6ItE5rzsnBMIHFLmzUfKaMSjw6S895ZITT4OWbXYkNZfRTleVs3juJ7qljW3orpI2DVoct_S9ARoCobogzdb0XLce_0d-8EPKTDRpYl_DqtoakpjaVhArsM1QN7mH1GhSrf8l8"/>
+<div class="absolute -bottom-6 -left-6 bg-surface-container-lowest p-6 rounded-2xl shadow-xl hidden md:block">
+<div class="flex items-center gap-4 mb-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="directions_car">directions_car</span>
+</div>
+<div>
+<div class="text-sm font-bold">Plats 42</div>
+<div class="text-xs text-on-surface-variant">Status: Ledig</div>
+</div>
+</div>
+<div class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                                Ledig
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Features -->
+<section class="bg-surface-container-low py-24 px-6 md:px-12">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16">
+<h2 class="text-3xl font-bold mb-4">Funktioner för en modern förening</h2>
+<div class="w-20 h-1.5 bg-primary rounded-full"></div>
+</div>
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Feature 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="map">map</span>
+<h3 class="text-xl font-bold mb-3">Interaktiv garagekarta</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Ladda upp er ritning, placera ut platser visuellt och se status färgkodat i realtid.
+                        </p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="list_alt">list_alt</span>
+<h3 class="text-xl font-bold mb-3">Rättvis FIFO-kö</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Boende ställer sig i kö och positionen baseras helt på ansökningsdatum. Full transparens för alla.
+                        </p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="mail">mail</span>
+<h3 class="text-xl font-bold mb-3">Automatiska erbjudanden</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            När en plats blir ledig skickas erbjudandet automatiskt till nästa person i kön med en tydlig tidsfrist.
+                        </p>
+</div>
+<!-- Feature 4 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="bookmark">bookmark</span>
+<h3 class="text-xl font-bold mb-3">Intressemarkering</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Kömedlemmar kan markera specifika platser de är intresserade av, t.ex. laddplatser eller bredare rutor.
+                        </p>
+</div>
+<!-- Feature 5 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="history">history</span>
+<h3 class="text-xl font-bold mb-3">Händelselogg</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Varje kö-åtgärd loggas oföränderligt. Ni har alltid bevis på att tilldelningen skett korrekt.
+                        </p>
+</div>
+<!-- Feature 6 -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl hover:translate-y-[-4px] transition-transform duration-300">
+<span class="material-symbols-outlined text-primary mb-6 block text-3xl" data-icon="person_add">person_add</span>
+<h3 class="text-xl font-bold mb-3">Inbjudningsbaserad åtkomst</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Administratören bjuder in medlemmar via e-post. Ingen publik registrering krävs.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: How It Works -->
+<section class="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl font-extrabold mb-4 tracking-tight">Så fungerar det</h2>
+<p class="text-on-surface-variant">Från kaos till ordning på tre enkla steg.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-12 relative">
+<!-- Step 1 -->
+<div class="relative z-10 text-center">
+<div class="w-20 h-20 bg-primary-container text-on-primary rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-8 shadow-xl">1</div>
+<h3 class="text-xl font-bold mb-4">Admin konfigurerar</h3>
+<p class="text-on-surface-variant">Ladda upp garageplanen, bjud in era boende och publicera den digitala kartan.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 text-center">
+<div class="w-20 h-20 bg-primary-container text-on-primary rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-8 shadow-xl">2</div>
+<h3 class="text-xl font-bold mb-4">Boende ställer sig i kö</h3>
+<p class="text-on-surface-variant">Medlemmar loggar in, ser sin köplats och markerar vilka platser de föredrar.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 text-center">
+<div class="w-20 h-20 bg-primary-container text-on-primary rounded-full flex items-center justify-center text-3xl font-bold mx-auto mb-8 shadow-xl">3</div>
+<h3 class="text-xl font-bold mb-4">Erbjudanden skickas</h3>
+<p class="text-on-surface-variant">Vid ledig plats skickas automatiskt mejl till nästa person. Vid nej går turen vidare.</p>
+</div>
+<!-- Decorative line -->
+<div class="absolute top-10 left-0 w-full h-0.5 bg-surface-container-high hidden md:block"></div>
+</div>
+</section>
+<!-- Section 5: Target Audience -->
+<section class="py-24 bg-surface">
+<div class="max-w-4xl mx-auto px-6 text-center">
+<div class="inline-flex items-center gap-2 bg-primary-fixed text-on-primary-fixed-variant px-4 py-1.5 rounded-full text-sm font-semibold mb-8">
+<span class="material-symbols-outlined text-sm" data-icon="cloud">cloud</span>
+                    SaaS · Per förening · Månadsabonnemang
+                </div>
+<h2 class="text-4xl font-extrabold mb-8 tracking-tight">Byggt för bostadsrättsföreningar.</h2>
+<p class="text-xl text-on-surface-variant leading-relaxed mb-12">
+                    Oavsett om ni har 10 eller 500 platser så automatiserar BRF Garage den tråkigaste biten av styrelsearbetet. Ni betalar en fast månadsavgift baserat på föreningens storlek. Inga dolda startavgifter eller bindningstider.
+                </p>
+<div class="flex justify-center">
+<button class="px-10 py-5 bg-on-surface text-surface rounded-xl font-bold text-lg hover:bg-slate-800 transition-all active:scale-95">
+                        Kontakta oss för offert
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Section 6: Footer -->
+<footer class="w-full py-12 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-col md:flex-row justify-between items-center px-6 md:px-12 max-w-7xl mx-auto gap-4">
+<div class="flex flex-col md:flex-row items-center gap-6">
+<div class="text-lg font-bold text-slate-900 dark:text-white font-['Manrope']">BRF Garage</div>
+<span class="font-['Manrope'] text-sm text-slate-500 dark:text-slate-400">© 2025 BRF Garage</span>
+</div>
+<div class="flex gap-8">
+<a class="font-['Manrope'] text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 underline underline-offset-4 transition-all duration-300" href="#">Logga in</a>
+</div>
+</div>
+</footer>
+</body></html>

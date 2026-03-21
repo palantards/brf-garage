@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="light" lang="sv"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Logga in - BRF Garage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#dbe4e7",
+              "on-surface": "#2b3437",
+              "secondary": "#5f5f62",
+              "primary-dim": "#0048c1",
+              "primary-fixed-dim": "#c7d3ff",
+              "error-container": "#fe8983",
+              "secondary-fixed": "#e4e2e6",
+              "outline": "#737c7f",
+              "tertiary": "#625b77",
+              "background": "#f8f9fa",
+              "surface-tint": "#0053db",
+              "tertiary-fixed-dim": "#d0c7e8",
+              "on-secondary": "#faf8fc",
+              "on-error-container": "#752121",
+              "on-error": "#fff7f6",
+              "surface-container": "#eaeff1",
+              "on-primary-fixed-variant": "#0050d4",
+              "primary-container": "#dbe1ff",
+              "primary-fixed": "#dbe1ff",
+              "on-tertiary-container": "#4f4964",
+              "secondary-container": "#e4e2e6",
+              "tertiary-dim": "#564f6b",
+              "surface-container-low": "#f1f4f6",
+              "on-secondary-container": "#515155",
+              "on-tertiary-fixed-variant": "#59526e",
+              "tertiary-container": "#dfd5f7",
+              "on-surface-variant": "#586064",
+              "on-secondary-fixed-variant": "#5b5b5f",
+              "primary": "#0053db",
+              "surface": "#f8f9fa",
+              "tertiary-fixed": "#dfd5f7",
+              "on-primary": "#f8f7ff",
+              "on-secondary-fixed": "#3f3f43",
+              "error": "#9f403d",
+              "secondary-dim": "#535356",
+              "on-tertiary": "#fdf7ff",
+              "surface-container-highest": "#dbe4e7",
+              "secondary-fixed-dim": "#d5d3d8",
+              "surface-bright": "#f8f9fa",
+              "on-tertiary-fixed": "#3c3650",
+              "on-primary-fixed": "#003798",
+              "on-primary-container": "#0048bf",
+              "surface-dim": "#d1dce0",
+              "surface-container-high": "#e2e9ec",
+              "inverse-on-surface": "#9b9d9e",
+              "on-background": "#2b3437",
+              "inverse-surface": "#0c0f10",
+              "outline-variant": "#abb3b7",
+              "surface-container-lowest": "#ffffff",
+              "error-dim": "#4e0309",
+              "inverse-primary": "#618bff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.25rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3 {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar (Suppressed navigation for Login flow) -->
+<header class="w-full top-0 left-0 fixed z-50 flex items-center justify-center h-16 px-6 bg-[#f8f9fa]">
+<div class="flex items-center justify-center w-full max-w-7xl">
+<span class="text-xl font-extrabold text-[#2b3437] tracking-tighter">BRF Garage</span>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center px-4 pt-16 pb-24">
+<!-- Login Card -->
+<div class="w-full max-w-[440px] bg-surface-container-lowest rounded-xl p-8 md:p-12 shadow-[0_12px_32px_rgba(43,52,55,0.04)] relative overflow-hidden">
+<!-- Asymmetric Accent (Subtle Tonal Sectioning) -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-surface-container-low rounded-bl-full -mr-16 -mt-16 z-0"></div>
+<div class="relative z-10">
+<header class="mb-10 text-center md:text-left">
+<h1 class="text-2xl font-bold text-on-surface tracking-tight mb-2">Logga in på ditt konto</h1>
+<p class="text-on-surface-variant body-md">Välkommen tillbaka till förvaltningen.</p>
+</header>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="block text-[0.6875rem] uppercase tracking-widest font-semibold text-on-surface-variant ml-1" for="email">
+                            E-postadress
+                        </label>
+<div class="relative group">
+<input class="w-full px-5 py-4 bg-surface-container-lowest border-2 border-outline-variant/20 rounded-lg text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary transition-all duration-200" id="email" name="email" placeholder="namn@exempel.se" required="" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-end px-1">
+<label class="block text-[0.6875rem] uppercase tracking-widest font-semibold text-on-surface-variant" for="password">
+                                Lösenord
+                            </label>
+<a class="text-primary text-[0.6875rem] uppercase tracking-widest font-bold hover:underline" href="#">Glömt?</a>
+</div>
+<div class="relative group">
+<input class="w-full px-5 py-4 bg-surface-container-lowest border-2 border-outline-variant/20 rounded-lg text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:border-primary transition-all duration-200" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full py-4 px-6 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold rounded-full shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" type="submit">
+<span>Logga in</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Architectural Info Bit -->
+<div class="mt-12 pt-8 border-t border-surface-container-low flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="lock">lock</span>
+</div>
+<p class="text-[0.6875rem] text-on-surface-variant leading-tight">
+                            Din anslutning är krypterad och säker. Endast behörig personal har tillgång till garagehanteringen.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bottom-0 fixed pb-8 bg-transparent z-10">
+<div class="flex flex-col md:flex-row justify-center items-center gap-6 w-full px-4">
+<span class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest text-[#2b3437]/50">© 2024 BRF Garage. All rights reserved.</span>
+<nav class="flex gap-6">
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest text-[#2b3437]/50 hover:text-[#2563eb] transition-colors" href="#">Integritetspolicy</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest text-[#2b3437]/50 hover:text-[#2563eb] transition-colors" href="#">Användarvillkor</a>
+<a class="font-['Inter'] text-[0.6875rem] uppercase tracking-widest text-[#2b3437]/50 hover:text-[#2563eb] transition-colors" href="#">Support</a>
+</nav>
+</div>
+</footer>
+</body></html>

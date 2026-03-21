@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,58 +24,52 @@ import type { SpotRow, SpotStatus } from "./page";
 
 const STATUS_LABEL: Record<SpotStatus, string> = {
   free:        "Ledig",
-  occupied:    "Upptagen",
+  occupied:    "Uthyrd",
   upcoming:    "Kommande",
   offered:     "Erbjuden",
   unavailable: "Ej tillgänglig",
 };
 
-const STATUS_CLASS: Record<SpotStatus, string> = {
-  free:        "text-green-600 border-green-200",
-  occupied:    "text-red-600 border-red-200",
-  upcoming:    "text-orange-600 border-orange-200",
-  offered:     "text-yellow-600 border-yellow-200",
-  unavailable: "text-gray-500 border-gray-200",
+const STATUS_STYLE: Record<SpotStatus, string> = {
+  free:        "bg-[#dbe1ff] text-[#0048bf]",
+  occupied:    "bg-green-100 text-green-700",
+  upcoming:    "bg-amber-100 text-amber-700",
+  offered:     "bg-yellow-100 text-yellow-700",
+  unavailable: "bg-[#eaeff1] text-[#586064]",
 };
 
 function formatEndingAt(endingAt: string) {
   return new Date(endingAt).toLocaleDateString("sv-SE", {
-    month: "long",
+    day: "numeric",
+    month: "short",
     year: "numeric",
   });
 }
 
-// Converts a date input value (YYYY-MM-DD) to a midnight UTC ISO string
 function dateInputToIso(value: string): string {
   return new Date(value + "T00:00:00Z").toISOString();
 }
 
-// Converts an ISO timestamp to a date input value (YYYY-MM-DD)
 function isoToDateInput(iso: string): string {
   return iso.slice(0, 10);
 }
 
 interface Props {
   initialSpots: SpotRow[];
+  showAdd?: boolean;
+  onCloseAdd?: () => void;
 }
 
-export default function SpotsTable({ initialSpots }: Props) {
+export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }: Props) {
   const router = useRouter();
   const [spots, setSpots] = useState<SpotRow[]>(initialSpots);
-  const [loading, setLoading] = useState<string | null>(null); // spotId or "add"
+  const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // Which spot row is in "set notice date" edit mode
   const [editingNotice, setEditingNotice] = useState<string | null>(null);
   const [noticeDate, setNoticeDate] = useState<string>("");
-
-  // Which spot row is pending delete confirmation
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-
-  // Add spot form
   const [addIdentifier, setAddIdentifier] = useState("");
   const [addType, setAddType] = useState<"car" | "mc">("car");
-  const [showAdd, setShowAdd] = useState(false);
 
   async function patch(spotId: string, body: Record<string, unknown>) {
     setLoading(spotId);
@@ -92,16 +85,11 @@ export default function SpotsTable({ initialSpots }: Props) {
         throw new Error(data.error ?? "Något gick fel");
       }
       router.refresh();
-      // Optimistically update local state so the user sees the change immediately
       setSpots(prev => prev.map(s => {
         if (s.id !== spotId) return s;
         if ("ending_at" in body) {
           const endingAt = (body.ending_at as string | null) ?? null;
-          return {
-            ...s,
-            ending_at: endingAt,
-            status: endingAt ? "upcoming" : "occupied",
-          };
+          return { ...s, ending_at: endingAt, status: endingAt ? "upcoming" : "occupied" };
         }
         if ("available" in body) {
           return {
@@ -154,7 +142,6 @@ export default function SpotsTable({ initialSpots }: Props) {
       const data = await res.json() as { error?: string; id?: string };
       if (!res.ok) throw new Error(data.error ?? "Något gick fel");
 
-      // Add new row optimistically
       setSpots(prev => [
         ...prev,
         {
@@ -173,7 +160,7 @@ export default function SpotsTable({ initialSpots }: Props) {
 
       setAddIdentifier("");
       setAddType("car");
-      setShowAdd(false);
+      onCloseAdd?.();
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Något gick fel");
@@ -182,49 +169,55 @@ export default function SpotsTable({ initialSpots }: Props) {
     }
   }
 
-  function startEditNotice(spot: SpotRow) {
-    setEditingNotice(spot.id);
-    setNoticeDate(spot.ending_at ? isoToDateInput(spot.ending_at) : "");
-  }
-
   async function saveNotice(spotId: string) {
     if (!noticeDate) return;
     await patch(spotId, { ending_at: dateInputToIso(noticeDate) });
     setEditingNotice(null);
   }
 
-  async function clearNotice(spotId: string) {
-    await patch(spotId, { ending_at: null });
-  }
-
   const isDeletable = (s: SpotRow) => s.status === "free" || s.status === "unavailable";
   const isAvailabilityToggleable = (s: SpotRow) => s.status === "free" || s.status === "unavailable";
 
   return (
-    <div>
+    <div className="bg-white rounded-xl overflow-hidden" style={{ boxShadow: "0 12px 32px rgba(43,52,55,0.06)" }}>
       {error && (
-        <div className="mx-6 mt-4 rounded-md bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-700">
+        <div className="mx-6 mt-4 rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-[#9f403d]">
           {error}
         </div>
       )}
 
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead className="w-28">Plats</TableHead>
-            <TableHead className="w-20">Typ</TableHead>
-            <TableHead className="w-36">Status</TableHead>
-            <TableHead>Boende</TableHead>
-            <TableHead className="w-44">Slutdatum</TableHead>
-            <TableHead className="w-24 text-right">Intresserade</TableHead>
-            <TableHead className="text-right w-72">Åtgärder</TableHead>
+          <TableRow className="bg-[#f1f4f6] hover:bg-[#f1f4f6]">
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+              Plats
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+              Typ
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+              Status
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+              Tilldelad till
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-center">
+              Tillgänglig
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+              Avtal upphör
+            </TableHead>
+            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-right">
+              Åtgärder
+            </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+
+        <TableBody className="divide-y divide-[#eaeff1]">
           {spots.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-gray-400 py-10">
-                Inga platser ännu. Lägg till en plats nedan.
+              <TableCell colSpan={7} className="text-center text-[#586064] py-16 text-sm">
+                Inga platser ännu. Klicka &ldquo;Lägg till plats&rdquo; för att komma igång.
               </TableCell>
             </TableRow>
           )}
@@ -233,96 +226,120 @@ export default function SpotsTable({ initialSpots }: Props) {
             const busy = loading === spot.id;
             const isEditing = editingNotice === spot.id;
             const isConfirmingDelete = confirmDelete === spot.id;
+            const canToggle = isAvailabilityToggleable(spot);
 
             return (
-              <TableRow key={spot.id}>
-                <TableCell className="font-mono font-semibold text-gray-900">
-                  {spot.identifier}
+              <TableRow
+                key={spot.id}
+                className="hover:bg-[#f1f4f6] transition-colors group"
+              >
+                {/* Identifier */}
+                <TableCell className="px-8 py-6">
+                  <span
+                    className="text-lg font-bold text-[#2b3437]"
+                    style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                  >
+                    {spot.identifier}
+                  </span>
+                  {spot.map_x === null && (
+                    <a
+                      href="/dashboard/map/editor"
+                      className="block text-[11px] text-[#abb3b7] hover:text-[#0053db] mt-0.5 transition-colors"
+                    >
+                      Ej på karta →
+                    </a>
+                  )}
                 </TableCell>
 
-                <TableCell className="text-gray-500 text-sm">
-                  {spot.map_type === "mc" ? "MC" : "Bil"}
-                </TableCell>
-
-                <TableCell>
-                  <div className="flex flex-col gap-1 items-start">
-                    <Badge variant="outline" className={STATUS_CLASS[spot.status]}>
-                      {STATUS_LABEL[spot.status]}
-                    </Badge>
-                    {spot.map_x === null && (
-                      <a
-                        href="/dashboard/map/editor"
-                        className="text-xs text-gray-400 hover:text-blue-600 hover:underline"
-                      >
-                        Ej placerad på karta →
-                      </a>
-                    )}
+                {/* Type */}
+                <TableCell className="px-8 py-6">
+                  <div className="flex items-center gap-2 text-[#586064]">
+                    <span className="material-symbols-outlined text-[#abb3b7] text-[18px]">
+                      {spot.map_type === "mc" ? "two_wheeler" : "directions_car"}
+                    </span>
+                    <span className="text-sm font-medium">
+                      {spot.map_type === "mc" ? "MC" : "Normalstor"}
+                    </span>
                   </div>
                 </TableCell>
 
-                <TableCell className="text-sm text-gray-600">
-                  {spot.resident_name ?? <span className="text-gray-300">—</span>}
+                {/* Status */}
+                <TableCell className="px-8 py-6">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${STATUS_STYLE[spot.status]}`}>
+                    {STATUS_LABEL[spot.status]}
+                  </span>
                 </TableCell>
 
-                <TableCell className="text-sm text-gray-500">
+                {/* Resident */}
+                <TableCell className="px-8 py-6">
+                  {spot.resident_name ? (
+                    <span className="text-sm font-semibold text-[#2b3437]">
+                      {spot.resident_name}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-[#abb3b7]">—</span>
+                  )}
+                </TableCell>
+
+                {/* Availability toggle */}
+                <TableCell className="px-8 py-6 text-center">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={spot.available}
+                    onClick={() => canToggle && !busy && patch(spot.id, { available: !spot.available })}
+                    disabled={!canToggle || busy}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+                      spot.available ? "bg-[#0053db]" : "bg-[#abb3b7]"
+                    } ${!canToggle ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    <span
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                        spot.available ? "translate-x-[18px]" : "translate-x-[3px]"
+                      }`}
+                    />
+                  </button>
+                </TableCell>
+
+                {/* Ending at */}
+                <TableCell className="px-8 py-6">
                   {isEditing ? (
                     <div className="flex items-center gap-1.5">
                       <input
                         type="date"
-                        className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-[#abb3b7] rounded-lg px-2 py-1 text-sm text-[#2b3437] focus:outline-none focus:border-[#0053db]"
                         value={noticeDate}
                         min={new Date().toISOString().slice(0, 10)}
                         onChange={e => setNoticeDate(e.target.value)}
                       />
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => saveNotice(spot.id)}
-                        disabled={!noticeDate || busy}
-                      >
+                      <Button type="button" size="sm" onClick={() => saveNotice(spot.id)} disabled={!noticeDate || busy}>
                         Spara
                       </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setEditingNotice(null)}
-                        disabled={busy}
-                      >
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setEditingNotice(null)} disabled={busy}>
                         Avbryt
                       </Button>
                     </div>
                   ) : spot.ending_at ? (
-                    formatEndingAt(spot.ending_at)
+                    <span className="text-sm font-semibold text-[#9f403d] bg-red-50 px-2 py-0.5 rounded">
+                      {formatEndingAt(spot.ending_at)}
+                    </span>
                   ) : (
-                    <span className="text-gray-300">—</span>
+                    <span className="text-sm text-[#abb3b7]">—</span>
                   )}
                 </TableCell>
 
-                <TableCell className="text-right text-sm text-gray-500">
-                  {Number(spot.preference_count) > 0
-                    ? <span className="font-medium text-gray-700">{Number(spot.preference_count)}</span>
-                    : <span className="text-gray-300">—</span>
-                  }
-                </TableCell>
-
-                <TableCell className="text-right">
+                {/* Actions */}
+                <TableCell className="px-8 py-6 text-right">
                   {isConfirmingDelete ? (
                     <div className="flex items-center justify-end gap-2">
-                      <span className="text-sm text-red-700">Ta bort?</span>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setConfirmDelete(null)}
-                        disabled={busy}
-                      >
+                      <span className="text-sm text-[#9f403d]">Ta bort?</span>
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmDelete(null)} disabled={busy}>
                         Avbryt
                       </Button>
                       <Button
                         type="button"
                         size="sm"
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-[#9f403d] hover:bg-[#8a3533] text-white text-xs"
                         onClick={() => deleteSpot(spot.id)}
                         disabled={busy}
                       >
@@ -330,52 +347,44 @@ export default function SpotsTable({ initialSpots }: Props) {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-end gap-3">
-                      {/* Set / clear notice date — only for occupied or upcoming spots */}
+                    <div className="flex items-center justify-end gap-1">
+                      {/* Set / clear notice for occupied/upcoming */}
                       {(spot.status === "occupied" || spot.status === "upcoming") && !isEditing && (
-                        <>
-                          <button
-                            type="button"
-                            className="text-sm text-blue-600 hover:underline disabled:opacity-50"
-                            onClick={() => startEditNotice(spot)}
-                            disabled={busy}
-                          >
-                            {spot.ending_at ? "Ändra datum" : "Ange uppsägningstid"}
-                          </button>
-                          {spot.ending_at && (
-                            <button
-                              type="button"
-                              className="text-sm text-gray-400 hover:text-gray-600 hover:underline disabled:opacity-50"
-                              onClick={() => clearNotice(spot.id)}
-                              disabled={busy}
-                            >
-                              Rensa
-                            </button>
-                          )}
-                        </>
-                      )}
-
-                      {/* Toggle availability — only for free or unavailable spots */}
-                      {isAvailabilityToggleable(spot) && (
                         <button
                           type="button"
-                          className="text-sm text-gray-500 hover:text-gray-800 hover:underline disabled:opacity-50"
-                          onClick={() => patch(spot.id, { available: !spot.available })}
+                          className="p-2 rounded-lg text-[#586064] hover:text-[#0053db] hover:bg-[#eaeff1] transition-all"
+                          onClick={() => {
+                            setEditingNotice(spot.id);
+                            setNoticeDate(spot.ending_at ? isoToDateInput(spot.ending_at) : "");
+                          }}
                           disabled={busy}
+                          title={spot.ending_at ? "Ändra datum" : "Ange uppsägningstid"}
                         >
-                          {spot.available ? "Markera otillgänglig" : "Markera tillgänglig"}
+                          <span className="material-symbols-outlined text-[18px]">edit</span>
                         </button>
                       )}
-
-                      {/* Delete — only for free or unavailable spots */}
+                      {/* Clear notice */}
+                      {spot.ending_at && !isEditing && (
+                        <button
+                          type="button"
+                          className="p-2 rounded-lg text-[#abb3b7] hover:text-[#586064] hover:bg-[#eaeff1] transition-all"
+                          onClick={() => patch(spot.id, { ending_at: null })}
+                          disabled={busy}
+                          title="Rensa datum"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">close</span>
+                        </button>
+                      )}
+                      {/* Delete for free/unavailable */}
                       {isDeletable(spot) && (
                         <button
                           type="button"
-                          className="text-sm text-red-500 hover:text-red-700 hover:underline disabled:opacity-50"
+                          className="p-2 rounded-lg text-[#abb3b7] hover:text-[#9f403d] hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
                           onClick={() => setConfirmDelete(spot.id)}
                           disabled={busy}
+                          title="Ta bort plats"
                         >
-                          Ta bort
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                       )}
                     </div>
@@ -387,20 +396,15 @@ export default function SpotsTable({ initialSpots }: Props) {
         </TableBody>
       </Table>
 
-      {/* ── Add spot ─────────────────────────────────────────────────────────── */}
-      <div className="border-t border-gray-100 px-6 py-4">
-        {!showAdd ? (
-          <button
-            type="button"
-            className="text-sm font-medium text-blue-600 hover:underline"
-            onClick={() => setShowAdd(true)}
-          >
-            + Lägg till plats
-          </button>
-        ) : (
+      {/* Add spot form (shown when sub-header button is clicked) */}
+      {showAdd && (
+        <div className="border-t border-[#eaeff1] bg-[#f8f9fa] px-8 py-6">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#586064] mb-4">
+            Ny plats
+          </p>
           <form onSubmit={addSpot} className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="add-identifier" className="text-xs text-gray-500">
+            <div className="space-y-1.5">
+              <Label htmlFor="add-identifier" className="text-[10px] font-bold uppercase tracking-widest text-[#586064]">
                 Identifierare
               </Label>
               <Input
@@ -408,17 +412,17 @@ export default function SpotsTable({ initialSpots }: Props) {
                 placeholder="t.ex. A12"
                 value={addIdentifier}
                 onChange={e => setAddIdentifier(e.target.value)}
-                className="w-32"
+                className="w-36 border-2 border-[#abb3b7]/30 focus-visible:border-[#0053db] focus-visible:ring-0 rounded-xl"
                 autoFocus
               />
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="add-type" className="text-xs text-gray-500">
+            <div className="space-y-1.5">
+              <Label htmlFor="add-type" className="text-[10px] font-bold uppercase tracking-widest text-[#586064]">
                 Typ
               </Label>
               <Select value={addType} onValueChange={v => setAddType(v as "car" | "mc")}>
-                <SelectTrigger id="add-type" className="w-28">
+                <SelectTrigger id="add-type" className="w-28 border-2 border-[#abb3b7]/30 focus:ring-0 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -428,21 +432,36 @@ export default function SpotsTable({ initialSpots }: Props) {
               </Select>
             </div>
 
-            <Button type="submit" size="sm" disabled={!addIdentifier.trim() || loading === "add"}>
+            <button
+              type="submit"
+              disabled={!addIdentifier.trim() || loading === "add"}
+              className="px-6 py-2.5 rounded-full font-bold text-sm text-white disabled:opacity-50 transition-all"
+              style={{ background: "linear-gradient(135deg, #0053db 0%, #0048c1 100%)" }}
+            >
               {loading === "add" ? "Sparar…" : "Lägg till"}
-            </Button>
+            </button>
             <Button
               type="button"
-              size="sm"
               variant="ghost"
-              onClick={() => { setShowAdd(false); setAddIdentifier(""); setAddType("car"); }}
+              onClick={() => { setAddIdentifier(""); setAddType("car"); onCloseAdd?.(); }}
               disabled={loading === "add"}
+              className="text-[#586064]"
             >
               Avbryt
             </Button>
           </form>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Footer: count */}
+      {!showAdd && spots.length > 0 && (
+        <div className="px-8 py-4 bg-[#f1f4f6] border-t border-[#eaeff1]">
+          <p className="text-xs text-[#586064] font-medium">
+            Visar <span className="font-bold text-[#2b3437]">{spots.length}</span>{" "}
+            {spots.length === 1 ? "plats" : "platser"}
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 export default function SignOutButton() {
   return (
     <Button
+      type="button"
       variant="ghost"
       size="sm"
       onClick={() => signOut({ redirectTo: "/login" })}
-      className="text-gray-500 hover:text-gray-900"
+      className="text-[#0053db] hover:text-[#0048c1] hover:bg-transparent font-medium px-0"
     >
       Logga ut
     </Button>
