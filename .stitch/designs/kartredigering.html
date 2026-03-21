@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Map Editor Pro - Canvas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#004ac6",
+              "background": "#f7f9fb",
+              "tertiary-container": "#bc4800",
+              "on-primary": "#ffffff",
+              "primary-fixed-dim": "#b4c5ff",
+              "primary-container": "#2563eb",
+              "on-surface": "#191c1e",
+              "surface-container-low": "#f2f4f6",
+              "outline-variant": "#c3c6d7",
+              "on-secondary-container": "#394c84",
+              "on-primary-fixed": "#00174b",
+              "secondary-fixed-dim": "#b4c5ff",
+              "on-tertiary-fixed-variant": "#7d2d00",
+              "error-container": "#ffdad6",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed-variant": "#31447b",
+              "error": "#ba1a1a",
+              "secondary-fixed": "#dbe1ff",
+              "tertiary": "#943700",
+              "outline": "#737686",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "on-primary-fixed-variant": "#003ea8",
+              "inverse-primary": "#b4c5ff",
+              "surface-dim": "#d8dadc",
+              "on-tertiary-fixed": "#360f00",
+              "on-surface-variant": "#434655",
+              "surface-tint": "#0053db",
+              "on-tertiary-container": "#ffede6",
+              "on-secondary": "#ffffff",
+              "on-background": "#191c1e",
+              "tertiary-fixed-dim": "#ffb596",
+              "surface-container": "#eceef0",
+              "on-secondary-fixed": "#00174b",
+              "secondary-container": "#acbfff",
+              "inverse-surface": "#2d3133",
+              "on-primary-container": "#eeefff",
+              "surface-container-high": "#e6e8ea",
+              "secondary": "#495c95",
+              "primary-fixed": "#dbe1ff",
+              "surface": "#f7f9fb",
+              "surface-container-highest": "#e0e3e5",
+              "surface-variant": "#e0e3e5",
+              "inverse-on-surface": "#eff1f3",
+              "tertiary-fixed": "#ffdbcd",
+              "surface-bright": "#f7f9fb",
+              "on-tertiary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+      .canvas-dot { width: 8px; height: 8px; border-radius: 50%; }
+      .handle { width: 6px; height: 6px; background: white; border: 1.5px solid #2563eb; position: absolute; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md docked full-width top-0 z-50 shadow-sm flex justify-between items-center w-full px-6 h-16">
+<div class="flex items-center gap-8">
+<span class="text-xl font-extrabold tracking-tighter text-blue-700 dark:text-blue-500 font-headline">Map Editor Pro</span>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-600 transition-colors" href="#">Dashboard</a>
+<a class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-600" href="#">Assets</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-blue-600 transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="settings">settings</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/20">
+<img alt="Admin Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2_hmVbZ_G-SM4kKsNg8naLVSBdvNbt0kv8EVTOuxcBjWOF7Pcj_rUXnl3zDlHpz28ycHJZr0JRhOEOwhtcm938y1S0tGjS6t4tag3_dGVkqwGP3BhbXFYOOBUcUpOs-8zqlqUSqU-yEKuRZn7PJJriHaleodxrz33Yj8bgFeqX7aDrrVgqzLwP_v6jj31o8tJXyfWE7OBI7DTcvHHtiRW03nGzbPSdj7oxHEXHQO5W_r1oN7wqzcopx1HMfBYovgP8VVO-jpqZyM"/>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-sm hover:scale-95 duration-200 ease-in-out">Publish Map</button>
+</div>
+</header>
+<div class="flex h-[calc(100vh-64px)] overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-slate-50 dark:bg-slate-950 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col py-4 gap-2 tonal-shift-right">
+<div class="px-4 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="garage">garage</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-slate-900 dark:text-slate-100 text-sm">Parking Terminal A</h3>
+<p class="text-xs text-on-surface-variant">Floor 2 - Editing</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm rounded-lg font-semibold text-sm scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span> Map Canvas
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-semibold text-sm hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="garage">garage</span> Spot Library
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-semibold text-sm hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="layers">layers</span> Layers
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-semibold text-sm hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span> History
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-semibold text-sm hover:translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span> Team
+                </a>
+</nav>
+<div class="px-4 py-4">
+<button class="w-full bg-primary text-white py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span> Add New Zone
+                </button>
+</div>
+<div class="mt-auto px-2 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 rounded-lg text-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span> Support
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 rounded-lg text-sm transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span> Logout
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas Area -->
+<main class="ml-64 flex-1 flex flex-col bg-surface overflow-hidden">
+<!-- TOP TOOLBAR -->
+<div class="bg-white px-6 h-14 flex items-center justify-between shadow-sm z-30">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<label class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider leading-none mb-1">Märkning</label>
+<input class="h-8 w-24 px-2 text-sm border-0 bg-surface-container-low rounded focus:ring-1 focus:ring-primary outline-none" placeholder="t.ex. A12" type="text"/>
+</div>
+<button class="h-8 w-8 flex items-center justify-center rounded text-error/40 bg-error-container/10 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+</button>
+<div class="h-6 w-[1px] bg-outline-variant/30"></div>
+<div class="flex items-center gap-4 text-[11px] font-semibold text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="canvas-dot bg-[#10b981]"></span> Bekräftad
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="canvas-dot bg-[#f59e0b]"></span> OCR-gissning
+                        </div>
+<div class="flex items-center gap-1.5">
+<span class="canvas-dot bg-[#ef4444]"></span> Omärkt
+                        </div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<p class="text-[12px] text-on-surface-variant font-medium">12 bekräftade · 3 att granska · 2 ej placerade</p>
+<div class="flex items-center gap-3">
+<button class="text-primary text-xs font-bold hover:bg-primary/5 px-3 py-1.5 rounded transition-colors">Spara</button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">Publicera karta</button>
+</div>
+</div>
+</div>
+<!-- CONDITIONAL STATUS BANNER -->
+<div class="bg-primary/10 px-6 py-2.5 flex items-center gap-3 z-20">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="info">info</span>
+<p class="text-xs font-semibold text-primary">Redo att granska — justera platser vid behov och klicka sedan Publicera karta.</p>
+</div>
+<!-- MAIN LAYOUT -->
+<div class="flex-1 p-6 flex gap-6 overflow-hidden">
+<!-- LEFT: CANVAS AREA -->
+<div class="flex-[3] relative bg-white rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 z-0 bg-slate-100 flex items-center justify-center">
+<img alt="Garage floor plan schematic" class="w-full h-full object-cover opacity-80" data-alt="Blue and white architectural floor plan of a parking garage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAn6uZTu3q8_HQf-xXJGEeGhm3KOLXmj9WPFmrFlxFqJDLb_VECyHTSK-iVtdibU61BjBbwevxyhF8KBVlQCZ3Jme-Y8CbQN9ChhGqe-lZPRuxaAPyuZu9CXvYrW1fuSGXQTVEsrlmK-U3ZwlEi-Myz2Uso2-9C8jj5j2ZwiuEafJfsvq7GgA4kpP3E9Pv-IhFb9psTRdb5QwPwDmLseJqyBPPl6DBIp0ViB5_A2pF-X-c09eNSTBiPjYFGOVKU7EXSMP64y9_tmU"/>
+</div>
+<!-- Overlay Elements -->
+<div class="relative w-[800px] h-[500px] z-10 pointer-events-none">
+<!-- Spot A1 (Green) -->
+<div class="absolute top-20 left-40 w-16 h-28 bg-green-500/30 border-2 border-green-500 rounded-sm flex items-center justify-center pointer-events-auto cursor-pointer">
+<span class="text-white font-bold text-xs">A1</span>
+</div>
+<!-- Spot A2 (Amber - OCR) -->
+<div class="absolute top-20 left-[240px] w-16 h-28 bg-amber-500/30 border-2 border-amber-500 rounded-sm flex items-center justify-center pointer-events-auto cursor-pointer">
+<span class="text-white font-bold italic text-xs">A2</span>
+</div>
+<!-- Spot A3 (Red - Unlabeled) -->
+<div class="absolute top-20 left-[340px] w-16 h-28 bg-red-500/30 border-2 border-red-500 rounded-sm pointer-events-auto cursor-pointer"></div>
+<!-- Selected Spot -->
+<div class="absolute top-60 left-40 w-16 h-28 bg-primary/20 border-2 border-primary rounded-sm pointer-events-auto cursor-move ring-2 ring-white">
+<!-- Handles -->
+<div class="handle -top-1 -left-1"></div>
+<div class="handle -top-1 left-1/2 -translate-x-1/2"></div>
+<div class="handle -top-1 -right-1"></div>
+<div class="handle top-1/2 -translate-y-1/2 -left-1"></div>
+<div class="handle top-1/2 -translate-y-1/2 -right-1"></div>
+<div class="handle -bottom-1 -left-1"></div>
+<div class="handle -bottom-1 left-1/2 -translate-x-1/2"></div>
+<div class="handle -bottom-1 -right-1"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-primary font-bold text-xs bg-white/80 px-1 rounded">A12</span>
+</div>
+</div>
+</div>
+<!-- Canvas Footer Tooltip -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-on-surface/90 text-white px-4 py-2 rounded-lg text-xs font-medium shadow-lg z-20 backdrop-blur-sm">
+                        Rita ny plats: klicka och dra på kartan
+                    </div>
+</div>
+<!-- RIGHT SIDEBAR -->
+<aside class="w-[260px] bg-white rounded-xl shadow-sm border border-outline-variant/10 p-5 flex flex-col gap-6">
+<div>
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-headline font-extrabold text-sm text-on-surface">Ej placerade platser</h4>
+<span class="bg-surface-container-high px-2 py-0.5 rounded text-[10px] font-bold">2</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<div class="px-3 py-1.5 bg-surface-container-low text-primary font-bold text-xs rounded-lg border border-primary/10 hover:border-primary transition-colors cursor-grab active:cursor-grabbing">C15</div>
+<div class="px-3 py-1.5 bg-surface-container-low text-primary font-bold text-xs rounded-lg border border-primary/10 hover:border-primary transition-colors cursor-grab active:cursor-grabbing">C16</div>
+</div>
+</div>
+<div class="pt-4 border-t border-surface-container">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-headline font-extrabold text-sm text-on-surface">Platser på kartan</h4>
+<span class="bg-primary-container/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">15</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between text-xs p-2 bg-surface-container-low rounded-lg">
+<span class="font-semibold text-on-surface-variant">A-Sektion</span>
+<span class="text-primary font-bold">12</span>
+</div>
+<div class="flex items-center justify-between text-xs p-2 bg-surface-container-low rounded-lg">
+<span class="font-semibold text-on-surface-variant">B-Sektion</span>
+<span class="text-primary font-bold">3</span>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<button class="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 py-3 rounded-xl text-xs font-bold transition-all border border-amber-500/20 flex flex-col items-center gap-1">
+<span>Bekräfta OCR-gissningar (3)</span>
+<span class="text-[9px] font-medium opacity-70">Granska automatiskt tolkade skyltar</span>
+</button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

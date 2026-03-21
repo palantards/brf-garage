@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="sv"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {secondary: "#495c95", "on-tertiary-fixed-variant": "#7d2d00", "primary-fixed-dim": "#b4c5ff", "surface-container-lowest": "#ffffff", "secondary-fixed": "#dbe1ff", outline: "#737686", "surface-container-high": "#e6e8ea", "on-background": "#191c1e", "outline-variant": "#c3c6d7", error: "#ba1a1a", "surface-container-highest": "#e0e3e5", "on-error-container": "#93000a", "tertiary-dim": "#564f6b", "on-surface-variant": "#434655", "surface-variant": "#e0e3e5", "secondary-dim": "#535356", "on-secondary-fixed-variant": "#31447b", "tertiary-container": "#bc4800", "on-primary-fixed-variant": "#003ea8", "on-secondary-container": "#394c84", "on-tertiary": "#ffffff", "on-primary-fixed": "#00174b", "inverse-on-surface": "#eff1f3", "inverse-primary": "#b4c5ff", "on-primary": "#ffffff", "error-dim": "#4e0309", "secondary-fixed-dim": "#b4c5ff", "on-surface": "#191c1e", "error-container": "#ffdad6", "on-tertiary-container": "#ffede6", "on-primary-container": "#eeefff", "on-secondary": "#ffffff", "secondary-container": "#acbfff", primary: "#004ac6", "inverse-surface": "#2d3133", "surface-container": "#eceef0", "on-secondary-fixed": "#00174b", background: "#f7f9fb", tertiary: "#943700", "surface-dim": "#d8dadc", "surface-tint": "#0053db", "tertiary-fixed": "#ffdbcd", "primary-fixed": "#dbe1ff", surface: "#f7f9fb", "on-error": "#ffffff", "primary-dim": "#0048c1", "primary-container": "#2563eb", "surface-container-low": "#f2f4f6", "tertiary-fixed-dim": "#ffb596", "on-tertiary-fixed": "#360f00", "surface-bright": "#f7f9fb"}, fontFamily: {headline: ["Manrope"], body: ["Inter"], label: ["Inter"], display: "Manrope"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}}}};</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .canvas-grid {
+            background-image: radial-gradient(#abb3b7 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: center;
+        }
+        .architectural-mask {
+            mix-blend-mode: multiply;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-100 dark:bg-slate-950 flex flex-col p-4 border-r border-slate-200/20 z-50">
+<div class="mb-8 px-4">
+<h1 class="text-lg font-black text-blue-700 dark:text-blue-500 font-headline">Garage Admin</h1>
+<p class="text-xs text-on-surface-variant opacity-70 font-medium">Stockholm City</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Översikt
+            </a>
+<!-- Active State: Garageplan -->
+<a class="flex items-center gap-3 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-lg px-4 py-3 shadow-sm font-manrope text-sm font-semibold tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+                Garageplan
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="format_list_bulleted">format_list_bulleted</span>
+                Kölista
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Hyresgäster
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Rapporter
+            </a>
+</nav>
+<div class="mt-auto border-t border-slate-200/20 pt-4 space-y-1">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:text-slate-900 font-manrope text-sm font-semibold tracking-tight transition-all hover:bg-white/50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logga ut
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 h-screen flex flex-col relative">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-8 py-4 w-full bg-slate-50 dark:bg-slate-900 border-b border-slate-200/50 dark:border-slate-800/50 z-40">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold text-slate-900 dark:text-slate-100 font-headline">Kartredigering</h2>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Editor Mode</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors scale-98-active">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors scale-98-active">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/20">
+<img alt="Användarprofil" class="w-full h-full object-cover" data-alt="Professional headshot of a facility manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfVATJ-Fn2vU7uU4JZ7DN3qDdKrAeTgurRyMPo5clBks3U38lg539JnF3r1aOzkHAK8G7UGkB0_vfXxhzXu-qC0OjHvYs41s9FThGNE4VNdppoz4nFJO1o0Q3YGgxUhDa3jN6FVRQheDv83ry56zJhRC3lvisW80hClkUTjicAbGiI90isdQBRQO5gDjv_hw7_r-hIVBNArb5N0_Az_NMexx2apzaxpno86bPxLOOWRJC7up4ogAbneBnHIUWESh_3dP0eKLHHqD4"/>
+</div>
+</div>
+</header>
+<!-- Workspace Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Editor Canvas -->
+<section class="flex-1 relative bg-surface-container-low canvas-grid flex items-center justify-center p-12 overflow-auto">
+<div class="relative bg-white shadow-2xl rounded-sm border border-outline-variant/10 p-8 min-w-[800px] aspect-[1.4/1]">
+<!-- Background Map Image -->
+<div class="absolute inset-0 opacity-40 architectural-mask grayscale pointer-events-none">
+<img alt="Garage Plan" class="w-full h-full object-contain" data-alt="Black and white architectural technical drawing of a parking garage floor plan" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA84ttf_qj5UNNT2kRxHep_TE7q3T-E8_yhR5zq4kHWxQti40ZoYL3maBLwZzyg2vbkJFXB6HFk5ht66LVjZx5GS86acimH6_-L5VLBDZ_cg41TOyoSvX6O1l6t-t5cRNoE66BlYa62ll-83oiTzMl2S7uJwbwqYP2gfugCzzPHx0R9dcXDynRGFM1bnIj1tzM4z8Zqrzz_ILpXR25mzXL6n_21xt27ETYw_sJ6Fy2IBcclRkF1x6KuATY6mg-0FUMdasybS5I2nrk"/>
+</div>
+<!-- Mapping Overlays -->
+<div class="relative w-full h-full">
+<!-- Spot A1 -->
+<div class="absolute top-10 left-10 w-24 h-44 bg-primary/10 border border-primary/30 flex items-center justify-center">
+<span class="font-headline font-bold text-primary/40 text-xl tracking-tighter">A1</span>
+</div>
+<!-- Spot A2 -->
+<div class="absolute top-10 left-36 w-24 h-44 bg-primary/10 border border-primary/30 flex items-center justify-center">
+<span class="font-headline font-bold text-primary/40 text-xl tracking-tighter">A2</span>
+</div>
+<!-- Selected Spot A3 -->
+<div class="absolute top-10 left-64 w-28 h-48 bg-primary/20 border-2 border-primary shadow-lg flex flex-col items-center justify-center z-10">
+<span class="font-headline font-extrabold text-primary text-2xl tracking-tighter">A3</span>
+<div class="absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-nwse-resize shadow-md"></div>
+<div class="absolute -top-1 -left-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -top-1 -right-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -bottom-1 -left-1 w-2 h-2 bg-primary"></div>
+<!-- Dimensions Info Bubble -->
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded shadow-xl whitespace-nowrap">
+                                2.5m x 5.0m
+                            </div>
+</div>
+<!-- Spot A4 -->
+<div class="absolute top-10 left-[388px] w-24 h-44 bg-primary/10 border border-primary/30 flex items-center justify-center opacity-50">
+<span class="font-headline font-bold text-primary/40 text-xl tracking-tighter">A4</span>
+</div>
+<!-- Technical Markers -->
+<div class="absolute bottom-20 right-20 flex gap-4 opacity-30">
+<div class="w-12 h-12 border-2 border-dashed border-on-surface flex items-center justify-center rounded-full">
+<span class="material-symbols-outlined text-sm" data-icon="north">north</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Toolset -->
+<div class="absolute bottom-8 left-8 flex gap-2 bg-surface-container-lowest/80 backdrop-blur-xl p-2 rounded-full shadow-xl border border-outline-variant/20">
+<button class="w-10 h-10 flex items-center justify-center text-primary rounded-full hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="pan_tool">pan_tool</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="near_me">near_me</span>
+</button>
+<div class="w-[1px] h-6 bg-outline-variant/30 self-center"></div>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="rectangle">rectangle</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+</button>
+</div>
+</section>
+<!-- Properties Sidebar -->
+<aside class="w-80 bg-surface-container-lowest border-l border-outline-variant/10 p-6 flex flex-col gap-8 shadow-sm">
+<header>
+<h3 class="font-headline text-lg font-bold text-on-surface mb-1">Inställningar för vald plats</h3>
+<p class="text-xs text-on-surface-variant font-medium tracking-tight">Redigerar objekt i lager 1</p>
+</header>
+<div class="space-y-6">
+<!-- Spot Title Display -->
+<div class="bg-surface-container-low p-4 rounded-xl">
+<span class="label-sm text-on-surface-variant opacity-60 font-bold block mb-2 uppercase tracking-widest text-[10px]">Identifierare</span>
+<h4 class="font-headline text-4xl font-extrabold text-primary">A3</h4>
+</div>
+<!-- Type Dropdown -->
+<div class="space-y-2">
+<label class="label-sm text-on-surface-variant font-semibold block uppercase tracking-wider text-[11px]">Typ av parkering</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg px-4 py-3 text-sm appearance-none focus:ring-2 focus:ring-primary focus:outline-none transition-all">
+<option>Normalstor</option>
+<option>Handikappsanpassad</option>
+<option selected="">Laddplats</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- Status Toggle -->
+<div class="flex items-center justify-between py-2 border-y border-outline-variant/10">
+<div class="space-y-0.5">
+<span class="block text-sm font-semibold">Tillgänglig</span>
+<span class="block text-xs text-on-surface-variant">Synlig för nya hyresgäster</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Dimensions Bento Grid -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface p-4 rounded-xl border border-outline-variant/10">
+<span class="label-sm text-on-surface-variant block mb-1 uppercase text-[9px] font-bold">Bredd</span>
+<div class="flex items-baseline gap-1">
+<span class="font-headline text-xl font-bold">2.5</span>
+<span class="text-xs text-on-surface-variant font-medium">m</span>
+</div>
+</div>
+<div class="bg-surface p-4 rounded-xl border border-outline-variant/10">
+<span class="label-sm text-on-surface-variant block mb-1 uppercase text-[9px] font-bold">Längd</span>
+<div class="flex items-baseline gap-1">
+<span class="font-headline text-xl font-bold">5.0</span>
+<span class="text-xs text-on-surface-variant font-medium">m</span>
+</div>
+</div>
+</div>
+<!-- Additional Metadata -->
+<div class="space-y-4 pt-4">
+<button class="w-full flex items-center justify-between text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" data-icon="bolt">bolt</span> El-uttag (Type 2)</span>
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between text-on-surface-variant hover:text-primary transition-colors text-sm font-medium">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" data-icon="lock">lock</span> Bur/Galler</span>
+<span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="mt-auto space-y-3">
+<button class="w-full py-3 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="delete">delete</span>
+                        Ta bort plats
+                    </button>
+</div>
+</aside>
+</div>
+<!-- Sticky Bottom Toolbar -->
+<footer class="h-20 bg-surface-container-lowest border-t border-outline-variant/10 px-8 flex items-center justify-between z-40">
+<div class="flex items-center gap-6 text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-primary rounded-sm"></span>
+<span class="text-xs font-semibold">32 Platsmarkerade</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 bg-surface-container-highest rounded-sm"></span>
+<span class="text-xs font-semibold">12 Lediga ytor</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 text-on-surface-variant font-bold text-sm rounded-full hover:bg-surface-container-high transition-all">
+                    Avbryt
+                </button>
+<button class="px-8 py-3 bg-gradient-to-br from-primary to-primary-dim text-white font-bold text-sm rounded-full shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-xl" data-icon="cloud_upload">cloud_upload</span>
+                    Publicera karta
+                </button>
+</div>
+</footer>
+</main>
+</body></html>

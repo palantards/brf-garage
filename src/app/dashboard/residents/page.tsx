@@ -80,11 +80,11 @@ export default async function ResidentsPage() {
 
   return (
     <ResidentsClient>
-      <div className="p-12 space-y-12">
+      <div className="p-4 sm:p-8 md:p-12 space-y-8 sm:space-y-12">
         {/* Page heading */}
         <div>
           <h2
-            className="text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none mb-3"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none mb-3"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Boende
@@ -106,14 +106,15 @@ export default async function ResidentsPage() {
           </div>
 
           <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-                  <TableHead className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Namn</TableHead>
-                  <TableHead className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
-                  <TableHead className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Roll</TableHead>
-                  <TableHead className="px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
-                  <TableHead className="px-6 py-4 text-right" />
+                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Namn</TableHead>
+                  <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
+                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Roll</TableHead>
+                  <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
+                  <TableHead className="px-4 sm:px-6 py-4 text-right" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -126,10 +127,10 @@ export default async function ResidentsPage() {
                 )}
                 {active.map((r) => (
                   <TableRow key={r.id} className="hover:bg-[#f1f4f6]/30 transition-colors border-b border-[#abb3b7]/5">
-                    <TableCell className="px-6 py-4">
+                    <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+                          className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
                           style={{
                             backgroundColor: avatarColor(r.email),
                             color: "#2b3437",
@@ -138,30 +139,34 @@ export default async function ResidentsPage() {
                         >
                           {initials(r)}
                         </div>
-                        <span className="font-semibold text-[#2b3437]">
-                          {r.name ?? <span className="text-[#abb3b7] italic font-normal">Ej angivet</span>}
-                        </span>
+                        <div>
+                          <span className="font-semibold text-[#2b3437] block">
+                            {r.name ?? <span className="text-[#abb3b7] italic font-normal">Ej angivet</span>}
+                          </span>
+                          {/* Email inline on mobile */}
+                          <span className="sm:hidden text-xs text-[#586064]">{r.email}</span>
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-sm text-[#586064]">{r.email}</TableCell>
-                    <TableCell className="px-6 py-4">
+                    <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[#586064]">{r.email}</TableCell>
+                    <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
                       {r.role === "admin" ? (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
-                          Administratör
+                        <span className="px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+                          Admin
                         </span>
                       ) : (
-                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#e2e9ec] text-[#586064]">
+                        <span className="px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#e2e9ec] text-[#586064]">
                           Boende
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className="px-6 py-4">
+                    <TableCell className="hidden md:table-cell px-6 py-4">
                       <div className="flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 block" />
                         <span className="text-xs font-bold text-green-600">Aktiv</span>
                       </div>
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-right">
+                    <TableCell className="px-4 sm:px-6 py-3 sm:py-4 text-right">
                       {r.role === "resident" && (
                         <form action={removeResidentAction}>
                           <input type="hidden" name="userId" value={r.id} />
@@ -178,13 +183,14 @@ export default async function ResidentsPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </div>
         </section>
 
         {/* Pending invitations */}
         {pending.length > 0 && (
-          <section className="grid grid-cols-3 gap-8">
-            <div className="col-span-2 space-y-4">
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="col-span-1 lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
                 <h3
                   className="text-2xl font-bold text-[#2b3437]"
@@ -198,13 +204,14 @@ export default async function ResidentsPage() {
               </div>
 
               <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-                      <TableHead className="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
-                      <TableHead className="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Datum skickad</TableHead>
-                      <TableHead className="px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
-                      <TableHead className="px-6 py-3 text-right" />
+                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
+                      <TableHead className="hidden sm:table-cell px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Datum skickad</TableHead>
+                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
+                      <TableHead className="px-4 sm:px-6 py-3 text-right" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -212,20 +219,20 @@ export default async function ResidentsPage() {
                       const status = getStatus(r, now);
                       return (
                         <TableRow key={r.id} className="border-b border-[#abb3b7]/10">
-                          <TableCell className="px-6 py-4 text-sm font-medium text-[#2b3437]">
+                          <TableCell className="px-4 sm:px-6 py-3 sm:py-4 text-sm font-medium text-[#2b3437]">
                             {r.email}
                           </TableCell>
-                          <TableCell className="px-6 py-4 text-sm text-[#586064]">
+                          <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[#586064]">
                             {new Date(r.invited_at).toLocaleDateString("sv-SE")}
                           </TableCell>
-                          <TableCell className="px-6 py-4">
+                          <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
                             {status === "expired" ? (
                               <span className="text-xs font-bold text-red-500">Utgången</span>
                             ) : (
                               <span className="text-xs font-bold text-amber-600">Väntar</span>
                             )}
                           </TableCell>
-                          <TableCell className="px-6 py-4 text-right">
+                          <TableCell className="px-4 sm:px-6 py-3 sm:py-4 text-right">
                             <form action={withdrawInviteAction}>
                               <input type="hidden" name="userId" value={r.id} />
                               <button
@@ -241,6 +248,7 @@ export default async function ResidentsPage() {
                     })}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             </div>
 

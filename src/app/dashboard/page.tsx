@@ -127,11 +127,11 @@ export default async function DashboardPage() {
     const upcomingPct = total > 0 ? Math.round((upcomingSpots.length / total) * 100) : 0;
 
     return (
-      <div className="p-12">
+      <div className="p-4 sm:p-8 md:p-12">
         {/* Welcome */}
-        <header className="mb-14">
-          <div className="flex items-baseline gap-4 mb-2">
-            <h1 className="font-[var(--font-manrope)] text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none">
+        <header className="mb-8 sm:mb-14">
+          <div className="flex flex-wrap items-baseline gap-3 sm:gap-4 mb-2">
+            <h1 className="font-[var(--font-manrope)] text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none">
               Hej, {user.name ?? user.email}
             </h1>
             <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
@@ -144,7 +144,7 @@ export default async function DashboardPage() {
         </header>
 
         {/* Bento stats grid */}
-        <section className="grid grid-cols-2 gap-6 mb-12">
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
 
           {/* Kö */}
           <Card className="rounded-xl border-none shadow-none bg-white relative overflow-hidden">
@@ -294,10 +294,10 @@ export default async function DashboardPage() {
 
   // ── Resident view ────────────────────────────────────────────────────────────
   return (
-    <div className="p-12">
-      <header className="mb-10">
-        <div className="flex items-baseline gap-3 mb-1">
-          <h1 className="font-[var(--font-manrope)] text-4xl font-extrabold tracking-tight text-[#2b3437] leading-tight">
+    <div className="p-4 sm:p-8 md:p-12">
+      <header className="mb-6 sm:mb-10">
+        <div className="flex flex-wrap items-baseline gap-3 mb-1">
+          <h1 className="font-[var(--font-manrope)] text-2xl sm:text-4xl font-extrabold tracking-tight text-[#2b3437] leading-tight">
             Hej, {user.name ?? user.email}
           </h1>
           <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
@@ -307,7 +307,7 @@ export default async function DashboardPage() {
         <p className="text-[#586064]">Välkommen tillbaka till garageportalen.</p>
       </header>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {/* Queue card */}
         <Card className="rounded-xl border-none shadow-none bg-white">
           <CardHeader className="pb-0">

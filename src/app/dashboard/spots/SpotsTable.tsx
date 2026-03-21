@@ -186,28 +186,29 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
         </div>
       )}
 
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-[#f1f4f6] hover:bg-[#f1f4f6]">
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
               Plats
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden sm:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
               Typ
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
               Status
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
               Tilldelad till
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-center">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-center">
               Tillgänglig
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
               Avtal upphör
             </TableHead>
-            <TableHead className="px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-right">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-right">
               Åtgärder
             </TableHead>
           </TableRow>
@@ -234,9 +235,9 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 className="hover:bg-[#f1f4f6] transition-colors group"
               >
                 {/* Identifier */}
-                <TableCell className="px-8 py-6">
+                <TableCell className="px-4 sm:px-8 py-4 sm:py-6">
                   <span
-                    className="text-lg font-bold text-[#2b3437]"
+                    className="text-base sm:text-lg font-bold text-[#2b3437]"
                     style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                   >
                     {spot.identifier}
@@ -251,8 +252,8 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                   )}
                 </TableCell>
 
-                {/* Type */}
-                <TableCell className="px-8 py-6">
+                {/* Type — hidden on mobile */}
+                <TableCell className="hidden sm:table-cell px-8 py-6">
                   <div className="flex items-center gap-2 text-[#586064]">
                     <span className="material-symbols-outlined text-[#abb3b7] text-[18px]">
                       {spot.map_type === "mc" ? "two_wheeler" : "directions_car"}
@@ -264,14 +265,14 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 </TableCell>
 
                 {/* Status */}
-                <TableCell className="px-8 py-6">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${STATUS_STYLE[spot.status]}`}>
+                <TableCell className="px-4 sm:px-8 py-4 sm:py-6">
+                  <span className={`inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${STATUS_STYLE[spot.status]}`}>
                     {STATUS_LABEL[spot.status]}
                   </span>
                 </TableCell>
 
-                {/* Resident */}
-                <TableCell className="px-8 py-6">
+                {/* Resident — hidden on mobile */}
+                <TableCell className="hidden md:table-cell px-8 py-6">
                   {spot.resident_name ? (
                     <span className="text-sm font-semibold text-[#2b3437]">
                       {spot.resident_name}
@@ -282,7 +283,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 </TableCell>
 
                 {/* Availability toggle */}
-                <TableCell className="px-8 py-6 text-center">
+                <TableCell className="px-4 sm:px-8 py-4 sm:py-6 text-center">
                   <button
                     type="button"
                     role="switch"
@@ -301,8 +302,8 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                   </button>
                 </TableCell>
 
-                {/* Ending at */}
-                <TableCell className="px-8 py-6">
+                {/* Ending at — hidden on mobile */}
+                <TableCell className="hidden md:table-cell px-8 py-6">
                   {isEditing ? (
                     <div className="flex items-center gap-1.5">
                       <input
@@ -329,7 +330,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 </TableCell>
 
                 {/* Actions */}
-                <TableCell className="px-8 py-6 text-right">
+                <TableCell className="px-4 sm:px-8 py-4 sm:py-6 text-right">
                   {isConfirmingDelete ? (
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-sm text-[#9f403d]">Ta bort?</span>
@@ -395,6 +396,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
           })}
         </TableBody>
       </Table>
+      </div>
 
       {/* Add spot form (shown when sub-header button is clicked) */}
       {showAdd && (

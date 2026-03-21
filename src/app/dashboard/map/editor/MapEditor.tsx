@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export interface EditorSpot {
   id: string;
@@ -28,7 +26,7 @@ function computePct(e: MouseEvent | React.MouseEvent, el: HTMLElement) {
   };
 }
 
-function spotBg(sp: EditorSpot) {
+function spotBgColor(sp: EditorSpot) {
   if (!sp.label) return "rgba(239,68,68,0.60)";
   if (sp.ocr)   return "rgba(234,179,8,0.75)";
   return "rgba(34,197,94,0.70)";
@@ -38,8 +36,8 @@ function handleStyle(dir: HandleDir): React.CSSProperties {
   const v = dir.includes("n") ? { top: -4 } : dir.includes("s") ? { bottom: -4 } : { top: "calc(50% - 4px)" };
   const h = dir.includes("w") ? { left: -4 } : dir.includes("e") ? { right: -4 } : { left: "calc(50% - 4px)" };
   return {
-    position: "absolute", width: 8, height: 8,
-    background: "#fff", border: "1.5px solid #1e293b", borderRadius: 2,
+    position: "absolute", width: 6, height: 6,
+    background: "white", border: "1.5px solid #2563eb", borderRadius: 1,
     cursor: `${dir}-resize`, zIndex: 20, ...v, ...h,
   };
 }
@@ -65,7 +63,6 @@ export default function MapEditor({
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [publishStatus, setPublishStatus] = useState<"idle" | "saving" | "error">("idle");
 
-  // Refs — used by mouse handlers to avoid stale closures
   const containerRef = useRef<HTMLDivElement>(null);
   const spotsRef = useRef(spots);
   const selectedRef = useRef<string | null>(null);
@@ -74,10 +71,8 @@ export default function MapEditor({
   const movingRef   = useRef<{ spId: string; start: { x: number; y: number }; orig: EditorSpot; moved: boolean } | null>(null);
   const drawingRef  = useRef<{ start: { x: number; y: number } } | null>(null);
 
-  // Keep spotsRef in sync with state (but not during active drag — see mouseup)
   useEffect(() => { spotsRef.current = spots; }, [spots]);
 
-  // ── Select ────────────────────────────────────────────────────────────────
   function selectSpot(id: string | null) {
     selectedRef.current = id;
     setSelected(id);
@@ -85,7 +80,6 @@ export default function MapEditor({
     setLabelInput(sp?.label ?? "");
   }
 
-  // ── Document-level mouse handlers ─────────────────────────────────────────
   useEffect(() => {
     function onMouseMove(e: MouseEvent) {
       if (!containerRef.current) return;
@@ -166,22 +160,21 @@ export default function MapEditor({
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     };
-  }, []); // empty — all state accessed via refs
+  }, []);
 
-  // ── Keyboard shortcuts ────────────────────────────────────────────────────
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if ((e.key === "Delete" || e.key === "Backspace") && selectedRef.current) {
-        e.preventDefault(); deleteSelected();
+        e.preventDefault();
+        deleteSelected();
       }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Actions ───────────────────────────────────────────────────────────────
   function deleteSelected() {
     const id = selectedRef.current;
     if (!id) return;
@@ -191,7 +184,8 @@ export default function MapEditor({
   }
 
   function confirmAllOcr() {
-    setSpots(prev => prev.map(s => s.ocr ? { ...s, ocr: false } : s));
+    spotsRef.current = spotsRef.current.map(s => s.ocr ? { ...s, ocr: false } : s);
+    setSpots([...spotsRef.current]);
   }
 
   function handleLabelChange(val: string) {
@@ -246,213 +240,315 @@ export default function MapEditor({
     }
   }
 
-  // ── Stats ─────────────────────────────────────────────────────────────────
-  const confirmed = spots.filter(s => s.label && !s.ocr).length;
+  const confirmed  = spots.filter(s => s.label && !s.ocr).length;
   const ocrGuesses = spots.filter(s => s.ocr).length;
+  const unlabeled  = spots.filter(s => !s.label).length;
 
   return (
-    <div className="space-y-0 rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
-
-      {/* ── Toolbar ── */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex flex-wrap gap-2 items-center">
-
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Märkning</span>
-          <Input
-            value={labelInput}
-            onChange={e => handleLabelChange(e.target.value)}
-            onKeyDown={e => { if (e.key === "Tab" || e.key === "Enter") { e.preventDefault(); tabToNext(); } }}
-            disabled={!selected}
-            placeholder="t.ex. 57"
-            className="h-7 text-xs w-20"
-          />
-        </div>
-
-        <div className="w-px bg-gray-200 h-6" />
-
-        <Button size="sm" variant="outline" className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50" onClick={deleteSelected} disabled={!selected}>✕ Ta bort</Button>
-
-        <div className="w-px bg-gray-200 h-6" />
-
-        {/* Legend */}
-        <div className="flex gap-3 text-xs text-gray-500">
-          {[
-            { color: "rgba(239,68,68,0.65)",  label: "Omärkt" },
-            { color: "rgba(234,179,8,0.75)",  label: "OCR-gissning" },
-            { color: "rgba(34,197,94,0.70)",  label: "Bekräftad" },
-          ].map(({ color, label }) => (
-            <span key={label} className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded-sm inline-block" style={{ background: color }} />
-              {label}
-            </span>
-          ))}
-        </div>
-
-        <div className="w-px bg-gray-200 h-6" />
-
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={confirmAllOcr}>✓ Bekräfta OCR</Button>
-
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7 text-xs"
-          onClick={handleSave}
-          disabled={saveStatus === "saving" || publishStatus === "saving"}
-        >
-          {saveStatus === "saving" ? "Sparar…"
-            : saveStatus === "saved" ? "✓ Sparat!"
-            : saveStatus === "error" ? "Fel — försök igen"
-            : "Spara"}
-        </Button>
-
-        <Button
-          size="sm"
-          className="h-7 text-xs bg-green-600 hover:bg-green-700"
-          onClick={handlePublish}
-          disabled={publishStatus === "saving" || saveStatus === "saving"}
-        >
-          {publishStatus === "saving" ? "Publicerar…"
-            : publishStatus === "error" ? "Fel — försök igen"
-            : mapStatus === "published" ? "Uppdatera publicerad karta"
-            : "Publicera karta"}
-        </Button>
-
-        <span className="text-xs text-gray-400 ml-auto">
-          {confirmed} bekräftade · {ocrGuesses} OCR · {spots.length} totalt
-        </span>
-      </div>
-
-      {/* ── Unplaced spots ── */}
-      {unplacedSpots.length > 0 && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-amber-800">
-            Ej placerade ({unplacedSpots.length}):
-          </span>
-          {unplacedSpots.map(identifier => (
-            <button
-              key={identifier}
-              type="button"
-              className="text-xs px-2 py-0.5 rounded bg-amber-100 border border-amber-300 text-amber-900 hover:bg-amber-200 font-mono"
-              onClick={() => {
-                setLabelInput(identifier);
-                const id = selectedRef.current;
-                if (id) {
-                  const sp = spotsRef.current.find(s => s.id === id);
-                  if (sp) { sp.label = identifier; sp.ocr = false; }
-                  setSpots(prev => prev.map(s => s.id === id ? { ...s, label: identifier, ocr: false } : s));
+    <div>
+      {/* ── TOP TOOLBAR ── */}
+      <div className="bg-white px-4 sm:px-6 min-h-14 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-2 shadow-sm z-30 border-b border-[#c3c6d7]/20">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+          {/* Märkning input */}
+          <div className="flex flex-col">
+            <label className="text-[10px] uppercase font-bold text-[#434655] tracking-wider leading-none mb-1">
+              Märkning
+            </label>
+            <input
+              value={labelInput}
+              onChange={e => handleLabelChange(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === "Tab" || e.key === "Enter") {
+                  e.preventDefault();
+                  tabToNext();
                 }
               }}
-              title="Klicka för att fylla i märkning. Rita sedan platsen på kartan."
+              disabled={!selected}
+              placeholder="t.ex. A12"
+              className="h-8 w-24 px-2 text-sm border-0 bg-[#f2f4f6] rounded focus:ring-1 focus:ring-[#004ac6] outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+          </div>
+
+          {/* Delete button */}
+          <button
+            type="button"
+            onClick={deleteSelected}
+            disabled={!selected}
+            className="h-8 w-8 flex items-center justify-center rounded text-red-400 bg-red-50 hover:bg-red-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Ta bort vald plats (Delete)"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span>
+          </button>
+
+          <div className="h-6 w-px bg-[#c3c6d7]/30 hidden sm:block" />
+
+          {/* Legend dots — hidden on xs */}
+          <div className="hidden sm:flex items-center gap-4 text-[11px] font-semibold text-[#434655]">
+            {[
+              { color: "#10b981", label: "Bekräftad"    },
+              { color: "#f59e0b", label: "OCR-gissning" },
+              { color: "#ef4444", label: "Omärkt"       },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 sm:gap-6">
+          {/* Stats — hidden on xs */}
+          <p className="hidden sm:block text-[12px] text-[#434655] font-medium">
+            {confirmed} bekräftade
+            {ocrGuesses > 0 && <> · {ocrGuesses} att granska</>}
+            {unlabeled > 0 && <> · {unlabeled} omärkta</>}
+          </p>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saveStatus === "saving" || publishStatus === "saving"}
+              className="text-[#004ac6] text-xs font-bold hover:bg-[#004ac6]/5 px-3 py-1.5 rounded transition-colors disabled:opacity-50"
             >
-              {identifier}
+              {saveStatus === "saving" ? "Sparar…"
+                : saveStatus === "saved" ? "✓ Sparat!"
+                : saveStatus === "error" ? "Fel"
+                : "Spara"}
             </button>
-          ))}
-          <span className="text-xs text-amber-600 ml-1">
-            Rita platsen på kartan, klicka sedan på rätt knapp för att sätta märkning.
-          </span>
+
+            <button
+              type="button"
+              onClick={handlePublish}
+              disabled={publishStatus === "saving" || saveStatus === "saving"}
+              className="bg-gradient-to-r from-[#004ac6] to-[#2563eb] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow disabled:opacity-50"
+            >
+              {publishStatus === "saving"
+                ? "Publicerar…"
+                : publishStatus === "error"
+                ? "Fel — försök igen"
+                : mapStatus === "published"
+                ? "Uppdatera karta"
+                : "Publicera karta"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── STATUS BANNER ── */}
+      {mapStatus === "review" && (
+        <div className="bg-[#004ac6]/10 px-6 py-2.5 flex items-center gap-3">
+          <span className="material-symbols-outlined text-[#004ac6] text-sm">info</span>
+          <p className="text-xs font-semibold text-[#004ac6]">
+            Redo att granska — justera platser vid behov och klicka sedan Publicera karta.
+          </p>
         </div>
       )}
 
-      {/* ── Map canvas ── */}
-      <div className="p-4 bg-gray-50">
-        <div
-          ref={containerRef}
-          className="relative w-full select-none overflow-visible rounded-lg border border-gray-200 cursor-crosshair"
-          style={{ paddingBottom: `${aspectRatio}%` }}
-          onMouseDown={e => {
-            if ((e.target as HTMLElement).closest("[data-is-spot]")) return;
-            selectSpot(null);
-            if (!containerRef.current) return;
-            drawingRef.current = { start: computePct(e, containerRef.current) };
-          }}
-        >
-          {/* Background */}
-          <div className="absolute inset-0">
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                onLoad={e => {
-                  const img = e.currentTarget;
-                  if (img.naturalWidth > 0)
-                    setAspectRatio(img.naturalHeight / img.naturalWidth * 100);
-                }}
-                className="w-full h-full object-fill"
-                draggable={false}
-                alt=""
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-                Ange en bild-URL i verktygsfältet ovan
+      {/* ── MAIN LAYOUT ── */}
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-[#f7f9fb]">
+
+        {/* LEFT: CANVAS */}
+        <div className="flex-[3] relative bg-white rounded-xl shadow-sm border border-[#c3c6d7]/10 overflow-visible">
+          <div
+            ref={containerRef}
+            className="relative w-full select-none cursor-crosshair rounded-xl overflow-visible"
+            style={{ paddingBottom: `${aspectRatio}%` }}
+            onMouseDown={e => {
+              if ((e.target as HTMLElement).closest("[data-is-spot]")) return;
+              selectSpot(null);
+              if (!containerRef.current) return;
+              drawingRef.current = { start: computePct(e, containerRef.current) };
+            }}
+          >
+            {/* Floor plan image */}
+            <div className="absolute inset-0 rounded-xl overflow-hidden">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  onLoad={e => {
+                    const img = e.currentTarget;
+                    if (img.naturalWidth > 0)
+                      setAspectRatio(img.naturalHeight / img.naturalWidth * 100);
+                  }}
+                  className="w-full h-full object-fill opacity-80"
+                  draggable={false}
+                  alt=""
+                />
+              ) : (
+                <div className="w-full h-full bg-[#f2f4f6] flex items-center justify-center text-[#737686] text-sm">
+                  Ingen planritning uppladdad
+                </div>
+              )}
+            </div>
+
+            {/* Spots */}
+            {spots.map(sp => {
+              const isSel = selected === sp.id;
+              return (
+                <div
+                  key={sp.id}
+                  data-id={sp.id}
+                  data-is-spot="1"
+                  style={{
+                    position: "absolute",
+                    left: `${sp.x}%`, top: `${sp.y}%`,
+                    width: `${sp.width}%`, height: `${sp.height}%`,
+                    backgroundColor: spotBgColor(sp),
+                    opacity: isSel ? 1 : 0.78,
+                    border: isSel ? "2px solid #004ac6" : "1.5px solid rgba(255,255,255,0.6)",
+                    boxShadow: isSel ? "0 0 0 2px #fff, 0 0 0 4px #004ac6" : undefined,
+                    borderRadius: 2,
+                    cursor: isSel ? "move" : "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "clamp(6px, 0.85vw, 11px)", fontWeight: 700,
+                    color: "#fff", textShadow: "0 0 4px rgba(0,0,0,0.7)",
+                    lineHeight: 1, zIndex: isSel ? 10 : 1,
+                    boxSizing: "border-box",
+                  }}
+                  title={sp.label ? (sp.ocr ? `OCR: ${sp.label}` : `Plats ${sp.label}`) : `Omärkt #${sp.id}`}
+                  onMouseDown={e => {
+                    e.stopPropagation();
+                    if (selectedRef.current !== sp.id) { selectSpot(sp.id); return; }
+                    if (!containerRef.current) return;
+                    movingRef.current = {
+                      spId: sp.id,
+                      start: computePct(e, containerRef.current),
+                      orig: { ...sp },
+                      moved: false,
+                    };
+                  }}
+                >
+                  <span style={{ pointerEvents: "none", userSelect: "none" }}>
+                    {sp.label || "?"}
+                  </span>
+                  {isSel && HANDLES.map(dir => (
+                    <div
+                      key={dir}
+                      style={handleStyle(dir)}
+                      onMouseDown={e => {
+                        e.stopPropagation();
+                        if (!containerRef.current) return;
+                        resizingRef.current = {
+                          spId: sp.id, dir,
+                          start: computePct(e, containerRef.current),
+                          orig: { ...sp },
+                        };
+                      }}
+                    />
+                  ))}
+                </div>
+              );
+            })}
+
+            {/* Draw preview */}
+            {drawPreview && (
+              <div style={{
+                position: "absolute",
+                left: `${drawPreview.x}%`, top: `${drawPreview.y}%`,
+                width: `${drawPreview.w}%`, height: `${drawPreview.h}%`,
+                border: "2px dashed #004ac6",
+                background: "rgba(0,74,198,0.1)",
+                borderRadius: 2, pointerEvents: "none",
+              }} />
+            )}
+
+            {/* Canvas hint */}
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-[#191c1e]/90 text-white px-4 py-2 rounded-lg text-xs font-medium shadow-lg z-20 backdrop-blur-sm pointer-events-none whitespace-nowrap">
+              Rita ny plats: klicka och dra på kartan
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: SIDEBAR */}
+        <aside className="w-full lg:w-[260px] bg-white rounded-xl shadow-sm border border-[#c3c6d7]/10 p-5 flex flex-col gap-6 self-start">
+
+          {/* Ej placerade */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h4
+                className="font-extrabold text-sm text-[#191c1e]"
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+              >
+                Ej placerade platser
+              </h4>
+              <span className="bg-[#e6e8ea] px-2 py-0.5 rounded text-[10px] font-bold text-[#434655]">
+                {unplacedSpots.length}
+              </span>
+            </div>
+            {unplacedSpots.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {unplacedSpots.map(identifier => (
+                  <button
+                    key={identifier}
+                    type="button"
+                    className="px-3 py-1.5 bg-[#f2f4f6] text-[#004ac6] font-bold text-xs rounded-lg border border-[#004ac6]/10 hover:border-[#004ac6] transition-colors cursor-pointer"
+                    onClick={() => {
+                      setLabelInput(identifier);
+                      const id = selectedRef.current;
+                      if (id) {
+                        const sp = spotsRef.current.find(s => s.id === id);
+                        if (sp) { sp.label = identifier; sp.ocr = false; }
+                        setSpots(prev => prev.map(s => s.id === id ? { ...s, label: identifier, ocr: false } : s));
+                      }
+                    }}
+                    title="Välj en plats på kartan och klicka sedan för att sätta märkning"
+                  >
+                    {identifier}
+                  </button>
+                ))}
               </div>
+            ) : (
+              <p className="text-xs text-[#737686]">Alla platser är placerade på kartan.</p>
             )}
           </div>
 
-          {/* Spots */}
-          {spots.map(sp => {
-            const isSel = selected === sp.id;
-            return (
-              <div
-                key={sp.id}
-                data-id={sp.id}
-                data-is-spot="1"
-                style={{
-                  position: "absolute",
-                  left: `${sp.x}%`, top: `${sp.y}%`,
-                  width: `${sp.width}%`, height: `${sp.height}%`,
-                  backgroundColor: spotBg(sp),
-                  opacity: isSel ? 1 : 0.78,
-                  border: isSel ? "2px solid #1e293b" : "1.5px solid rgba(255,255,255,0.6)",
-                  boxShadow: isSel ? "0 0 0 2px #fff, 0 0 0 4px #1e293b" : undefined,
-                  borderRadius: 2,
-                  cursor: isSel ? "move" : "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "clamp(6px, 0.85vw, 11px)", fontWeight: 700,
-                  color: "#fff", textShadow: "0 0 4px rgba(0,0,0,0.7)",
-                  lineHeight: 1, zIndex: isSel ? 10 : 1,
-                  boxSizing: "border-box",
-                }}
-                title={sp.label ? (sp.ocr ? `OCR: ${sp.label}` : `Plats ${sp.label}`) : `Omärkt #${sp.id}`}
-                onMouseDown={e => {
-                  e.stopPropagation();
-                  if (selectedRef.current !== sp.id) { selectSpot(sp.id); return; }
-                  // Already selected — start move
-                  if (!containerRef.current) return;
-                  movingRef.current = { spId: sp.id, start: computePct(e, containerRef.current), orig: { ...sp }, moved: false };
-                }}
+          {/* Platser på kartan */}
+          <div className="pt-4 border-t border-[#eceef0]">
+            <div className="flex items-center justify-between mb-4">
+              <h4
+                className="font-extrabold text-sm text-[#191c1e]"
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
               >
-                <span style={{ pointerEvents: "none", userSelect: "none" }}>
-                  {sp.label || "?"}
-                </span>
+                Platser på kartan
+              </h4>
+              <span className="bg-[#004ac6]/10 text-[#004ac6] px-2 py-0.5 rounded text-[10px] font-bold">
+                {spots.length}
+              </span>
+            </div>
+            <div className="space-y-2">
+              {[
+                { label: "Bekräftade", count: confirmed,  color: "#10b981" },
+                { label: "OCR-gissning", count: ocrGuesses, color: "#f59e0b" },
+                { label: "Omärkta",    count: unlabeled,  color: "#ef4444" },
+              ].map(({ label, count, color }) => count > 0 && (
+                <div key={label} className="flex items-center justify-between text-xs p-2 bg-[#f2f4f6] rounded-lg">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="font-semibold text-[#434655]">{label}</span>
+                  </div>
+                  <span className="font-bold text-[#191c1e]">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-                {/* Resize handles (selected spot only) */}
-                {isSel && HANDLES.map(dir => (
-                  <div
-                    key={dir}
-                    style={handleStyle(dir)}
-                    onMouseDown={e => {
-                      e.stopPropagation();
-                      if (!containerRef.current) return;
-                      resizingRef.current = { spId: sp.id, dir, start: computePct(e, containerRef.current), orig: { ...sp } };
-                    }}
-                  />
-                ))}
-              </div>
-            );
-          })}
-
-          {/* Draw preview */}
-          {drawPreview && (
-            <div style={{
-              position: "absolute",
-              left: `${drawPreview.x}%`, top: `${drawPreview.y}%`,
-              width: `${drawPreview.w}%`, height: `${drawPreview.h}%`,
-              border: "2px dashed #2563eb", background: "rgba(37,99,235,0.15)",
-              borderRadius: 2, pointerEvents: "none",
-            }} />
+          {/* OCR confirm */}
+          {ocrGuesses > 0 && (
+            <div className="mt-auto">
+              <button
+                type="button"
+                onClick={confirmAllOcr}
+                className="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 py-3 rounded-xl text-xs font-bold transition-all border border-amber-500/20 flex flex-col items-center gap-1"
+              >
+                <span>Bekräfta OCR-gissningar ({ocrGuesses})</span>
+                <span className="text-[9px] font-medium opacity-70">Granska automatiskt tolkade skyltar</span>
+              </button>
+            </div>
           )}
-        </div>
+        </aside>
       </div>
-
     </div>
   );
 }

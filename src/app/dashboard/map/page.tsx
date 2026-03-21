@@ -1,10 +1,16 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GarageMap, { type Spot } from "./GarageMap";
 import UploadMapModal from "./UploadMapModal";
-import DeleteMapButton from "./DeleteMapButton";
+
+const LEGEND = [
+  { status: "free",     color: "#22c55e", label: "Ledig"    },
+  { status: "occupied", color: "#ef4444", label: "Uthyrd"   },
+  { status: "upcoming", color: "#f97316", label: "Kommande" },
+  { status: "offered",  color: "#f59e0b", label: "Erbjuden" },
+] as const;
 
 export default async function MapPage() {
   const session = await auth();
@@ -59,7 +65,7 @@ export default async function MapPage() {
         AND s.available = true
       ORDER BY s.identifier
     `;
-    spots = rows.map(r => ({
+    spots = rows.map((r) => ({
       id: r.id,
       label: r.identifier,
       status: r.status as Spot["status"],
@@ -73,106 +79,218 @@ export default async function MapPage() {
     }));
   }
 
+  const free     = spots.filter((s) => s.status === "free").length;
+  const occupied = spots.filter((s) => s.status === "occupied").length;
+  const upcoming = spots.filter((s) => s.status === "upcoming").length;
+  const offered  = spots.filter((s) => s.status === "offered").length;
+
+  const statCards = [
+    { label: "Lediga",   value: free,     colorClass: "text-emerald-600" },
+    { label: "Uthyrda",  value: occupied, colorClass: "text-rose-600"    },
+    { label: "Kommande", value: upcoming, colorClass: "text-amber-600"   },
+    { label: "Erbjudna", value: offered,  colorClass: "text-yellow-600"  },
+  ];
+
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-2">
-          <a href="/dashboard" className="text-sm text-gray-500 hover:text-gray-900">
-            ← Tillbaka
-          </a>
-          <span className="text-gray-300">/</span>
-          <span className="font-semibold text-gray-900">Garageplan</span>
-        </div>
-      </header>
+    <div className="p-4 sm:p-8 md:p-12 space-y-6 sm:space-y-10">
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Garageplan</CardTitle>
-            {isAdmin && mapStatus === "review" && (
-              <a href="/dashboard/map/editor" className="text-sm text-blue-600 hover:underline">
-                Granska och publicera →
-              </a>
+      {/* ── Published state ── */}
+      {mapStatus === "published" && (
+        <>
+          {/* Heading */}
+          <div className="flex flex-wrap gap-3 justify-between items-end">
+            <div>
+              <h1
+                className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#191c1e]"
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+              >
+                Garageplan
+              </h1>
+              <p className="text-[#434655] mt-2 text-sm sm:text-base">Visuell översikt av garageplanen.</p>
+            </div>
+            {isAdmin && (
+              <Link
+                href="/dashboard/map/editor"
+                className="text-[#004ac6] font-semibold flex items-center gap-1 hover:underline"
+              >
+                Redigera karta
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </Link>
             )}
-            {isAdmin && mapStatus === "published" && (
-              <a href="/dashboard/map/editor" className="text-sm text-gray-400 hover:text-gray-600">
-                Redigera karta →
-              </a>
-            )}
-          </CardHeader>
-          <CardContent>
+          </div>
 
-            {/* ── No map yet ── */}
+          {/* Legend row */}
+          <div className="flex flex-wrap gap-4 px-4 py-3 bg-[#f2f4f6] rounded-xl w-fit">
+            {LEGEND.map(({ status, color, label }) => (
+              <div key={status} className="flex items-center gap-2">
+                <span
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="text-sm font-medium text-[#191c1e]">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Map */}
+          {imageUrl && (
+            <div>
+              <GarageMap spots={spots} isAdmin={isAdmin} imageUrl={imageUrl} />
+            </div>
+          )}
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+            {statCards.map(({ label, value, colorClass }) => (
+              <div key={label} className="bg-white p-6 rounded-xl shadow-sm">
+                <p className={`${colorClass} font-bold text-sm uppercase`}>{label}</p>
+                <p
+                  className="text-4xl font-extrabold mt-1 text-[#191c1e]"
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                >
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* ── Non-published states ── */}
+      {mapStatus !== "published" && (
+        <>
+          <div>
+            <h1
+              className="text-4xl font-extrabold tracking-tight text-[#191c1e]"
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+            >
+              Garageplan
+            </h1>
+          </div>
+
+          <div className="max-w-sm mx-auto py-4">
+
+            {/* STATE: Unconfigured */}
             {mapStatus === "unconfigured" && (
-              <div className="py-12 text-center space-y-4">
-                {isAdmin ? (
+              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-3xl text-slate-400">map</span>
+                </div>
+                <h4
+                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                >
+                  {isAdmin ? "Ingen garageplan uppladdad" : "Ingen garageplan konfigurerad"}
+                </h4>
+                <p className="text-[#434655] text-sm mb-8 px-4">
+                  {isAdmin
+                    ? "Ladda upp en planritning så konfigurerar vi kartan åt dig."
+                    : "Administratören har ännu inte konfigurerat garagekartan."}
+                </p>
+
+                {isAdmin && (
                   <>
-                    <p className="text-gray-500 text-sm">
-                      Ingen garageplan är uppladdad ännu. Ladda upp en planritning
-                      så konfigurerar vi kartan åt dig.
-                    </p>
+                    <div className="w-full space-y-4 mb-8">
+                      {[
+                        { n: 1, text: "Ladda upp planritning",   active: true  },
+                        { n: 2, text: "Vi konfigurerar",         active: false },
+                        { n: 3, text: "Granska och publicera",   active: false },
+                      ].map(({ n, text, active }) => (
+                        <div key={n} className={`flex items-center gap-3 text-left ${active ? "" : "opacity-40"}`}>
+                          <span
+                            className="w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold flex-shrink-0"
+                            style={{
+                              backgroundColor: active ? "#004ac6" : "#e2e8f0",
+                              color: active ? "#fff" : "#64748b",
+                            }}
+                          >
+                            {n}
+                          </span>
+                          <span className="text-xs font-medium text-[#191c1e]">{text}</span>
+                        </div>
+                      ))}
+                    </div>
                     <UploadMapModal />
                   </>
-                ) : (
-                  <p className="text-gray-400 text-sm">Ingen garageplan är konfigurerad ännu.</p>
                 )}
               </div>
             )}
 
-            {/* ── Under review by ops ── */}
+            {/* STATE: Pending */}
             {mapStatus === "pending" && (
-              <div className="py-12 text-center space-y-3">
-                <div className="text-3xl">⏳</div>
-                <p className="font-medium text-gray-700">Din garageplan granskas</p>
-                <p className="text-sm text-gray-400 max-w-sm mx-auto">
-                  Vi har tagit emot din planritning och håller på att konfigurera kartan.
-                  Du får ett meddelande när den är klar att granska.
-                </p>
-                {isAdmin && (
-                  <div className="pt-2">
-                    <DeleteMapButton />
+              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center justify-center">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-3xl text-[#004ac6]">
+                      hourglass_empty
+                    </span>
                   </div>
-                )}
+                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[#004ac6] ring-2 ring-white animate-pulse" />
+                </div>
+                <h4
+                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                >
+                  Planritningen granskas
+                </h4>
+                <p className="text-[#434655] text-sm mb-8">
+                  Vi har tagit emot din planritning och håller på att konfigurera kartan.
+                  Du meddelas när den är klar.
+                </p>
               </div>
             )}
 
-            {/* ── Ready for admin review/edit ── */}
-            {mapStatus === "review" && (
-              <div className="py-12 text-center space-y-4">
-                {isAdmin ? (
-                  <>
-                    <div className="text-3xl">✅</div>
-                    <p className="font-medium text-gray-700">Kartan är klar att granska</p>
-                    <p className="text-sm text-gray-400 max-w-sm mx-auto">
-                      Platserna är inlagda. Öppna redigeraren för att justera och sedan publicera kartan.
-                    </p>
-                    <a
-                      href="/dashboard/map/editor"
-                      className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-                    >
-                      Granska och publicera →
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-3xl">⏳</div>
-                    <p className="font-medium text-gray-700">Kartan färdigställs</p>
-                    <p className="text-sm text-gray-400 max-w-sm mx-auto">
-                      Vi håller på att slutföra konfigurationen. Du får ett meddelande när kartan är klar.
-                    </p>
-                  </>
-                )}
+            {/* STATE: Review (admin) */}
+            {mapStatus === "review" && isAdmin && (
+              <div className="bg-blue-50/50 p-8 rounded-xl shadow-sm border-2 border-[#004ac6]/20 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-[#004ac6] rounded-full flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-3xl text-white">check_circle</span>
+                </div>
+                <h4
+                  className="font-extrabold text-xl mb-2 text-[#004ac6]"
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                >
+                  Kartan är klar att granska!
+                </h4>
+                <p className="text-[#434655] text-sm mb-8 px-4">
+                  Platserna är inlagda. Öppna redigeraren för att justera positioner och sedan publicera.
+                </p>
+                <Link
+                  href="/dashboard/map/editor"
+                  className="w-full bg-gradient-to-br from-[#004ac6] to-[#2563eb] text-white py-3 px-6 rounded-full font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95"
+                >
+                  Öppna redigeraren
+                  <span className="material-symbols-outlined">arrow_forward</span>
+                </Link>
               </div>
             )}
 
-            {/* ── Published map ── */}
-            {mapStatus === "published" && imageUrl && (
-              <GarageMap spots={spots} isAdmin={isAdmin} imageUrl={imageUrl} />
+            {/* STATE: Review (resident) */}
+            {mapStatus === "review" && !isAdmin && (
+              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center justify-center">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
+                    <span className="material-symbols-outlined text-3xl text-[#004ac6]">
+                      hourglass_empty
+                    </span>
+                  </div>
+                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[#004ac6] ring-2 ring-white animate-pulse" />
+                </div>
+                <h4
+                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+                >
+                  Kartan färdigställs
+                </h4>
+                <p className="text-[#434655] text-sm">
+                  Vi håller på att slutföra konfigurationen. Du meddelas när kartan är klar.
+                </p>
+              </div>
             )}
-
-          </CardContent>
-        </Card>
-      </main>
+          </div>
+        </>
+      )}
     </div>
   );
 }

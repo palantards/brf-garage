@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 
 export type SpotStatus = "free" | "occupied" | "offered" | "upcoming";
 export type SpotType = "car" | "mc";
@@ -16,34 +15,37 @@ export interface Spot {
   /** Size as % of container (0–100) */
   width: number;
   height: number;
-  /** Clockwise rotation in degrees (default 0) */
   rotation?: number;
   type?: SpotType;
   residentName?: string;
-  /** ISO timestamp — set when a resident has given notice; status will be "upcoming" */
   endingAt?: string;
 }
 
-const STATUS_COLOR: Record<SpotStatus, string> = {
+export const STATUS_COLOR: Record<SpotStatus, string> = {
   free:     "#22c55e",
   occupied: "#ef4444",
-  offered:  "#eab308",
+  offered:  "#f59e0b",
   upcoming: "#f97316",
 };
 
-const STATUS_LABEL: Record<SpotStatus, string> = {
+export const STATUS_LABEL: Record<SpotStatus, string> = {
   free:     "Ledig",
-  occupied: "Upptagen",
+  occupied: "Uthyrd",
   offered:  "Erbjuden",
   upcoming: "Kommande",
+};
+
+const STATUS_BADGE: Record<SpotStatus, string> = {
+  free:     "bg-emerald-100 text-emerald-700",
+  occupied: "bg-rose-100 text-rose-700",
+  offered:  "bg-amber-100 text-amber-700",
+  upcoming: "bg-orange-100 text-orange-700",
 };
 
 interface Props {
   spots: Spot[];
   isAdmin?: boolean;
-  /** URL of the garage floor plan image. If omitted, a neutral gray bg is used. */
   imageUrl?: string;
-  /** padding-bottom % to maintain aspect ratio (height/width × 100). Default 52.69 (1338×705). */
   aspectRatio?: number;
 }
 
@@ -56,35 +58,24 @@ export default function GarageMap({
   const [selected, setSelected] = useState<Spot | null>(null);
 
   return (
-    <div className="space-y-4">
-      {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-        {(["free", "occupied", "upcoming", "offered"] as SpotStatus[]).map((s) => (
-          <span key={s} className="flex items-center gap-1.5">
-            <span
-              className="inline-block w-3 h-3 rounded-sm border border-white/40 shadow-sm"
-              style={{ backgroundColor: STATUS_COLOR[s] }}
-            />
-            {STATUS_LABEL[s]}
-          </span>
-        ))}
-      </div>
-
-      {/* Map */}
+    <div className="flex flex-col sm:flex-row gap-4 sm:items-start">
+      {/* Map canvas */}
+      <div className="flex-1 min-w-0">
       <div
-        className="relative w-full select-none overflow-hidden rounded-lg border border-gray-200"
-        style={{ paddingBottom: `${aspectRatio}%` }}
+        className="relative w-full select-none overflow-hidden rounded-xl shadow-inner border border-[#c3c6d7]/10"
+        style={{
+          paddingBottom: `${aspectRatio}%`,
+          backgroundColor: "#e6e8ea",
+        }}
       >
-        {/* Background */}
         <div
           className="absolute inset-0"
           style={
             imageUrl
               ? { backgroundImage: `url(${imageUrl})`, backgroundSize: "100% 100%" }
-              : { backgroundColor: "#f9fafb" }
+              : undefined
           }
         >
-          {/* Spots */}
           {spots.map((spot) => {
             const isSelected = selected?.id === spot.id;
             return (
@@ -100,18 +91,19 @@ export default function GarageMap({
                   transform: `rotate(${spot.rotation ?? 0}deg)`,
                   transformOrigin: "center center",
                   backgroundColor: STATUS_COLOR[spot.status],
-                  opacity: isSelected ? 0.92 : 0.72,
+                  opacity: isSelected ? 0.95 : 0.8,
                   border: isSelected
-                    ? "2px solid #1e293b"
-                    : "1px solid rgba(255,255,255,0.55)",
+                    ? "2px solid #fff"
+                    : "1px solid rgba(255,255,255,0.5)",
+                  boxShadow: isSelected ? "0 0 0 2px #004ac6" : undefined,
                   borderRadius: "2px",
-                  cursor: isAdmin ? "pointer" : "default",
+                  cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   overflow: "hidden",
                   boxSizing: "border-box",
-                  transition: "opacity 0.1s, border 0.1s",
+                  transition: "opacity 0.1s, box-shadow 0.1s",
                 }}
                 title={`${spot.label}${spot.residentName ? ` – ${spot.residentName}` : ""} (${STATUS_LABEL[spot.status]})`}
               >
@@ -134,67 +126,71 @@ export default function GarageMap({
           })}
         </div>
       </div>
+      </div>
 
-      {/* Selected spot detail */}
-      {selected && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 flex items-start justify-between gap-4 shadow-sm">
-          <div>
-            <p className="font-semibold text-gray-900">
+      {/* Detail panel — always visible */}
+      <div className="w-full sm:w-64 shrink-0 bg-white rounded-xl shadow-sm border border-[#c3c6d7]/10 p-5 flex flex-col">
+        {selected ? (
+          <>
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-10 h-10 bg-[#004ac6]/10 text-[#004ac6] rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                  {selected.type === "mc" ? "two_wheeler" : "directions_car"}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                className="p-1 rounded-full hover:bg-[#f2f4f6] text-[#737686] hover:text-[#191c1e] transition-colors"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
+              </button>
+            </div>
+
+            <h3
+              className="font-extrabold text-lg text-[#191c1e] leading-tight"
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+            >
               {selected.type === "mc" ? "MC-plats" : "Plats"} {selected.label}
-            </p>
+            </h3>
+
             {selected.residentName && (
-              <p className="text-sm text-gray-500 mt-0.5">{selected.residentName}</p>
+              <p className="text-sm text-[#434655] mt-1">Boende: {selected.residentName}</p>
             )}
-            {selected.endingAt && (
-              <p className="text-sm text-orange-600 mt-0.5">
-                Beräknat ledigt:{" "}
-                {new Date(selected.endingAt).toLocaleDateString("sv-SE", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </p>
-            )}
-            <Badge
-              variant="outline"
-              className="mt-2"
-              style={{
-                color: STATUS_COLOR[selected.status],
-                borderColor: STATUS_COLOR[selected.status] + "66",
-              }}
+
+            <span
+              className={`mt-3 self-start px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${STATUS_BADGE[selected.status]}`}
             >
               {STATUS_LABEL[selected.status]}
-            </Badge>
-          </div>
-          {isAdmin && (
-            <div className="flex flex-col gap-2 shrink-0 text-right">
-              {selected.status !== "free" && (
-                <button className="text-sm font-medium text-green-600 hover:underline">
-                  Markera som ledig
-                </button>
-              )}
-              {selected.status === "free" && (
-                <button className="text-sm font-medium text-blue-600 hover:underline">
-                  Tilldela boende
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+            </span>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 text-center">
-        {(["free", "occupied", "upcoming", "offered"] as SpotStatus[]).map((s) => {
-          const count = spots.filter((sp) => sp.status === s).length;
-          return (
-            <div key={s} className="rounded-lg border border-gray-200 bg-white py-3 px-2">
-              <p className="text-2xl font-bold" style={{ color: STATUS_COLOR[s] }}>
-                {count}
-              </p>
-              <p className="text-xs text-gray-500 mt-0.5">{STATUS_LABEL[s]}</p>
+            {selected.endingAt && (
+              <div className="mt-5 pt-4 border-t border-[#f2f4f6]">
+                <p className="text-[10px] text-[#434655] uppercase font-bold tracking-widest">
+                  Beräknat ledigt
+                </p>
+                <p className="font-medium text-sm mt-1 text-[#191c1e]">
+                  {new Date(selected.endingAt).toLocaleDateString("sv-SE", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                  })}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full py-8 text-center gap-3">
+            <div className="w-12 h-12 bg-[#f2f4f6] rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-[#c3c6d7]" style={{ fontSize: 24 }}>
+                directions_car
+              </span>
             </div>
-          );
-        })}
+            <div>
+              <p className="text-sm font-semibold text-[#434655]">Välj en plats</p>
+              <p className="text-xs text-[#c3c6d7] mt-0.5">Klicka på kartan</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

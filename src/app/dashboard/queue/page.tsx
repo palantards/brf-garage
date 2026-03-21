@@ -77,13 +77,13 @@ export default async function QueuePage() {
 
   return (
     <QueueClient>
-    <div className="p-12 space-y-10">
+    <div className="p-4 sm:p-8 md:p-12 space-y-6 sm:space-y-10">
 
       {/* Page heading */}
-      <header className="flex items-end justify-between">
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div className="space-y-2">
           <h2
-            className="text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Kö
@@ -100,15 +100,15 @@ export default async function QueuePage() {
       </header>
 
       {/* Bento stats */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {/* Total */}
         <Card className="rounded-xl border-none shadow-sm bg-white border-l-4 border-[#0053db]" style={{ borderLeft: "4px solid #0053db" }}>
-          <CardContent className="p-8">
+          <CardContent className="p-5 sm:p-8">
             <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
               Totalt i kö
             </p>
             <p
-              className="text-5xl font-extrabold text-[#2b3437]"
+              className="text-3xl sm:text-5xl font-extrabold text-[#2b3437]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {total}
@@ -121,12 +121,12 @@ export default async function QueuePage() {
 
         {/* New this month */}
         <Card className="rounded-xl border-none shadow-sm bg-white">
-          <CardContent className="p-8">
+          <CardContent className="p-5 sm:p-8">
             <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
               Nya denna månad
             </p>
             <p
-              className="text-5xl font-extrabold text-[#0053db]"
+              className="text-3xl sm:text-5xl font-extrabold text-[#0053db]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {newThisMonth}
@@ -139,12 +139,12 @@ export default async function QueuePage() {
 
         {/* Free spots */}
         <Card className="rounded-xl border-none shadow-sm bg-white overflow-hidden relative">
-          <CardContent className="p-8">
+          <CardContent className="p-5 sm:p-8">
             <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
               Lediga platser
             </p>
             <p
-              className="text-5xl font-extrabold text-[#2b3437]"
+              className="text-3xl sm:text-5xl font-extrabold text-[#2b3437]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {freeSpots}
@@ -165,25 +165,26 @@ export default async function QueuePage() {
 
       {/* Queue table */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-              <TableHead className="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
                 Position
               </TableHead>
-              <TableHead className="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
                 Namn
               </TableHead>
-              <TableHead className="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
                 E-post
               </TableHead>
-              <TableHead className="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
                 Gick med
               </TableHead>
-              <TableHead className="px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
                 Preferenser
               </TableHead>
-              <TableHead className="px-6 py-4" />
+              <TableHead className="px-4 sm:px-6 py-4" />
             </TableRow>
           </TableHeader>
 
@@ -206,7 +207,7 @@ export default async function QueuePage() {
                   className="hover:bg-[#f8f9fa] transition-colors border-b border-[#abb3b7]/5 group"
                 >
                   {/* Position circle */}
-                  <TableCell className="px-6 py-5">
+                  <TableCell className="px-4 sm:px-6 py-4 sm:py-5">
                     <span
                       className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                       style={{
@@ -220,19 +221,21 @@ export default async function QueuePage() {
                   </TableCell>
 
                   {/* Name */}
-                  <TableCell className="px-6 py-5">
+                  <TableCell className="px-4 sm:px-6 py-4 sm:py-5">
                     <p className="font-bold text-[#2b3437]">
                       {e.name ?? <span className="text-[#abb3b7] font-normal italic">Ej angivet</span>}
                     </p>
+                    {/* Show email inline on mobile */}
+                    <p className="sm:hidden text-xs text-[#586064] mt-0.5">{e.email}</p>
                   </TableCell>
 
-                  {/* Email */}
-                  <TableCell className="px-6 py-5 text-sm text-[#586064]">
+                  {/* Email — hidden on mobile */}
+                  <TableCell className="hidden sm:table-cell px-6 py-5 text-sm text-[#586064]">
                     {e.email}
                   </TableCell>
 
-                  {/* Joined */}
-                  <TableCell className="px-6 py-5 text-sm text-[#586064]">
+                  {/* Joined — hidden on mobile */}
+                  <TableCell className="hidden md:table-cell px-6 py-5 text-sm text-[#586064]">
                     {new Date(e.joined_at).toLocaleDateString("sv-SE", {
                       day: "numeric",
                       month: "short",
@@ -240,8 +243,8 @@ export default async function QueuePage() {
                     })}
                   </TableCell>
 
-                  {/* Preferences */}
-                  <TableCell className="px-6 py-5">
+                  {/* Preferences — hidden on mobile */}
+                  <TableCell className="hidden md:table-cell px-6 py-5">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaeff1] text-[#586064] text-xs font-semibold">
                       <span className="material-symbols-outlined text-[14px]">
                         {prefCount > 0 ? "bookmark" : "bookmark_border"}
@@ -251,7 +254,7 @@ export default async function QueuePage() {
                   </TableCell>
 
                   {/* Remove */}
-                  <TableCell className="px-6 py-5 text-right">
+                  <TableCell className="px-4 sm:px-6 py-4 sm:py-5 text-right">
                     <form action={adminRemoveFromQueueAction}>
                       <input type="hidden" name="userId" value={e.user_id} />
                       <button
@@ -269,6 +272,7 @@ export default async function QueuePage() {
             })}
           </TableBody>
         </Table>
+        </div>
 
         {/* Footer */}
         {entries.length > 0 && (
