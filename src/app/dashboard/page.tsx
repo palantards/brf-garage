@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import QueueCard from "./QueueCard";
+import OfferCard from "./OfferCard";
 
 const eventMeta: Record<string, { label: string; icon: string }> = {
   "queue.join":              { label: "Ny köanmälan",         icon: "login" },
@@ -18,6 +19,10 @@ const eventMeta: Record<string, { label: string; icon: string }> = {
   "invite.accepted":         { label: "Inbjudan accepterad",  icon: "person_add" },
   "resident.invited":        { label: "Boende inbjuden",      icon: "mail" },
   "resident.deactivated":    { label: "Boende avaktiverad",   icon: "person_off" },
+  "offer.created":           { label: "Erbjudande skickat",   icon: "send" },
+  "offer.accepted":          { label: "Erbjudande accepterat",icon: "check_circle" },
+  "offer.declined":          { label: "Erbjudande avböjt",    icon: "cancel" },
+  "offer.expired":           { label: "Erbjudande utgånget",  icon: "timer_off" },
 };
 
 function formatEventDate(dateStr: string): string {
@@ -81,6 +86,22 @@ export default async function DashboardPage() {
         WHERE user_id = ${user.id} AND association_id = ${user.associationId}
       `.then((rows) => rows.map((r) => r.spot_id))
     : [];
+
+  // Pending offer for this user
+  const [pendingOffer] = await sql<{
+    id: string;
+    spot_identifier: string;
+    spot_type: string;
+    expires_at: string;
+  }[]>`
+    SELECT so.id, s.identifier AS spot_identifier, s.map_type AS spot_type, so.expires_at
+    FROM spot_offers so
+    JOIN spots s ON s.id = so.spot_id
+    WHERE so.user_id = ${user.id}
+      AND so.association_id = ${user.associationId}
+      AND so.status = 'pending'
+    LIMIT 1
+  `;
 
   // Admin-only queries
   const [spotStats, queueCount, residentCount, offerCount, recentEvents] = isAdmin
@@ -306,6 +327,18 @@ export default async function DashboardPage() {
         </div>
         <p className="text-[#586064]">Välkommen tillbaka till garageportalen.</p>
       </header>
+
+      {/* Pending offer — shown prominently above everything */}
+      {pendingOffer && (
+        <div className="mb-6">
+          <OfferCard
+            offerId={pendingOffer.id}
+            spotIdentifier={pendingOffer.spot_identifier}
+            spotType={pendingOffer.spot_type}
+            expiresAt={pendingOffer.expires_at}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {/* Queue card */}

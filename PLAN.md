@@ -10,6 +10,7 @@
 - [x] Queue join/leave + position display
 - [x] Spot management + upcoming availability
 - [x] Spot preferences (queue member interest + admin interest count)
+- [x] Offer flow (trigger, accept/decline, auto-cascade, cron expiry)
 
 ---
 
@@ -94,19 +95,21 @@ CREATE TABLE spot_preferences (
 
 ---
 
-## Prio 5 — Offer Flow
+## Prio 5 — Offer Flow ✅
 
 **Goal:** When a spot becomes free, an offer is automatically sent to the right person
 in queue (respecting preferences from Prio 4). They have a deadline to accept.
 If declined or expired → next in queue.
 
 **Tasks:**
-- [ ] Trigger: spot marked free → find next eligible person → create `spot_offer`
-- [ ] Resident: view active offer (with deadline countdown)
-- [ ] Resident: accept offer → creates `spot_assignment`, removes from queue
-- [ ] Resident: decline offer → offer marked declined → triggers next in queue
-- [ ] Cron job / background task: expire offers past deadline → trigger next
-- [ ] Admin: manually trigger offer (override)
+- [x] Core logic: `src/lib/offers.ts` — findNextEligible (prefers spot preferences, falls back to FIFO), createOfferForSpot, acceptOffer, declineOffer, expireStaleOffers
+- [x] Configurable deadline: `offer_deadline_hours` column on associations (default 48h) — migration 007
+- [x] Admin: trigger offer from spots table (`POST /api/admin/offers`) — send button on free spots
+- [x] Resident: view active offer with live countdown (`OfferCard` on dashboard)
+- [x] Resident: accept offer → creates `spot_assignment`, removes from queue, cleans up preferences
+- [x] Resident: decline offer → with confirmation → offer cascades to next in queue
+- [x] Cron job: `GET /api/cron/expire-offers` — Vercel Cron every 5 min, expires stale offers + auto-cascades
+- [x] Audit log: `offer.created`, `offer.accepted`, `offer.declined`, `offer.expired` events
 
 ---
 

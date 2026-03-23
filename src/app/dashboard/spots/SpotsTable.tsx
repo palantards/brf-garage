@@ -70,6 +70,28 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [addIdentifier, setAddIdentifier] = useState("");
   const [addType, setAddType] = useState<"car" | "mc">("car");
+  const [offeringSent, setOfferingSent] = useState<string | null>(null);
+
+  async function sendOffer(spotId: string) {
+    setLoading(spotId);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/offers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ spotId }),
+      });
+      const data = await res.json() as { error?: string };
+      if (!res.ok) throw new Error(data.error ?? "Något gick fel");
+      setOfferingSent(spotId);
+      setTimeout(() => setOfferingSent(null), 3000);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Något gick fel");
+    } finally {
+      setLoading(null);
+    }
+  }
 
   async function patch(spotId: string, body: Record<string, unknown>) {
     setLoading(spotId);
@@ -349,6 +371,22 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                     </div>
                   ) : (
                     <div className="flex items-center justify-end gap-1">
+                      {/* Send offer for free spots */}
+                      {spot.status === "free" && (
+                        offeringSent === spot.id ? (
+                          <span className="text-xs font-semibold text-emerald-600 mr-1">Erbjudande skickat!</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="p-2 rounded-lg text-[#0053db] hover:bg-[#dbe1ff] transition-all"
+                            onClick={() => sendOffer(spot.id)}
+                            disabled={busy}
+                            title="Skicka erbjudande till nästa i kön"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">send</span>
+                          </button>
+                        )
+                      )}
                       {/* Set / clear notice for occupied/upcoming */}
                       {(spot.status === "occupied" || spot.status === "upcoming") && !isEditing && (
                         <button
