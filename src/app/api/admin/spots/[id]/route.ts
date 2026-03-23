@@ -65,8 +65,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       );
     }
 
+    const available = body.available ?? true;
     await sql`
-      UPDATE spots SET available = ${body.available} WHERE id = ${spotId}
+      UPDATE spots SET available = ${available} WHERE id = ${spotId}
     `;
     await sql`
       INSERT INTO audit_log (association_id, actor_id, event_type, payload)
@@ -74,7 +75,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         ${assocId},
         ${actorId},
         'spot.availability_changed',
-        ${sql.json({ spot_id: spotId, available: body.available })}
+        ${sql.json({ spot_id: spotId, available })}
       )
     `;
   }
