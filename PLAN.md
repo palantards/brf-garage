@@ -105,11 +105,15 @@ If declined or expired → next in queue.
 - [x] Core logic: `src/lib/offers.ts` — findNextEligible (prefers spot preferences, falls back to FIFO), createOfferForSpot, acceptOffer, declineOffer, expireStaleOffers
 - [x] Configurable deadline: `offer_deadline_hours` column on associations (default 48h) — migration 007
 - [x] Admin: trigger offer from spots table (`POST /api/admin/offers`) — send button on free spots
+- [x] Auto-trigger: offer sent immediately when admin sets `ending_at` (notice date) on an assignment
+- [x] Resident: self-service resign (`POST /api/spots/resign`) — sets 3-month notice, auto-triggers offer
+- [x] Resident: dashboard shows `SpotCard` (with resign button) when they have an assignment, `QueueCard` when they don't
 - [x] Resident: view active offer with live countdown (`OfferCard` on dashboard)
-- [x] Resident: accept offer → creates `spot_assignment`, removes from queue, cleans up preferences
+- [x] Resident: accept offer → creates `spot_assignment` (or defers if spot still occupied), removes from queue, cleans up preferences
 - [x] Resident: decline offer → with confirmation → offer cascades to next in queue
-- [x] Cron job: `GET /api/cron/expire-offers` — Vercel Cron every 5 min, expires stale offers + auto-cascades
-- [x] Audit log: `offer.created`, `offer.accepted`, `offer.declined`, `offer.expired` events
+- [x] Email notification sent immediately when offer is created (via Resend)
+- [x] Cron job: `GET /api/cron/expire-offers` — daily at 06:00 UTC, expires stale offers + ends assignments past notice date + creates handover assignments
+- [x] Audit log: `spot.resigned`, `offer.created`, `offer.accepted`, `offer.declined`, `offer.expired`, `spot.assignment_ended`, `spot.assigned`
 
 ---
 
@@ -118,7 +122,7 @@ If declined or expired → next in queue.
 **Goal:** Residents get emails for key events.
 
 **Tasks:**
-- [ ] Email: spot offer (with accept/decline links)
+- [x] Email: spot offer notification (sent immediately via Resend with deadline + dashboard link)
 - [ ] Email: offer reminder (24h before deadline)
 - [ ] Email: offer expired notification
 - [ ] Email: queue join confirmation
