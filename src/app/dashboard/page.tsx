@@ -162,8 +162,8 @@ export default async function DashboardPage() {
                   <span className="material-symbols-outlined">format_list_numbered</span>
                 </div>
               </div>
-              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" asChild>
-                <Link href="/dashboard/queue">Hantera kölista</Link>
+              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" render={<Link href="/dashboard/queue" />}>
+                Hantera kölista
               </Button>
             </CardContent>
             {/* Watermark */}
@@ -198,8 +198,8 @@ export default async function DashboardPage() {
               </div>
               <div className="flex justify-between mt-2">
                 <span className="text-[11px] text-[#586064]">{occupancyPct}% beläggning</span>
-                <Button variant="link" className="px-0 text-[11px] text-[#0053db] font-bold h-auto" asChild>
-                  <Link href="/dashboard/spots">Hantera platser</Link>
+                <Button variant="link" className="px-0 text-[11px] text-[#0053db] font-bold h-auto" render={<Link href="/dashboard/spots" />}>
+                  Hantera platser
                 </Button>
               </div>
             </CardContent>
@@ -221,8 +221,8 @@ export default async function DashboardPage() {
                   <span className="material-symbols-outlined">group</span>
                 </div>
               </div>
-              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" asChild>
-                <Link href="/dashboard/residents">Hantera boende</Link>
+              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" render={<Link href="/dashboard/residents" />}>
+                Hantera boende
               </Button>
             </CardContent>
           </Card>
@@ -339,12 +339,10 @@ export default async function DashboardPage() {
             </p>
             <Button
               className="bg-[#0053db] hover:bg-[#0048c1] text-white font-semibold rounded-lg gap-2"
-              asChild
+              render={<Link href="/dashboard/map" />}
             >
-              <Link href="/dashboard/map">
-                <span className="material-symbols-outlined text-[18px]">map</span>
-                Visa garageplan
-              </Link>
+              <span className="material-symbols-outlined text-[18px]">map</span>
+              Visa garageplan
             </Button>
           </CardContent>
         </Card>

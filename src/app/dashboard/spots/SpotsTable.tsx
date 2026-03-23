@@ -149,7 +149,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
           identifier,
           map_type: addType,
           available: true,
-          status: "free",
+          status: "free" as const,
           resident_name: null,
           assignment_id: null,
           ending_at: null,
