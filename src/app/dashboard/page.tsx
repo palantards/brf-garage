@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import QueueCard from "./QueueCard";
 import OfferCard from "./OfferCard";
+import SpotCard from "./SpotCard";
 
 const eventMeta: Record<string, { label: string; icon: string }> = {
   "queue.join":              { label: "Ny köanmälan",         icon: "login" },
@@ -19,7 +20,9 @@ const eventMeta: Record<string, { label: string; icon: string }> = {
   "invite.accepted":         { label: "Inbjudan accepterad",  icon: "person_add" },
   "resident.invited":        { label: "Boende inbjuden",      icon: "mail" },
   "resident.deactivated":    { label: "Boende avaktiverad",   icon: "person_off" },
+  "spot.resigned":           { label: "Plats uppsagd",        icon: "exit_to_app" },
   "spot.assignment_ended":   { label: "Tilldelning avslutad", icon: "person_remove" },
+  "spot.assigned":           { label: "Plats tilldelad",      icon: "how_to_reg" },
   "offer.created":           { label: "Erbjudande skickat",   icon: "send" },
   "offer.accepted":          { label: "Erbjudande accepterat",icon: "check_circle" },
   "offer.declined":          { label: "Erbjudande avböjt",    icon: "cancel" },
@@ -61,9 +64,16 @@ export default async function DashboardPage() {
       `.then((rows) => rows[0]?.position ?? null)
     : null;
 
-  const [assignment] = await sql<{ id: string }[]>`
-    SELECT id FROM spot_assignments
-    WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND ended_at IS NULL
+  const [assignment] = await sql<{
+    id: string;
+    spot_identifier: string;
+    spot_type: string;
+    ending_at: string | null;
+  }[]>`
+    SELECT sa.id, s.identifier AS spot_identifier, s.map_type AS spot_type, sa.ending_at
+    FROM spot_assignments sa
+    JOIN spots s ON s.id = sa.spot_id
+    WHERE sa.user_id = ${user.id} AND sa.association_id = ${user.associationId} AND sa.ended_at IS NULL
   `;
 
   const upcomingSpots = await sql<{
@@ -342,23 +352,43 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        {/* Queue card */}
-        <Card className="rounded-xl border-none shadow-none bg-white">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
-              Min köplats
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <QueueCard
-              position={queuePosition}
-              joinedAt={queueEntry?.joined_at ?? null}
-              hasAssignment={!!assignment}
-              upcomingSpots={upcomingSpots}
-              userPreferences={userPreferences}
-            />
-          </CardContent>
-        </Card>
+        {/* Spot card — shown if user has an active assignment */}
+        {assignment && (
+          <Card className="rounded-xl border-none shadow-none bg-white">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Min plats
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <SpotCard
+                spotIdentifier={assignment.spot_identifier}
+                spotType={assignment.spot_type}
+                endingAt={assignment.ending_at}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Queue card — shown if user has no assignment */}
+        {!assignment && (
+          <Card className="rounded-xl border-none shadow-none bg-white">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+                Min köplats
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <QueueCard
+                position={queuePosition}
+                joinedAt={queueEntry?.joined_at ?? null}
+                hasAssignment={false}
+                upcomingSpots={upcomingSpots}
+                userPreferences={userPreferences}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Map card */}
         <Card className="rounded-xl border-none shadow-none bg-white">
