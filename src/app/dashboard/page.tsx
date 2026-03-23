@@ -19,6 +19,7 @@ const eventMeta: Record<string, { label: string; icon: string }> = {
   "invite.accepted":         { label: "Inbjudan accepterad",  icon: "person_add" },
   "resident.invited":        { label: "Boende inbjuden",      icon: "mail" },
   "resident.deactivated":    { label: "Boende avaktiverad",   icon: "person_off" },
+  "spot.assignment_ended":   { label: "Tilldelning avslutad", icon: "person_remove" },
   "offer.created":           { label: "Erbjudande skickat",   icon: "send" },
   "offer.accepted":          { label: "Erbjudande accepterat",icon: "check_circle" },
   "offer.declined":          { label: "Erbjudande avböjt",    icon: "cancel" },

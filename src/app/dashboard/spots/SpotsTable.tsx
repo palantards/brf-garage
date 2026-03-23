@@ -111,13 +111,13 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
         if (s.id !== spotId) return s;
         if ("ending_at" in body) {
           const endingAt = (body.ending_at as string | null) ?? null;
-          return { ...s, ending_at: endingAt, status: endingAt ? "upcoming" : "occupied" };
+          return { ...s, ending_at: endingAt, status: endingAt ? "upcoming" as const : "occupied" as const };
         }
         if ("available" in body) {
           return {
             ...s,
             available: body.available as boolean,
-            status: (body.available as boolean) ? "free" : "unavailable",
+            status: (body.available as boolean) ? "free" as const : "unavailable" as const,
           };
         }
         return s;

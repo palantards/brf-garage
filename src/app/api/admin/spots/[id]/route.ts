@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
+import { createOfferForSpot } from "@/lib/offers";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -47,6 +48,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         ${sql.json({ spot_id: spotId, ending_at: endingAt })}
       )
     `;
+
+    // When a notice date is set, immediately trigger an offer to next in queue
+    // so they have the full notice period to respond
+    if (endingAt) {
+      await createOfferForSpot(spotId, assocId, actorId);
+    }
   }
 
   // ── Toggle availability ──────────────────────────────────────────────────────

@@ -146,11 +146,20 @@ export async function acceptOffer(
     WHERE id = ${offerId}
   `;
 
-  // 2. Create spot assignment
-  await sql`
-    INSERT INTO spot_assignments (association_id, spot_id, user_id)
-    VALUES (${offer.association_id}, ${offer.spot_id}, ${userId})
+  // 2. Create spot assignment only if spot is actually free right now.
+  //    If there's still an active assignment (spot is "upcoming" — current tenant
+  //    gave notice but hasn't left yet), the daily cron will handle the handover
+  //    when ending_at passes.
+  const [activeAssignment] = await sql<{ id: string }[]>`
+    SELECT id FROM spot_assignments
+    WHERE spot_id = ${offer.spot_id} AND ended_at IS NULL
   `;
+  if (!activeAssignment) {
+    await sql`
+      INSERT INTO spot_assignments (association_id, spot_id, user_id)
+      VALUES (${offer.association_id}, ${offer.spot_id}, ${userId})
+    `;
+  }
 
   // 3. Remove from queue
   await sql`
@@ -248,4 +257,67 @@ export async function expireStaleOffers(): Promise<number> {
   }
 
   return stale.length;
+}
+
+/**
+ * Handle assignment handovers for spots where the notice period has passed.
+ *
+ * When ending_at <= now():
+ * 1. End the old assignment (set ended_at = now())
+ * 2. If there's an accepted offer for this spot, create the new assignment
+ *
+ * Called by the daily cron job.
+ */
+export async function processExpiredAssignments(): Promise<number> {
+  const expired = await sql<{ id: string; spot_id: string; association_id: string; user_id: string }[]>`
+    UPDATE spot_assignments
+    SET ended_at = now(), ending_at = NULL
+    WHERE ended_at IS NULL
+      AND ending_at IS NOT NULL
+      AND ending_at <= now()
+    RETURNING id, spot_id, association_id, user_id
+  `;
+
+  for (const assignment of expired) {
+    await sql`
+      INSERT INTO audit_log (association_id, actor_id, event_type, payload)
+      VALUES (
+        ${assignment.association_id},
+        NULL,
+        'spot.assignment_ended',
+        ${sql.json({ spot_id: assignment.spot_id, user_id: assignment.user_id, reason: 'notice_period_expired' })}
+      )
+    `;
+
+    // Check if someone already accepted an offer for this spot
+    const [accepted] = await sql<{ id: string; user_id: string }[]>`
+      SELECT id, user_id FROM spot_offers
+      WHERE spot_id = ${assignment.spot_id}
+        AND status = 'accepted'
+      ORDER BY responded_at DESC
+      LIMIT 1
+    `;
+
+    if (accepted) {
+      // Create the new assignment for the person who accepted
+      await sql`
+        INSERT INTO spot_assignments (association_id, spot_id, user_id)
+        VALUES (${assignment.association_id}, ${assignment.spot_id}, ${accepted.user_id})
+      `;
+      await sql`
+        INSERT INTO audit_log (association_id, actor_id, event_type, payload)
+        VALUES (
+          ${assignment.association_id},
+          NULL,
+          'spot.assigned',
+          ${sql.json({ spot_id: assignment.spot_id, user_id: accepted.user_id, offer_id: accepted.id })}
+        )
+      `;
+    } else {
+      // No one accepted yet — trigger a new offer if there's still someone in queue
+      await createOfferForSpot(assignment.spot_id, assignment.association_id, null);
+    }
+  }
+
+  return expired.length;
 }

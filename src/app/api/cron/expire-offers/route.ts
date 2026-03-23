@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { expireStaleOffers } from "@/lib/offers";
+import { expireStaleOffers, processExpiredAssignments } from "@/lib/offers";
 
 /**
- * GET /api/cron/expire-offers — Vercel Cron job to expire stale offers.
- * Protected by CRON_SECRET header.
+ * GET /api/cron/expire-offers — Daily Vercel Cron job.
+ *
+ * 1. Expire stale offers (past deadline) and cascade to next in queue.
+ * 2. End assignments where the notice period (ending_at) has passed,
+ *    and create new assignments for accepted offers (seamless handover).
  */
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
@@ -11,7 +14,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const expired = await expireStaleOffers();
+  const [expiredOffers, endedAssignments] = await Promise.all([
+    expireStaleOffers(),
+    processExpiredAssignments(),
+  ]);
 
-  return NextResponse.json({ expired });
+  return NextResponse.json({ expiredOffers, endedAssignments });
 }
