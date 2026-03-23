@@ -1,4 +1,5 @@
 import sql from "@/db/client";
+import { sendOfferEmail } from "@/lib/email";
 
 /**
  * Find the next eligible person in queue for a given spot.
@@ -61,13 +62,21 @@ export async function createOfferForSpot(
   const eligible = await findNextEligible(spotId, assocId);
   if (!eligible) return null;
 
-  // Get the association's offer deadline
-  const [assoc] = await sql<{ offer_deadline_hours: number }[]>`
-    SELECT offer_deadline_hours FROM associations WHERE id = ${assocId}
+  // Get association details + offer deadline
+  const [assoc] = await sql<{ name: string; offer_deadline_hours: number }[]>`
+    SELECT name, offer_deadline_hours FROM associations WHERE id = ${assocId}
   `;
   const deadlineHours = assoc?.offer_deadline_hours ?? 48;
 
-  const [offer] = await sql<{ id: string }[]>`
+  // Get spot identifier and user email for the notification
+  const [spot] = await sql<{ identifier: string }[]>`
+    SELECT identifier FROM spots WHERE id = ${spotId}
+  `;
+  const [user] = await sql<{ email: string }[]>`
+    SELECT email FROM users WHERE id = ${eligible.userId}
+  `;
+
+  const [offer] = await sql<{ id: string; expires_at: string }[]>`
     INSERT INTO spot_offers (association_id, spot_id, user_id, queue_entry_id, expires_at)
     VALUES (
       ${assocId},
@@ -76,7 +85,7 @@ export async function createOfferForSpot(
       ${eligible.queueEntryId},
       now() + make_interval(hours => ${deadlineHours})
     )
-    RETURNING id
+    RETURNING id, expires_at
   `;
 
   await sql`
@@ -88,6 +97,16 @@ export async function createOfferForSpot(
       ${sql.json({ offer_id: offer.id, spot_id: spotId, user_id: eligible.userId, deadline_hours: deadlineHours })}
     )
   `;
+
+  // Send email notification (non-blocking — don't fail the offer if email fails)
+  sendOfferEmail({
+    to: user.email,
+    associationName: assoc?.name ?? "din förening",
+    spotIdentifier: spot.identifier,
+    expiresAt: new Date(offer.expires_at),
+  }).catch((err) => {
+    console.error("Failed to send offer email:", err);
+  });
 
   return { offerId: offer.id, userId: eligible.userId };
 }
