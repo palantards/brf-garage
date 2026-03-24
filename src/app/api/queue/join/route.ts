@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import sql from "@/db/client";
+import { sendQueueJoinEmail } from "@/lib/email";
 
 export async function POST() {
   const session = await auth();
@@ -32,6 +33,13 @@ export async function POST() {
     INSERT INTO audit_log (association_id, actor_id, event_type, payload)
     VALUES (${associationId}, ${userId}, 'queue.join', ${sql.json({ queue_entry_id: entry.id })})
   `;
+
+  const [user] = await sql<{ email: string }[]>`SELECT email FROM users WHERE id = ${userId}`;
+  const [assoc] = await sql<{ name: string }[]>`SELECT name FROM associations WHERE id = ${associationId}`;
+  sendQueueJoinEmail({
+    to: user.email,
+    associationName: assoc?.name ?? "din förening",
+  }).catch((err) => console.error("Failed to send queue join email:", err));
 
   return NextResponse.json({ ok: true });
 }

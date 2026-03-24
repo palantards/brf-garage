@@ -123,10 +123,10 @@ If declined or expired → next in queue.
 
 **Tasks:**
 - [x] Email: spot offer notification (sent immediately via Resend with deadline + dashboard link)
-- [ ] Email: offer reminder (24h before deadline)
-- [ ] Email: offer expired notification
-- [ ] Email: queue join confirmation
-- [ ] Email: assignment confirmation
+- [x] Email: offer reminder (24h before deadline)
+- [x] Email: offer expired notification
+- [x] Email: queue join confirmation
+- [x] Email: assignment confirmation
 
 ---
 

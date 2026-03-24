@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { expireStaleOffers, processExpiredAssignments } from "@/lib/offers";
+import { expireStaleOffers, processExpiredAssignments, sendPendingReminders } from "@/lib/offers";
 
 /**
  * GET /api/cron/expire-offers — Daily Vercel Cron job.
@@ -14,10 +14,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [expiredOffers, endedAssignments] = await Promise.all([
+  const [expiredOffers, endedAssignments, remindedOffers] = await Promise.all([
     expireStaleOffers(),
     processExpiredAssignments(),
+    sendPendingReminders(),
   ]);
 
-  return NextResponse.json({ expiredOffers, endedAssignments });
+  return NextResponse.json({ expiredOffers, endedAssignments, remindedOffers });
 }

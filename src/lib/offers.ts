@@ -1,5 +1,5 @@
 import sql from "@/db/client";
-import { sendOfferEmail } from "@/lib/email";
+import { sendAssignmentConfirmationEmail, sendOfferEmail, sendOfferExpiredEmail, sendOfferReminderEmail } from "@/lib/email";
 
 /**
  * Find the next eligible person in queue for a given spot.
@@ -159,6 +159,16 @@ export async function acceptOffer(
       INSERT INTO spot_assignments (association_id, spot_id, user_id)
       VALUES (${offer.association_id}, ${offer.spot_id}, ${userId})
     `;
+
+    // Notify resident of their new assignment
+    const [assignUser] = await sql<{ email: string }[]>`SELECT email FROM users WHERE id = ${userId}`;
+    const [assignSpot] = await sql<{ identifier: string }[]>`SELECT identifier FROM spots WHERE id = ${offer.spot_id}`;
+    const [assignAssoc] = await sql<{ name: string }[]>`SELECT name FROM associations WHERE id = ${offer.association_id}`;
+    sendAssignmentConfirmationEmail({
+      to: assignUser.email,
+      associationName: assignAssoc?.name ?? "din förening",
+      spotIdentifier: assignSpot.identifier,
+    }).catch((err) => console.error("Failed to send assignment confirmation email:", err));
   }
 
   // 3. Remove from queue
@@ -252,6 +262,24 @@ export async function expireStaleOffers(): Promise<number> {
       )
     `;
 
+    // Notify the resident their offer lapsed
+    const [user] = await sql<{ email: string }[]>`
+      SELECT email FROM users WHERE id = ${offer.user_id}
+    `;
+    const [spot] = await sql<{ identifier: string }[]>`
+      SELECT identifier FROM spots WHERE id = ${offer.spot_id}
+    `;
+    const [assoc] = await sql<{ name: string }[]>`
+      SELECT name FROM associations WHERE id = ${offer.association_id}
+    `;
+    sendOfferExpiredEmail({
+      to: user.email,
+      associationName: assoc?.name ?? "din förening",
+      spotIdentifier: spot.identifier,
+    }).catch((err) => {
+      console.error("Failed to send offer expired email:", err);
+    });
+
     // Cascade to next person
     await createOfferForSpot(offer.spot_id, offer.association_id, null);
   }
@@ -313,6 +341,15 @@ export async function processExpiredAssignments(): Promise<number> {
           ${sql.json({ spot_id: assignment.spot_id, user_id: accepted.user_id, offer_id: accepted.id })}
         )
       `;
+
+      const [handoverUser] = await sql<{ email: string }[]>`SELECT email FROM users WHERE id = ${accepted.user_id}`;
+      const [handoverSpot] = await sql<{ identifier: string }[]>`SELECT identifier FROM spots WHERE id = ${assignment.spot_id}`;
+      const [handoverAssoc] = await sql<{ name: string }[]>`SELECT name FROM associations WHERE id = ${assignment.association_id}`;
+      sendAssignmentConfirmationEmail({
+        to: handoverUser.email,
+        associationName: handoverAssoc?.name ?? "din förening",
+        spotIdentifier: handoverSpot.identifier,
+      }).catch((err) => console.error("Failed to send assignment confirmation email:", err));
     } else {
       // No one accepted yet — trigger a new offer if there's still someone in queue
       await createOfferForSpot(assignment.spot_id, assignment.association_id, null);
@@ -320,4 +357,49 @@ export async function processExpiredAssignments(): Promise<number> {
   }
 
   return expired.length;
+}
+
+/**
+ * Send reminder emails for pending offers expiring within the next 24 hours.
+ * Marks each offer with reminder_sent_at to prevent duplicate sends.
+ * Called by the daily cron job.
+ */
+export async function sendPendingReminders(): Promise<number> {
+  const due = await sql<{
+    id: string;
+    user_id: string;
+    spot_id: string;
+    association_id: string;
+    expires_at: string;
+  }[]>`
+    UPDATE spot_offers
+    SET reminder_sent_at = now()
+    WHERE status = 'pending'
+      AND reminder_sent_at IS NULL
+      AND expires_at BETWEEN now() AND now() + interval '24 hours'
+    RETURNING id, user_id, spot_id, association_id, expires_at
+  `;
+
+  for (const offer of due) {
+    const [user] = await sql<{ email: string }[]>`
+      SELECT email FROM users WHERE id = ${offer.user_id}
+    `;
+    const [spot] = await sql<{ identifier: string }[]>`
+      SELECT identifier FROM spots WHERE id = ${offer.spot_id}
+    `;
+    const [assoc] = await sql<{ name: string }[]>`
+      SELECT name FROM associations WHERE id = ${offer.association_id}
+    `;
+
+    sendOfferReminderEmail({
+      to: user.email,
+      associationName: assoc?.name ?? "din förening",
+      spotIdentifier: spot.identifier,
+      expiresAt: new Date(offer.expires_at),
+    }).catch((err) => {
+      console.error("Failed to send offer reminder email:", err);
+    });
+  }
+
+  return due.length;
 }
