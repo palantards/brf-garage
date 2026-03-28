@@ -7,30 +7,37 @@ import AuditLogClient from "./AuditLogClient";
 const PAGE_SIZE = 20;
 
 const EVENT_META: Record<string, { label: string; icon: string }> = {
-  "queue.join":              { label: "Ny köanmälan",          icon: "login" },
-  "queue.leave":             { label: "Lämnade kön",           icon: "logout" },
-  "queue.preference.add":    { label: "Intresse markerat",     icon: "bookmark" },
-  "queue.preference.remove": { label: "Intresse borttaget",    icon: "bookmark_remove" },
-  "spot.created":            { label: "Ny plats skapad",       icon: "directions_car" },
-  "spot.updated":            { label: "Plats uppdaterad",      icon: "edit" },
-  "spot.deleted":            { label: "Plats borttagen",       icon: "delete" },
-  "invite.accepted":         { label: "Inbjudan accepterad",   icon: "person_add" },
-  "resident.invited":        { label: "Boende inbjuden",       icon: "mail" },
-  "resident.deactivated":    { label: "Boende avaktiverad",    icon: "person_off" },
-  "spot.resigned":           { label: "Plats uppsagd",         icon: "exit_to_app" },
-  "spot.assignment_ended":   { label: "Tilldelning avslutad",  icon: "person_remove" },
-  "spot.assigned":           { label: "Plats tilldelad",       icon: "how_to_reg" },
-  "offer.created":           { label: "Erbjudande skickat",    icon: "send" },
-  "offer.accepted":          { label: "Erbjudande accepterat", icon: "check_circle" },
-  "offer.declined":          { label: "Erbjudande avböjt",     icon: "cancel" },
-  "offer.expired":           { label: "Erbjudande utgånget",   icon: "timer_off" },
+  // Queue
+  "queue.join":                 { label: "Gick med i kön",              icon: "login" },
+  "queue.leave":                { label: "Lämnade kön",                 icon: "logout" },
+  "queue.admin_remove":         { label: "Borttagen från kö av admin",  icon: "remove_circle" },
+  "preference.added":           { label: "Intresse markerat",           icon: "bookmark" },
+  "preference.removed":         { label: "Intresse borttaget",          icon: "bookmark_remove" },
+  // Offers
+  "offer.created":              { label: "Erbjudande skickat",          icon: "send" },
+  "offer.accepted":             { label: "Erbjudande accepterat",       icon: "check_circle" },
+  "offer.declined":             { label: "Erbjudande avböjt",           icon: "cancel" },
+  "offer.expired":              { label: "Erbjudande utgånget",         icon: "timer_off" },
+  // Spots
+  "spot.created":               { label: "Ny plats skapad",             icon: "directions_car" },
+  "spot.deleted":               { label: "Plats borttagen",             icon: "delete" },
+  "spot.resigned":              { label: "Plats uppsagd av boende",     icon: "exit_to_app" },
+  "spot.assigned":              { label: "Plats tilldelad",             icon: "how_to_reg" },
+  "spot.assignment_ended":      { label: "Tilldelning avslutad",        icon: "person_remove" },
+  "spot.ending_at_set":         { label: "Uppsägningsdatum satt",       icon: "event" },
+  "spot.availability_changed":  { label: "Tillgänglighet ändrad",       icon: "toggle_on" },
+  // Users / residents
+  "user.invited":               { label: "Boende inbjuden",             icon: "mail" },
+  "user.activated":             { label: "Konto aktiverat",             icon: "person_add" },
+  "user.invite_withdrawn":      { label: "Inbjudan återkallad",         icon: "mail_off" },
+  "user.removed":               { label: "Boende borttagen",            icon: "person_off" },
 };
 
 const FILTER_EVENT_TYPES: Record<string, string[]> = {
-  queue:     ["queue.join", "queue.leave", "queue.preference.add", "queue.preference.remove"],
-  offers:    ["offer.created", "offer.accepted", "offer.declined", "offer.expired"],
-  spots:     ["spot.created", "spot.updated", "spot.deleted", "spot.resigned", "spot.assignment_ended", "spot.assigned"],
-  residents: ["resident.invited", "resident.deactivated", "invite.accepted"],
+  queue:  ["queue.join", "queue.leave", "queue.admin_remove", "preference.added", "preference.removed"],
+  offers: ["offer.created", "offer.accepted", "offer.declined", "offer.expired"],
+  spots:  ["spot.created", "spot.deleted", "spot.resigned", "spot.assigned", "spot.assignment_ended", "spot.ending_at_set", "spot.availability_changed"],
+  users:  ["user.invited", "user.activated", "user.invite_withdrawn", "user.removed"],
 };
 
 function formatDate(dateStr: string) {
@@ -54,7 +61,8 @@ export default async function AuditLogPage({
   if (session.user.role !== "admin") redirect("/dashboard");
 
   const params = await searchParams;
-  const filter = (params.filter && params.filter in FILTER_EVENT_TYPES) ? params.filter : "all";
+  const validFilters = ["all", ...Object.keys(FILTER_EVENT_TYPES)];
+  const filter = (params.filter && validFilters.includes(params.filter)) ? params.filter : "all";
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
   const offset = (page - 1) * PAGE_SIZE;
   const assocId = session.user.associationId;
@@ -111,7 +119,7 @@ export default async function AuditLogPage({
       {/* Filters + table + pagination */}
       <Suspense>
         <AuditLogClient
-          filter={filter as "all" | "queue" | "offers" | "spots" | "residents"}
+          filter={filter as "all" | "queue" | "offers" | "spots" | "users"}
           page={page}
           totalPages={totalPages}
         >

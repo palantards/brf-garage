@@ -1,6 +1,7 @@
 # BRF Garage — MVP Plan
 
 ## Done ✅
+
 - [x] Project setup (Next.js, Neon, Resend, Auth.js, shadcn)
 - [x] Invite-based auth (invite token → set password → login)
 - [x] Admin: invite residents, residents table with status
@@ -19,12 +20,14 @@
 **Status:** Complete.
 
 **Flow:**
+
 1. Admin uploads floor plan image via drag-and-drop modal → stored as private Vercel Blob → `map_status = pending`
 2. Ops notified by email → runs `npx tsx scripts/process-map.ts <assocId>` locally → downloads image, runs `detect_spots.py` (EasyOCR), upserts spots → `map_status = review`
 3. Admin opens editor → drag/resize spots, label them → clicks "Publicera karta" → `map_status = published`
 4. Map visible to all users with color-coded spots (free/occupied/offered)
 
 **Key files:**
+
 - `scripts/process-map.ts` — end-to-end pipeline (download + OCR + import)
 - `scripts/detect_spots.py` — EasyOCR-based spot detection
 - `src/app/dashboard/map/` — map page, upload modal, delete button, GarageMap component
@@ -39,6 +42,7 @@
 **Goal:** Residents can join/leave the queue and see their current position.
 
 **Tasks:**
+
 - [x] Resident: join queue (insert into `queue_entries`)
 - [x] Resident: leave queue (set `left_at`) — requires inline confirmation
 - [x] Resident: see queue position (ROW_NUMBER window function)
@@ -53,6 +57,7 @@
 (3-month notice period / uppsägningstid), making it visible as "upcoming" to queue members.
 
 **Tasks:**
+
 - [x] Admin: list all spots with current status
 - [x] Admin: add spot (identifier, description)
 - [x] Admin: toggle spot availability (e.g. spot under renovation)
@@ -75,6 +80,7 @@ normal FIFO if nobody expressed a preference.
 for a specific one rather than taking whatever comes first. This formalises that flow.
 
 **Data model:**
+
 ```sql
 CREATE TABLE spot_preferences (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -87,6 +93,7 @@ CREATE TABLE spot_preferences (
 ```
 
 **Tasks:**
+
 - [x] DB migration: create `spot_preferences` table (`006_spot_preferences.sql`)
 - [x] Resident: view upcoming spots + toggle preference (want / don't want) — QueueCard upcoming table with optimistic toggle
 - [x] API: POST/DELETE `/api/queue/preferences` — idempotent via `ON CONFLICT DO NOTHING`, scoped DELETE
@@ -102,6 +109,7 @@ in queue (respecting preferences from Prio 4). They have a deadline to accept.
 If declined or expired → next in queue.
 
 **Tasks:**
+
 - [x] Core logic: `src/lib/offers.ts` — findNextEligible (prefers spot preferences, falls back to FIFO), createOfferForSpot, acceptOffer, declineOffer, expireStaleOffers
 - [x] Configurable deadline: `offer_deadline_hours` column on associations (default 48h) — migration 007
 - [x] Admin: trigger offer from spots table (`POST /api/admin/offers`) — send button on free spots
@@ -122,6 +130,7 @@ If declined or expired → next in queue.
 **Goal:** Residents get emails for key events.
 
 **Tasks:**
+
 - [x] Email: spot offer notification (sent immediately via Resend with deadline + dashboard link)
 - [x] Email: offer reminder (24h before deadline)
 - [x] Email: offer expired notification
@@ -135,6 +144,7 @@ If declined or expired → next in queue.
 **Goal:** Admin can see a full history of queue events for transparency.
 
 **Tasks:**
+
 - [x] Admin: audit log page (paginated table)
 - [x] Filter by event type
 - [x] Wire up "Händelselogg" card on dashboard
@@ -144,15 +154,17 @@ If declined or expired → next in queue.
 ## Prio 8 — Security Hardening
 
 **Tasks:**
-- [ ] Add Content-Security-Policy headers in `next.config.ts` before go-live
-- [ ] Review all API routes for missing auth checks
-- [ ] Ensure rate limiting on auth endpoints (login, invite)
+
+- [x] Add Content-Security-Policy headers in `next.config.ts` before go-live
+- [x] Review all API routes for missing auth checks
+- [x] Ensure rate limiting on auth endpoints (login, invite)
 
 ---
 
 ## Prio 9 — Production Deploy
 
 **Tasks:**
+
 - [ ] Set up Vercel project, connect repo
 - [ ] Configure production env vars
 - [ ] Verify Resend domain for production email
@@ -161,21 +173,8 @@ If declined or expired → next in queue.
 
 ---
 
-## Prio 10 — Landing Page
-
-**Goal:** A polished public-facing `/` page that clearly communicates what BRF Garage is,
-who it's for, and how to get started — replacing the current placeholder.
-
-**Tasks:**
-- [ ] Hero section: headline, subheadline, CTA button ("Logga in" / "Kom igång")
-- [ ] Feature highlights: queue management, garage map, offer flow, audit log
-- [ ] How it works: 3-step flow (admin sets up → residents join queue → offers sent automatically)
-- [ ] Pricing / target audience blurb (bostadsrättsföreningar)
-- [ ] Footer with contact / copyright
-
----
-
 ## Deferred (post-MVP)
+
 - BankID authentication
 - Self-service association onboarding
 - Fully automated garage map generation (host detect_spots.py on Modal or similar — currently ops-assisted)

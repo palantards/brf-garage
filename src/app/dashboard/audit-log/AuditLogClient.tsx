@@ -4,11 +4,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const FILTERS = [
-  { key: "all",       label: "Alla" },
-  { key: "queue",     label: "Kö" },
-  { key: "offers",    label: "Erbjudanden" },
-  { key: "spots",     label: "Platser" },
-  { key: "residents", label: "Boende" },
+  { key: "all",    label: "Alla" },
+  { key: "queue",  label: "Kö" },
+  { key: "offers", label: "Erbjudanden" },
+  { key: "spots",  label: "Platser" },
+  { key: "users",  label: "Boende" },
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]["key"];

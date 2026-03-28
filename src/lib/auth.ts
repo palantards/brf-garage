@@ -4,6 +4,33 @@ import bcrypt from "bcryptjs";
 import sql from "@/db/client";
 import { authConfig } from "./auth.config";
 
+// Simple per-email rate limiter.
+// Module-level Map persists across requests on the same Node.js instance.
+// NOTE: In a multi-instance/serverless environment this is per-warm-instance only.
+// For stricter enforcement at production scale, replace with Upstash Redis.
+const LOGIN_MAX_ATTEMPTS = 10;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function checkLoginRateLimit(email: string): boolean {
+  const now = Date.now();
+  const key = email.toLowerCase();
+  const entry = loginAttempts.get(key);
+
+  if (!entry || entry.resetAt < now) {
+    loginAttempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
+    return true;
+  }
+
+  entry.count++;
+  return entry.count <= LOGIN_MAX_ATTEMPTS;
+}
+
+function recordLoginSuccess(email: string) {
+  loginAttempts.delete(email.toLowerCase());
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
@@ -14,6 +41,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
+
+        if (!checkLoginRateLimit(credentials.email as string)) return null;
 
         const [user] = await sql<
           {
@@ -38,6 +67,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           user.password_hash
         );
         if (!valid) return null;
+
+        recordLoginSuccess(credentials.email as string);
 
         return {
           id: user.id,
