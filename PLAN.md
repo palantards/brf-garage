@@ -135,9 +135,9 @@ If declined or expired → next in queue.
 **Goal:** Admin can see a full history of queue events for transparency.
 
 **Tasks:**
-- [ ] Admin: audit log page (paginated table)
-- [ ] Filter by event type
-- [ ] Wire up "Händelselogg" card on dashboard
+- [x] Admin: audit log page (paginated table)
+- [x] Filter by event type
+- [x] Wire up "Händelselogg" card on dashboard
 
 ---
 

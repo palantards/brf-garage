@@ -286,10 +286,13 @@ export default async function DashboardPage() {
 
         {/* Activity log */}
         <Card className="rounded-xl border-none shadow-none bg-white">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="font-[var(--font-manrope)] text-xl font-bold text-[#2b3437]">
               Händelselogg
             </CardTitle>
+            <Button variant="link" className="px-0 text-[#0053db] font-semibold h-auto text-sm" render={<Link href="/dashboard/audit-log" />}>
+              Visa allt
+            </Button>
           </CardHeader>
           <CardContent>
             {recentEvents.length === 0 ? (

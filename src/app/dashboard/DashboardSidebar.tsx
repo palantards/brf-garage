@@ -16,6 +16,7 @@ const adminItems = [
   { href: "/dashboard/residents", icon: "group", label: "Boende" },
   { href: "/dashboard/spots", icon: "directions_car", label: "Platser" },
   { href: "/dashboard/map", icon: "map", label: "Garageplan" },
+  { href: "/dashboard/audit-log", icon: "history", label: "Händelselogg" },
 ];
 
 const residentItems = [
