@@ -83,16 +83,16 @@ export default async function QueuePage() {
       <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
         <div className="space-y-2">
           <h2
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--brf-on-surface)] leading-none"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Kö
           </h2>
           <div className="flex items-center gap-3">
-            <Badge className="bg-[#dbe1ff] text-[#0048bf] text-[11px] font-bold uppercase tracking-widest rounded hover:bg-[#dbe1ff] px-2.5 py-0.5">
+            <Badge className="bg-[var(--brf-primary-tint)] text-[var(--brf-primary-tint-text)] text-[11px] font-bold uppercase tracking-widest rounded hover:bg-[var(--brf-primary-tint)] px-2.5 py-0.5">
               Status: Aktiv
             </Badge>
-            <p className="text-sm text-[#586064] font-medium">
+            <p className="text-sm text-[var(--brf-on-surface-muted)] font-medium">
               {total} {total === 1 ? "medlem väntar" : "medlemmar väntar"} på plats
             </p>
           </div>
@@ -102,59 +102,59 @@ export default async function QueuePage() {
       {/* Bento stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {/* Total */}
-        <Card className="rounded-xl border-none shadow-sm bg-white border-l-4 border-[#0053db]" style={{ borderLeft: "4px solid #0053db" }}>
+        <Card className="rounded-xl border-none shadow-sm bg-[var(--brf-surface)] border-l-4 border-[var(--brf-primary)]" style={{ borderLeft: "4px solid var(--brf-primary)" }}>
           <CardContent className="p-5 sm:p-8">
-            <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)] mb-3">
               Totalt i kö
             </p>
             <p
-              className="text-3xl sm:text-5xl font-extrabold text-[#2b3437]"
+              className="text-3xl sm:text-5xl font-extrabold text-[var(--brf-on-surface)]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {total}
             </p>
-            <p className="text-xs text-[#586064] mt-2 font-medium">
+            <p className="text-xs text-[var(--brf-on-surface-muted)] mt-2 font-medium">
               {total === 0 ? "Kön är tom" : `Baserat på FIFO-ordning`}
             </p>
           </CardContent>
         </Card>
 
         {/* New this month */}
-        <Card className="rounded-xl border-none shadow-sm bg-white">
+        <Card className="rounded-xl border-none shadow-sm bg-[var(--brf-surface)]">
           <CardContent className="p-5 sm:p-8">
-            <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)] mb-3">
               Nya denna månad
             </p>
             <p
-              className="text-3xl sm:text-5xl font-extrabold text-[#0053db]"
+              className="text-3xl sm:text-5xl font-extrabold text-[var(--brf-primary)]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {newThisMonth}
             </p>
-            <p className="text-xs text-[#586064] mt-2 font-medium">
+            <p className="text-xs text-[var(--brf-on-surface-muted)] mt-2 font-medium">
               {now.toLocaleDateString("sv-SE", { month: "long", year: "numeric" })}
             </p>
           </CardContent>
         </Card>
 
         {/* Free spots */}
-        <Card className="rounded-xl border-none shadow-sm bg-white overflow-hidden relative">
+        <Card className="rounded-xl border-none shadow-sm bg-[var(--brf-surface)] overflow-hidden relative">
           <CardContent className="p-5 sm:p-8">
-            <p className="text-[10px] font-bold tracking-widest uppercase text-[#586064] mb-3">
+            <p className="text-[10px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)] mb-3">
               Lediga platser
             </p>
             <p
-              className="text-3xl sm:text-5xl font-extrabold text-[#2b3437]"
+              className="text-3xl sm:text-5xl font-extrabold text-[var(--brf-on-surface)]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {freeSpots}
             </p>
-            <p className="text-xs text-[#586064] mt-2 font-medium">
+            <p className="text-xs text-[var(--brf-on-surface-muted)] mt-2 font-medium">
               {freeSpots === 0 ? "Inga lediga just nu" : "Tillgängliga omgående"}
             </p>
             {/* Watermark */}
             <span
-              className="material-symbols-outlined absolute -right-3 -bottom-3 text-[#2b3437] select-none pointer-events-none opacity-[0.06]"
+              className="material-symbols-outlined absolute -right-3 -bottom-3 text-[var(--brf-on-surface)] select-none pointer-events-none opacity-[0.06]"
               style={{ fontSize: 96 }}
             >
               directions_car
@@ -164,24 +164,24 @@ export default async function QueuePage() {
       </div>
 
       {/* Queue table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-[var(--brf-surface)] rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+            <TableRow className="bg-[var(--brf-surface-low)] border-b border-[#abb3b7]/10 hover:bg-[var(--brf-surface-low)]">
+              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)]">
                 Position
               </TableHead>
-              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)]">
                 Namn
               </TableHead>
-              <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)]">
                 E-post
               </TableHead>
-              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)]">
                 Gick med
               </TableHead>
-              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[#586064]">
+              <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold tracking-widest uppercase text-[var(--brf-on-surface-muted)]">
                 Preferenser
               </TableHead>
               <TableHead className="px-4 sm:px-6 py-4" />
@@ -191,7 +191,7 @@ export default async function QueuePage() {
           <TableBody>
             {entries.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-[#586064] py-12 text-sm">
+                <TableCell colSpan={6} className="text-center text-[var(--brf-on-surface-muted)] py-12 text-sm">
                   Kön är tom.
                 </TableCell>
               </TableRow>
@@ -204,15 +204,15 @@ export default async function QueuePage() {
               return (
                 <TableRow
                   key={e.user_id}
-                  className="hover:bg-[#f8f9fa] transition-colors border-b border-[#abb3b7]/5 group"
+                  className="hover:bg-[var(--brf-surface-hover)] transition-colors border-b border-[#abb3b7]/5 group"
                 >
                   {/* Position circle */}
                   <TableCell className="px-4 sm:px-6 py-4 sm:py-5">
                     <span
                       className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                       style={{
-                        backgroundColor: isFirst ? "#dbe1ff" : "#eaeff1",
-                        color: isFirst ? "#0048bf" : "#2b3437",
+                        backgroundColor: isFirst ? "var(--brf-primary-tint)" : "var(--brf-surface-high)",
+                        color: isFirst ? "var(--brf-primary-tint-text)" : "var(--brf-on-surface)",
                         fontFamily: "var(--font-manrope), sans-serif",
                       }}
                     >
@@ -222,20 +222,20 @@ export default async function QueuePage() {
 
                   {/* Name */}
                   <TableCell className="px-4 sm:px-6 py-4 sm:py-5">
-                    <p className="font-bold text-[#2b3437]">
-                      {e.name ?? <span className="text-[#abb3b7] font-normal italic">Ej angivet</span>}
+                    <p className="font-bold text-[var(--brf-on-surface)]">
+                      {e.name ?? <span className="text-[var(--brf-muted)] font-normal italic">Ej angivet</span>}
                     </p>
                     {/* Show email inline on mobile */}
-                    <p className="sm:hidden text-xs text-[#586064] mt-0.5">{e.email}</p>
+                    <p className="sm:hidden text-xs text-[var(--brf-on-surface-muted)] mt-0.5">{e.email}</p>
                   </TableCell>
 
                   {/* Email — hidden on mobile */}
-                  <TableCell className="hidden sm:table-cell px-6 py-5 text-sm text-[#586064]">
+                  <TableCell className="hidden sm:table-cell px-6 py-5 text-sm text-[var(--brf-on-surface-muted)]">
                     {e.email}
                   </TableCell>
 
                   {/* Joined — hidden on mobile */}
-                  <TableCell className="hidden md:table-cell px-6 py-5 text-sm text-[#586064]">
+                  <TableCell className="hidden md:table-cell px-6 py-5 text-sm text-[var(--brf-on-surface-muted)]">
                     {new Date(e.joined_at).toLocaleDateString("sv-SE", {
                       day: "numeric",
                       month: "short",
@@ -245,7 +245,7 @@ export default async function QueuePage() {
 
                   {/* Preferences — hidden on mobile */}
                   <TableCell className="hidden md:table-cell px-6 py-5">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaeff1] text-[#586064] text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--brf-surface-high)] text-[var(--brf-on-surface-muted)] text-xs font-semibold">
                       <span className="material-symbols-outlined text-[14px]">
                         {prefCount > 0 ? "bookmark" : "bookmark_border"}
                       </span>
@@ -259,7 +259,7 @@ export default async function QueuePage() {
                       <input type="hidden" name="userId" value={e.user_id} />
                       <button
                         type="submit"
-                        className="p-2 rounded-full text-[#abb3b7] hover:text-[#9f403d] hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        className="p-2 rounded-full text-[var(--brf-muted)] hover:text-[#9f403d] hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                         title="Ta bort från kö"
                       >
                         <span className="material-symbols-outlined text-xl">delete</span>
@@ -276,9 +276,9 @@ export default async function QueuePage() {
 
         {/* Footer */}
         {entries.length > 0 && (
-          <div className="px-8 py-4 border-t border-[#abb3b7]/10 bg-[#f8f9fa]">
-            <p className="text-xs text-[#586064]">
-              Visar <span className="font-bold text-[#2b3437]">{entries.length}</span> {entries.length === 1 ? "person" : "personer"} i kön
+          <div className="px-8 py-4 border-t border-[#abb3b7]/10 bg-[var(--brf-surface-hover)]">
+            <p className="text-xs text-[var(--brf-on-surface-muted)]">
+              Visar <span className="font-bold text-[var(--brf-on-surface)]">{entries.length}</span> {entries.length === 1 ? "person" : "personer"} i kön
             </p>
           </div>
         )}

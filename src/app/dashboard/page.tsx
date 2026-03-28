@@ -166,14 +166,14 @@ export default async function DashboardPage() {
         {/* Welcome */}
         <header className="mb-8 sm:mb-14">
           <div className="flex flex-wrap items-baseline gap-3 sm:gap-4 mb-2">
-            <h1 className="font-[var(--font-manrope)] text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none">
+            <h1 className="font-[var(--font-manrope)] text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--brf-on-surface)] leading-none">
               Hej, {user.name ?? user.email}
             </h1>
-            <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
+            <Badge className="bg-[var(--brf-surface-high)] text-[var(--brf-on-surface-muted)] text-[11px] uppercase tracking-widest font-bold hover:bg-[var(--brf-surface-high)] rounded-full px-3">
               Administratör
             </Badge>
           </div>
-          <p className="text-[#586064] max-w-xl">
+          <p className="text-[var(--brf-on-surface-muted)] max-w-xl">
             Välkommen tillbaka. Här är en sammanfattning av fastighetens aktuella status.
           </p>
         </header>
@@ -182,28 +182,28 @@ export default async function DashboardPage() {
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
 
           {/* Kö */}
-          <Card className="rounded-xl border-none shadow-none bg-white relative overflow-hidden">
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)] relative overflow-hidden">
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Kö
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex justify-between items-start">
-                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[var(--brf-on-surface)]">
                   {queueCount} i kö
                 </p>
-                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                <div className="w-12 h-12 rounded-full bg-[var(--brf-surface-low)] flex items-center justify-center text-[var(--brf-primary)]">
                   <span className="material-symbols-outlined">format_list_numbered</span>
                 </div>
               </div>
-              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" render={<Link href="/dashboard/queue" />}>
+              <Button variant="link" className="px-0 mt-4 text-[var(--brf-primary)] font-semibold h-auto" render={<Link href="/dashboard/queue" />}>
                 Hantera kölista
               </Button>
             </CardContent>
             {/* Watermark */}
             <span
-              className="material-symbols-outlined absolute -bottom-4 -right-4 text-[#0053db] select-none pointer-events-none"
+              className="material-symbols-outlined absolute -bottom-4 -right-4 text-[var(--brf-primary)] select-none pointer-events-none"
               style={{ fontSize: 120, opacity: 0.04 }}
             >
               format_list_numbered
@@ -211,29 +211,29 @@ export default async function DashboardPage() {
           </Card>
 
           {/* Platser */}
-          <Card className="rounded-xl border-none shadow-none bg-white border-l-4 border-[#0053db]" style={{ borderLeft: "4px solid #0053db" }}>
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)] border-l-4 border-[var(--brf-primary)]" style={{ borderLeft: "4px solid var(--brf-primary)" }}>
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Platser
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex items-baseline gap-4 mb-6">
-                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[var(--brf-on-surface)]">
                   {total} totalt
                 </p>
-                <span className="text-sm text-[#586064]">
+                <span className="text-sm text-[var(--brf-on-surface-muted)]">
                   · {free} lediga{upcomingSpots.length > 0 && ` · ${upcomingSpots.length} kommande`}
                 </span>
               </div>
               {/* Occupancy bar */}
-              <div className="w-full h-2 bg-[#dbe4e7] rounded-full overflow-hidden flex">
-                <div className="h-full bg-[#0053db]" style={{ width: `${occupancyPct}%` }} />
-                <div className="h-full bg-[#dbe1ff]" style={{ width: `${upcomingPct}%` }} />
+              <div className="w-full h-2 bg-[var(--brf-surface-high)] rounded-full overflow-hidden flex">
+                <div className="h-full bg-[var(--brf-primary)]" style={{ width: `${occupancyPct}%` }} />
+                <div className="h-full bg-[var(--brf-primary-tint)]" style={{ width: `${upcomingPct}%` }} />
               </div>
               <div className="flex justify-between mt-2">
-                <span className="text-[11px] text-[#586064]">{occupancyPct}% beläggning</span>
-                <Button variant="link" className="px-0 text-[11px] text-[#0053db] font-bold h-auto" render={<Link href="/dashboard/spots" />}>
+                <span className="text-[11px] text-[var(--brf-on-surface-muted)]">{occupancyPct}% beläggning</span>
+                <Button variant="link" className="px-0 text-[11px] text-[var(--brf-primary)] font-bold h-auto" render={<Link href="/dashboard/spots" />}>
                   Hantera platser
                 </Button>
               </div>
@@ -241,45 +241,45 @@ export default async function DashboardPage() {
           </Card>
 
           {/* Boende */}
-          <Card className="rounded-xl border-none shadow-none bg-white">
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Boende
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex justify-between items-start">
-                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[var(--brf-on-surface)]">
                   {residentCount} aktiva
                 </p>
-                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                <div className="w-12 h-12 rounded-full bg-[var(--brf-surface-low)] flex items-center justify-center text-[var(--brf-primary)]">
                   <span className="material-symbols-outlined">group</span>
                 </div>
               </div>
-              <Button variant="link" className="px-0 mt-4 text-[#0053db] font-semibold h-auto" render={<Link href="/dashboard/residents" />}>
+              <Button variant="link" className="px-0 mt-4 text-[var(--brf-primary)] font-semibold h-auto" render={<Link href="/dashboard/residents" />}>
                 Hantera boende
               </Button>
             </CardContent>
           </Card>
 
           {/* Aktiva erbjudanden */}
-          <Card className="rounded-xl border-none shadow-none bg-white">
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Aktiva erbjudanden
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-[var(--font-manrope)] text-4xl font-bold text-[#2b3437]">
+                  <p className="font-[var(--font-manrope)] text-4xl font-bold text-[var(--brf-on-surface)]">
                     {offerCount} {offerCount === 1 ? "aktivt" : "aktiva"}
                   </p>
                   {offerCount === 0 && (
-                    <p className="text-sm text-[#586064] mt-2 italic">Inga väntande erbjudanden</p>
+                    <p className="text-sm text-[var(--brf-on-surface-muted)] mt-2 italic">Inga väntande erbjudanden</p>
                   )}
                 </div>
-                <div className="w-12 h-12 rounded-full bg-[#f1f4f6] flex items-center justify-center text-[#0053db]">
+                <div className="w-12 h-12 rounded-full bg-[var(--brf-surface-low)] flex items-center justify-center text-[var(--brf-primary)]">
                   <span className="material-symbols-outlined">local_offer</span>
                 </div>
               </div>
@@ -288,18 +288,18 @@ export default async function DashboardPage() {
         </section>
 
         {/* Activity log */}
-        <Card className="rounded-xl border-none shadow-none bg-white">
+        <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="font-[var(--font-manrope)] text-xl font-bold text-[#2b3437]">
+            <CardTitle className="font-[var(--font-manrope)] text-xl font-bold text-[var(--brf-on-surface)]">
               Händelselogg
             </CardTitle>
-            <Button variant="link" className="px-0 text-[#0053db] font-semibold h-auto text-sm" render={<Link href="/dashboard/audit-log" />}>
+            <Button variant="link" className="px-0 text-[var(--brf-primary)] font-semibold h-auto text-sm" render={<Link href="/dashboard/audit-log" />}>
               Visa allt
             </Button>
           </CardHeader>
           <CardContent>
             {recentEvents.length === 0 ? (
-              <p className="text-sm text-[#586064]">Inga händelser ännu.</p>
+              <p className="text-sm text-[var(--brf-on-surface-muted)]">Inga händelser ännu.</p>
             ) : (
               <div>
                 {recentEvents.map((event, i) => {
@@ -307,16 +307,16 @@ export default async function DashboardPage() {
                   return (
                     <div
                       key={event.id}
-                      className="flex items-center justify-between py-5 px-4 -mx-4 rounded-lg hover:bg-[#f8f9fa] transition-colors"
-                      style={{ borderBottom: i < recentEvents.length - 1 ? "1px solid rgba(171,179,183,0.12)" : "none" }}
+                      className="flex items-center justify-between py-5 px-4 -mx-4 rounded-lg hover:bg-[var(--brf-surface-hover)] transition-colors"
+                      style={{ borderBottom: i < recentEvents.length - 1 ? "1px solid var(--brf-divider)" : "none" }}
                     >
                       <div className="flex items-center gap-5">
-                        <div className="w-10 h-10 rounded-full bg-[#0053db]/10 flex items-center justify-center text-[#0053db] shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-[var(--brf-primary)]/10 flex items-center justify-center text-[var(--brf-primary)] shrink-0">
                           <span className="material-symbols-outlined text-[20px]">{meta.icon}</span>
                         </div>
-                        <span className="text-sm font-semibold text-[#2b3437]">{meta.label}</span>
+                        <span className="text-sm font-semibold text-[var(--brf-on-surface)]">{meta.label}</span>
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-[#586064] whitespace-nowrap">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] whitespace-nowrap">
                         {formatEventDate(event.created_at)}
                       </span>
                     </div>
@@ -335,14 +335,14 @@ export default async function DashboardPage() {
     <div className="p-4 sm:p-8 md:p-12">
       <header className="mb-6 sm:mb-10">
         <div className="flex flex-wrap items-baseline gap-3 mb-1">
-          <h1 className="font-[var(--font-manrope)] text-2xl sm:text-4xl font-extrabold tracking-tight text-[#2b3437] leading-tight">
+          <h1 className="font-[var(--font-manrope)] text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--brf-on-surface)] leading-tight">
             Hej, {user.name ?? user.email}
           </h1>
-          <Badge className="bg-[#e2e9ec] text-[#586064] text-[11px] uppercase tracking-widest font-bold hover:bg-[#e2e9ec] rounded-full px-3">
+          <Badge className="bg-[var(--brf-surface-high)] text-[var(--brf-on-surface-muted)] text-[11px] uppercase tracking-widest font-bold hover:bg-[var(--brf-surface-high)] rounded-full px-3">
             Boende
           </Badge>
         </div>
-        <p className="text-[#586064]">Välkommen tillbaka till garageportalen.</p>
+        <p className="text-[var(--brf-on-surface-muted)]">Välkommen tillbaka till garageportalen.</p>
       </header>
 
       {/* Pending offer — shown prominently above everything */}
@@ -360,9 +360,9 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {/* Spot card — shown if user has an active assignment */}
         {assignment && (
-          <Card className="rounded-xl border-none shadow-none bg-white">
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Min plats
               </CardTitle>
             </CardHeader>
@@ -378,9 +378,9 @@ export default async function DashboardPage() {
 
         {/* Queue card — shown if user has no assignment */}
         {!assignment && (
-          <Card className="rounded-xl border-none shadow-none bg-white">
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
             <CardHeader className="pb-0">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
                 Min köplats
               </CardTitle>
             </CardHeader>
@@ -397,18 +397,18 @@ export default async function DashboardPage() {
         )}
 
         {/* Map card */}
-        <Card className="rounded-xl border-none shadow-none bg-white">
+        <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
           <CardHeader className="pb-0">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#586064] font-[var(--font-inter)]">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
               Garageplan
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
-            <p className="text-sm text-[#586064] mb-5">
+            <p className="text-sm text-[var(--brf-on-surface-muted)] mb-5">
               Se vilka platser som är lediga, upptagna eller erbjudna.
             </p>
             <Button
-              className="bg-[#0053db] hover:bg-[#0048c1] text-white font-semibold rounded-lg gap-2"
+              className="bg-[var(--brf-primary)] hover:bg-[var(--brf-primary-dim)] text-white font-semibold rounded-lg gap-2"
               render={<Link href="/dashboard/map" />}
             >
               <span className="material-symbols-outlined text-[18px]">map</span>

@@ -5,6 +5,7 @@ import DashboardSidebar from "./DashboardSidebar";
 import SignOutButton from "./SignOutButton";
 import { DashboardHeaderProvider } from "./DashboardHeaderContext";
 import DashboardHeaderSlot from "./DashboardHeaderSlot";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default async function DashboardLayout({
   children,
@@ -22,18 +23,15 @@ export default async function DashboardLayout({
 
   return (
     <DashboardHeaderProvider>
-      <div className="min-h-screen bg-[#f8f9fa] font-[var(--font-inter)] text-[#2b3437]">
+      <div className="min-h-screen bg-[var(--brf-bg)] font-[var(--font-inter)] text-[var(--brf-on-surface)]">
         {/* Top nav */}
-        <header className="fixed top-0 left-0 w-full h-16 z-50 bg-[#f1f4f6] border-b border-black/5 flex items-center px-4 sm:px-8 box-border gap-4">
-          <span className="font-[var(--font-manrope)] font-bold text-lg sm:text-xl text-[#2b3437] tracking-tight shrink-0">
-            BRF Garage
-          </span>
-
+        <header className="fixed top-0 left-0 sm:left-64 right-0 h-16 z-40 bg-[var(--brf-surface-low)] border-b border-[var(--brf-border)] flex items-center px-4 sm:px-8 box-border gap-4">
           {/* Page-specific search + action */}
           <DashboardHeaderSlot />
 
-          <div className="flex items-center gap-2 sm:gap-4 pl-3 sm:pl-6 border-l border-[#abb3b7]/30 shrink-0">
-            <span className="hidden md:block text-sm font-medium text-[#2b3437]">
+          <div className="flex items-center gap-2 sm:gap-4 pl-3 sm:pl-6 border-l border-[var(--brf-muted)]/30 shrink-0">
+            <ThemeToggle />
+            <span className="hidden md:block text-sm font-medium text-[var(--brf-on-surface)]">
               {user.name ?? user.email}
             </span>
             <SignOutButton />

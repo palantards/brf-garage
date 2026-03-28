@@ -84,14 +84,14 @@ export default async function ResidentsPage() {
         {/* Page heading */}
         <div>
           <h2
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none mb-3"
+            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--brf-on-surface)] leading-none mb-3"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Boende
           </h2>
           <div className="flex items-center gap-3">
-            <span className="h-1 w-12 bg-[#0053db] rounded-full block" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[#586064]">
+            <span className="h-1 w-12 bg-[var(--brf-primary)] rounded-full block" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Hantering av föreningsmedlemmar
             </span>
           </div>
@@ -100,62 +100,62 @@ export default async function ResidentsPage() {
         {/* Active residents table */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#586064] font-medium">
-              Visar <span className="text-[#2b3437] font-bold">{active.length}</span> aktiva boende
+            <span className="text-sm text-[var(--brf-on-surface-muted)] font-medium">
+              Visar <span className="text-[var(--brf-on-surface)] font-bold">{active.length}</span> aktiva boende
             </span>
           </div>
 
-          <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-[var(--brf-surface)] rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Namn</TableHead>
-                  <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
-                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Roll</TableHead>
-                  <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
+                <TableRow className="bg-[var(--brf-surface-low)] border-b border-[var(--brf-muted)]/10 hover:bg-[var(--brf-surface-low)]">
+                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">Namn</TableHead>
+                  <TableHead className="hidden sm:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">E-post</TableHead>
+                  <TableHead className="px-4 sm:px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">Roll</TableHead>
+                  <TableHead className="hidden md:table-cell px-6 py-4 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">Status</TableHead>
                   <TableHead className="px-4 sm:px-6 py-4 text-right" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {active.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center text-[#586064] py-10 text-sm">
+                    <TableCell colSpan={5} className="text-center text-[var(--brf-on-surface-muted)] py-10 text-sm">
                       Inga aktiva boende ännu. Bjud in någon via knappen ovan.
                     </TableCell>
                   </TableRow>
                 )}
                 {active.map((r) => (
-                  <TableRow key={r.id} className="hover:bg-[#f1f4f6]/30 transition-colors border-b border-[#abb3b7]/5">
+                  <TableRow key={r.id} className="hover:bg-[var(--brf-surface-low)]/30 transition-colors border-b border-[#abb3b7]/5">
                     <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
                       <div className="flex items-center gap-3">
                         <div
                           className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
                           style={{
                             backgroundColor: avatarColor(r.email),
-                            color: "#2b3437",
+                            color: "var(--brf-on-surface)",
                             fontFamily: "var(--font-manrope), sans-serif",
                           }}
                         >
                           {initials(r)}
                         </div>
                         <div>
-                          <span className="font-semibold text-[#2b3437] block">
-                            {r.name ?? <span className="text-[#abb3b7] italic font-normal">Ej angivet</span>}
+                          <span className="font-semibold text-[var(--brf-on-surface)] block">
+                            {r.name ?? <span className="text-[var(--brf-muted)] italic font-normal">Ej angivet</span>}
                           </span>
                           {/* Email inline on mobile */}
-                          <span className="sm:hidden text-xs text-[#586064]">{r.email}</span>
+                          <span className="sm:hidden text-xs text-[var(--brf-on-surface-muted)]">{r.email}</span>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[#586064]">{r.email}</TableCell>
+                    <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[var(--brf-on-surface-muted)]">{r.email}</TableCell>
                     <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
                       {r.role === "admin" ? (
                         <span className="px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
                           Admin
                         </span>
                       ) : (
-                        <span className="px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#e2e9ec] text-[#586064]">
+                        <span className="px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[var(--brf-surface-high)] text-[var(--brf-on-surface-muted)]">
                           Boende
                         </span>
                       )}
@@ -172,7 +172,7 @@ export default async function ResidentsPage() {
                           <input type="hidden" name="userId" value={r.id} />
                           <button
                             type="submit"
-                            className="text-xs text-[#586064] hover:text-[#9f403d] transition-colors"
+                            className="text-xs text-[var(--brf-on-surface-muted)] hover:text-[#9f403d] transition-colors"
                           >
                             Ta bort
                           </button>
@@ -193,7 +193,7 @@ export default async function ResidentsPage() {
             <div className="col-span-1 lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
                 <h3
-                  className="text-2xl font-bold text-[#2b3437]"
+                  className="text-2xl font-bold text-[var(--brf-on-surface)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   Väntande inbjudningar
@@ -203,14 +203,14 @@ export default async function ResidentsPage() {
                 </Badge>
               </div>
 
-              <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-[var(--brf-surface)] rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-[#f1f4f6] border-b border-[#abb3b7]/10 hover:bg-[#f1f4f6]">
-                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">E-post</TableHead>
-                      <TableHead className="hidden sm:table-cell px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Datum skickad</TableHead>
-                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[#586064]">Status</TableHead>
+                    <TableRow className="bg-[var(--brf-surface-low)] border-b border-[var(--brf-muted)]/10 hover:bg-[var(--brf-surface-low)]">
+                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">E-post</TableHead>
+                      <TableHead className="hidden sm:table-cell px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">Datum skickad</TableHead>
+                      <TableHead className="px-4 sm:px-6 py-3 text-[11px] font-bold uppercase tracking-wider text-[var(--brf-on-surface-muted)]">Status</TableHead>
                       <TableHead className="px-4 sm:px-6 py-3 text-right" />
                     </TableRow>
                   </TableHeader>
@@ -218,11 +218,11 @@ export default async function ResidentsPage() {
                     {pending.map((r) => {
                       const status = getStatus(r, now);
                       return (
-                        <TableRow key={r.id} className="border-b border-[#abb3b7]/10">
-                          <TableCell className="px-4 sm:px-6 py-3 sm:py-4 text-sm font-medium text-[#2b3437]">
+                        <TableRow key={r.id} className="border-b border-[var(--brf-muted)]/10">
+                          <TableCell className="px-4 sm:px-6 py-3 sm:py-4 text-sm font-medium text-[var(--brf-on-surface)]">
                             {r.email}
                           </TableCell>
-                          <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[#586064]">
+                          <TableCell className="hidden sm:table-cell px-6 py-4 text-sm text-[var(--brf-on-surface-muted)]">
                             {new Date(r.invited_at).toLocaleDateString("sv-SE")}
                           </TableCell>
                           <TableCell className="px-4 sm:px-6 py-3 sm:py-4">
@@ -237,7 +237,7 @@ export default async function ResidentsPage() {
                               <input type="hidden" name="userId" value={r.id} />
                               <button
                                 type="submit"
-                                className="text-xs text-[#586064] hover:text-[#9f403d] transition-colors"
+                                className="text-xs text-[var(--brf-on-surface-muted)] hover:text-[#9f403d] transition-colors"
                               >
                                 Återkalla
                               </button>
@@ -253,33 +253,33 @@ export default async function ResidentsPage() {
             </div>
 
             {/* Stats sidebar */}
-            <div className="bg-[#f1f4f6] rounded-xl p-8 flex flex-col justify-between border border-[#abb3b7]/10 relative overflow-hidden">
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#0053db]/5 rounded-full blur-2xl" />
+            <div className="bg-[var(--brf-surface-low)] rounded-xl p-8 flex flex-col justify-between border border-[var(--brf-muted)]/10 relative overflow-hidden">
+              <div className="absolute -top-6 -right-6 w-32 h-32 bg-[var(--brf-primary)]/5 rounded-full blur-2xl" />
               <div>
                 <h4
-                  className="text-lg font-bold text-[#2b3437] mb-6"
+                  className="text-lg font-bold text-[var(--brf-on-surface)] mb-6"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   Statistik
                 </h4>
                 <div className="space-y-6">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-[#586064] mb-1">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] mb-1">
                       Totala boende
                     </p>
                     <p
-                      className="text-4xl font-extrabold text-[#0053db] tracking-tight"
+                      className="text-4xl font-extrabold text-[var(--brf-primary)] tracking-tight"
                       style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                     >
                       {residents.length}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-[#586064] mb-1">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] mb-1">
                       Väntande inbjudningar
                     </p>
                     <p
-                      className="text-4xl font-extrabold text-[#2b3437] tracking-tight"
+                      className="text-4xl font-extrabold text-[var(--brf-on-surface)] tracking-tight"
                       style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                     >
                       {pending.length}

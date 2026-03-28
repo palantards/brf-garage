@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const c = {
-  primary: "#0053db",
-  onSurface: "#2b3437",
-  onSurfaceVariant: "#586064",
-  surfaceContainerLow: "#f1f4f6",
-};
+import { useTheme } from "@/lib/ThemeProvider";
 
 const adminItems = [
   { href: "/dashboard", icon: "dashboard", label: "Översikt" },
@@ -26,7 +20,27 @@ const residentItems = [
 
 export default function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
+  const { theme } = useTheme();
+  const dark = theme === "dark";
   const items = isAdmin ? adminItems : residentItems;
+
+  const c = dark
+    ? {
+        bg: "#1e2d4a",
+        border: "rgba(255,255,255,0.08)",
+        primary: "#b0c6ff",
+        onSurface: "#e4e9eb",
+        onSurfaceMuted: "#8d909f",
+        activeBg: "rgba(255,255,255,0.08)",
+      }
+    : {
+        bg: "var(--brf-bg)",
+        border: "var(--brf-border)",
+        primary: "var(--brf-primary)",
+        onSurface: "var(--brf-on-surface)",
+        onSurfaceMuted: "var(--brf-on-surface-muted)",
+        activeBg: "var(--brf-surface-low)",
+      };
 
   function isActive(href: string) {
     return href === "/dashboard"
@@ -45,27 +59,29 @@ export default function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
           position: "fixed",
           left: 0,
           top: 0,
-          paddingTop: 64,
-          backgroundColor: "#f8f9fa",
-          borderRight: "1px solid rgba(43,52,55,0.08)",
+          backgroundColor: c.bg,
+          borderRight: `1px solid ${c.border}`,
           zIndex: 40,
           fontFamily: "var(--font-inter), sans-serif",
         }}
       >
-        <div style={{ padding: "28px 24px 20px" }}>
-          <div
+        <div style={{ padding: "0 24px", height: 64, display: "flex", alignItems: "center", borderBottom: `1px solid ${c.border}` }}>
+          <span
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
-              fontWeight: 700,
-              fontSize: 16,
+              fontWeight: 800,
+              fontSize: 18,
               color: c.onSurface,
-              marginBottom: 4,
+              letterSpacing: "-0.02em",
             }}
           >
+            BRF Garage
+          </span>
+        </div>
+
+        <div style={{ padding: "20px 24px 12px" }}>
+          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: c.onSurfaceMuted, margin: 0 }}>
             {isAdmin ? "Administration" : "Min portal"}
-          </div>
-          <p style={{ fontSize: 12, color: c.onSurfaceVariant, margin: 0 }}>
-            BRF Styrelseportal
           </p>
         </div>
 
@@ -81,8 +97,8 @@ export default function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
                 padding: "10px 14px",
                 borderRadius: 8,
                 textDecoration: "none",
-                color: isActive(item.href) ? c.primary : c.onSurfaceVariant,
-                backgroundColor: isActive(item.href) ? c.surfaceContainerLow : "transparent",
+                color: isActive(item.href) ? c.primary : c.onSurfaceMuted,
+                backgroundColor: isActive(item.href) ? c.activeBg : "transparent",
                 fontWeight: isActive(item.href) ? 700 : 500,
                 fontSize: 14,
                 transition: "background 150ms, color 150ms",
@@ -98,7 +114,10 @@ export default function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
       </aside>
 
       {/* ── Mobile bottom nav ── */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#abb3b7]/20 flex">
+      <nav
+        className="sm:hidden fixed bottom-0 left-0 right-0 z-50 flex"
+        style={{ backgroundColor: c.bg, borderTop: `1px solid ${c.border}` }}
+      >
         {items.map((item) => {
           const active = isActive(item.href);
           return (
@@ -106,7 +125,7 @@ export default function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
               key={item.href}
               href={item.href}
               className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5"
-              style={{ color: active ? c.primary : c.onSurfaceVariant }}
+              style={{ color: active ? c.primary : c.onSurfaceMuted }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
                 {item.icon}

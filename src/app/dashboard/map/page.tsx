@@ -102,17 +102,17 @@ export default async function MapPage() {
           <div className="flex flex-wrap gap-3 justify-between items-end">
             <div>
               <h1
-                className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#191c1e]"
+                className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--brf-on-surface)]"
                 style={{ fontFamily: "var(--font-manrope), sans-serif" }}
               >
                 Garageplan
               </h1>
-              <p className="text-[#434655] mt-2 text-sm sm:text-base">Visuell översikt av garageplanen.</p>
+              <p className="text-[var(--brf-on-surface-muted)] mt-2 text-sm sm:text-base">Visuell översikt av garageplanen.</p>
             </div>
             {isAdmin && (
               <Link
                 href="/dashboard/map/editor"
-                className="text-[#004ac6] font-semibold flex items-center gap-1 hover:underline"
+                className="text-[var(--brf-primary)] font-semibold flex items-center gap-1 hover:underline"
               >
                 Redigera karta
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -121,14 +121,14 @@ export default async function MapPage() {
           </div>
 
           {/* Legend row */}
-          <div className="flex flex-wrap gap-4 px-4 py-3 bg-[#f2f4f6] rounded-xl w-fit">
+          <div className="flex flex-wrap gap-4 px-4 py-3 bg-[var(--brf-surface-low)] rounded-xl w-fit">
             {LEGEND.map(({ status, color, label }) => (
               <div key={status} className="flex items-center gap-2">
                 <span
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-sm font-medium text-[#191c1e]">{label}</span>
+                <span className="text-sm font-medium text-[var(--brf-on-surface)]">{label}</span>
               </div>
             ))}
           </div>
@@ -143,10 +143,10 @@ export default async function MapPage() {
           {/* Stat cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             {statCards.map(({ label, value, colorClass }) => (
-              <div key={label} className="bg-white p-6 rounded-xl shadow-sm">
+              <div key={label} className="bg-[var(--brf-surface)] p-6 rounded-xl shadow-sm">
                 <p className={`${colorClass} font-bold text-sm uppercase`}>{label}</p>
                 <p
-                  className="text-4xl font-extrabold mt-1 text-[#191c1e]"
+                  className="text-4xl font-extrabold mt-1 text-[var(--brf-on-surface)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   {value}
@@ -162,7 +162,7 @@ export default async function MapPage() {
         <>
           <div>
             <h1
-              className="text-4xl font-extrabold tracking-tight text-[#191c1e]"
+              className="text-4xl font-extrabold tracking-tight text-[var(--brf-on-surface)]"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Garageplan
@@ -173,17 +173,17 @@ export default async function MapPage() {
 
             {/* STATE: Unconfigured */}
             {mapStatus === "unconfigured" && (
-              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center">
+              <div className="bg-[var(--brf-surface)] p-8 rounded-xl shadow-sm border border-[var(--brf-muted)]/20 flex flex-col items-center text-center">
                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-6">
                   <span className="material-symbols-outlined text-3xl text-slate-400">map</span>
                 </div>
                 <h4
-                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  className="font-extrabold text-xl mb-2 text-[var(--brf-on-surface)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   {isAdmin ? "Ingen garageplan uppladdad" : "Ingen garageplan konfigurerad"}
                 </h4>
-                <p className="text-[#434655] text-sm mb-8 px-4">
+                <p className="text-[var(--brf-on-surface-muted)] text-sm mb-8 px-4">
                   {isAdmin
                     ? "Ladda upp en planritning så konfigurerar vi kartan åt dig."
                     : "Administratören har ännu inte konfigurerat garagekartan."}
@@ -201,13 +201,13 @@ export default async function MapPage() {
                           <span
                             className="w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold flex-shrink-0"
                             style={{
-                              backgroundColor: active ? "#004ac6" : "#e2e8f0",
-                              color: active ? "#fff" : "#64748b",
+                              backgroundColor: active ? "var(--brf-primary)" : "var(--brf-surface-high)",
+                              color: active ? "#fff" : "var(--brf-on-surface-muted)",
                             }}
                           >
                             {n}
                           </span>
-                          <span className="text-xs font-medium text-[#191c1e]">{text}</span>
+                          <span className="text-xs font-medium text-[var(--brf-on-surface)]">{text}</span>
                         </div>
                       ))}
                     </div>
@@ -219,22 +219,22 @@ export default async function MapPage() {
 
             {/* STATE: Pending */}
             {mapStatus === "pending" && (
-              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center justify-center">
+              <div className="bg-[var(--brf-surface)] p-8 rounded-xl shadow-sm border border-[var(--brf-muted)]/20 flex flex-col items-center text-center justify-center">
                 <div className="relative mb-6">
                   <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-3xl text-[#004ac6]">
+                    <span className="material-symbols-outlined text-3xl text-[var(--brf-primary)]">
                       hourglass_empty
                     </span>
                   </div>
-                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[#004ac6] ring-2 ring-white animate-pulse" />
+                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[var(--brf-primary)] ring-2 ring-white animate-pulse" />
                 </div>
                 <h4
-                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  className="font-extrabold text-xl mb-2 text-[var(--brf-on-surface)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   Planritningen granskas
                 </h4>
-                <p className="text-[#434655] text-sm mb-8">
+                <p className="text-[var(--brf-on-surface-muted)] text-sm mb-8">
                   Vi har tagit emot din planritning och håller på att konfigurera kartan.
                   Du meddelas när den är klar.
                 </p>
@@ -243,22 +243,22 @@ export default async function MapPage() {
 
             {/* STATE: Review (admin) */}
             {mapStatus === "review" && isAdmin && (
-              <div className="bg-blue-50/50 p-8 rounded-xl shadow-sm border-2 border-[#004ac6]/20 flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-[#004ac6] rounded-full flex items-center justify-center mb-6">
+              <div className="bg-blue-50/50 p-8 rounded-xl shadow-sm border-2 border-[var(--brf-primary)]/20 flex flex-col items-center text-center">
+                <div className="w-16 h-16 bg-[var(--brf-primary)] rounded-full flex items-center justify-center mb-6">
                   <span className="material-symbols-outlined text-3xl text-white">check_circle</span>
                 </div>
                 <h4
-                  className="font-extrabold text-xl mb-2 text-[#004ac6]"
+                  className="font-extrabold text-xl mb-2 text-[var(--brf-primary)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   Kartan är klar att granska!
                 </h4>
-                <p className="text-[#434655] text-sm mb-8 px-4">
+                <p className="text-[var(--brf-on-surface-muted)] text-sm mb-8 px-4">
                   Platserna är inlagda. Öppna redigeraren för att justera positioner och sedan publicera.
                 </p>
                 <Link
                   href="/dashboard/map/editor"
-                  className="w-full bg-gradient-to-br from-[#004ac6] to-[#2563eb] text-white py-3 px-6 rounded-full font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95"
+                  className="w-full bg-gradient-to-br from-[var(--brf-primary)] to-[var(--brf-primary-dim)] text-white py-3 px-6 rounded-full font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all active:scale-95"
                 >
                   Öppna redigeraren
                   <span className="material-symbols-outlined">arrow_forward</span>
@@ -268,22 +268,22 @@ export default async function MapPage() {
 
             {/* STATE: Review (resident) */}
             {mapStatus === "review" && !isAdmin && (
-              <div className="bg-white p-8 rounded-xl shadow-sm border border-[#c3c6d7]/20 flex flex-col items-center text-center justify-center">
+              <div className="bg-[var(--brf-surface)] p-8 rounded-xl shadow-sm border border-[var(--brf-muted)]/20 flex flex-col items-center text-center justify-center">
                 <div className="relative mb-6">
                   <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-3xl text-[#004ac6]">
+                    <span className="material-symbols-outlined text-3xl text-[var(--brf-primary)]">
                       hourglass_empty
                     </span>
                   </div>
-                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[#004ac6] ring-2 ring-white animate-pulse" />
+                  <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-[var(--brf-primary)] ring-2 ring-white animate-pulse" />
                 </div>
                 <h4
-                  className="font-extrabold text-xl mb-2 text-[#191c1e]"
+                  className="font-extrabold text-xl mb-2 text-[var(--brf-on-surface)]"
                   style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   Kartan färdigställs
                 </h4>
-                <p className="text-[#434655] text-sm">
+                <p className="text-[var(--brf-on-surface-muted)] text-sm">
                   Vi håller på att slutföra konfigurationen. Du meddelas när kartan är klar.
                 </p>
               </div>

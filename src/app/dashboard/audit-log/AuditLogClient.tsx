@@ -46,9 +46,9 @@ export default function AuditLogClient({
               onClick={() => navigate(f.key, 1)}
               className="px-4 py-1.5 rounded-full text-sm font-semibold transition-colors"
               style={{
-                backgroundColor: active ? "#0053db" : "transparent",
-                color: active ? "#fff" : "#586064",
-                border: active ? "1.5px solid #0053db" : "1.5px solid #abb3b7",
+                backgroundColor: active ? "var(--brf-primary)" : "transparent",
+                color: active ? "#fff" : "var(--brf-on-surface-muted)",
+                border: active ? "1.5px solid var(--brf-primary)" : "1.5px solid var(--brf-muted)",
               }}
             >
               {f.label}
@@ -65,7 +65,7 @@ export default function AuditLogClient({
         <div className="flex items-center justify-between pt-2">
           <Button
             variant="outline"
-            className="rounded-lg border-[#abb3b7]/40 text-[#586064] font-semibold"
+            className="rounded-lg border-[var(--brf-muted)]/40 text-[var(--brf-on-surface-muted)] font-semibold"
             disabled={page <= 1}
             onClick={() => navigate(filter, page - 1)}
           >
@@ -77,7 +77,7 @@ export default function AuditLogClient({
           </span>
           <Button
             variant="outline"
-            className="rounded-lg border-[#abb3b7]/40 text-[#586064] font-semibold"
+            className="rounded-lg border-[var(--brf-muted)]/40 text-[var(--brf-on-surface-muted)] font-semibold"
             disabled={page >= totalPages}
             onClick={() => navigate(filter, page + 1)}
           >

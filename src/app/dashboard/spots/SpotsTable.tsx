@@ -35,7 +35,7 @@ const STATUS_STYLE: Record<SpotStatus, string> = {
   occupied:    "bg-green-100 text-green-700",
   upcoming:    "bg-amber-100 text-amber-700",
   offered:     "bg-yellow-100 text-yellow-700",
-  unavailable: "bg-[#eaeff1] text-[#586064]",
+  unavailable: "bg-[var(--brf-surface-high)] text-[var(--brf-on-surface-muted)]",
 };
 
 function formatEndingAt(endingAt: string) {
@@ -201,7 +201,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
   const isAvailabilityToggleable = (s: SpotRow) => s.status === "free" || s.status === "unavailable";
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden" style={{ boxShadow: "0 12px 32px rgba(43,52,55,0.06)" }}>
+    <div className="bg-[var(--brf-surface)] rounded-xl overflow-hidden" style={{ boxShadow: "0 12px 32px rgba(43,52,55,0.06)" }}>
       {error && (
         <div className="mx-6 mt-4 rounded-lg bg-red-50 border border-red-100 px-4 py-3 text-sm text-[#9f403d]">
           {error}
@@ -211,35 +211,35 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
       <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#f1f4f6] hover:bg-[#f1f4f6]">
-            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+          <TableRow className="bg-[var(--brf-surface-low)] hover:bg-[var(--brf-surface-low)]">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Plats
             </TableHead>
-            <TableHead className="hidden sm:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden sm:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Typ
             </TableHead>
-            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Status
             </TableHead>
-            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Tilldelad till
             </TableHead>
-            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-center">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] text-center">
               Tillgänglig
             </TableHead>
-            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+            <TableHead className="hidden md:table-cell px-8 py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
               Avtal upphör
             </TableHead>
-            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[#586064] text-right">
+            <TableHead className="px-4 sm:px-8 py-4 sm:py-5 text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] text-right">
               Åtgärder
             </TableHead>
           </TableRow>
         </TableHeader>
 
-        <TableBody className="divide-y divide-[#eaeff1]">
+        <TableBody className="divide-y divide-[var(--brf-surface-high)]">
           {spots.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="text-center text-[#586064] py-16 text-sm">
+              <TableCell colSpan={7} className="text-center text-[var(--brf-on-surface-muted)] py-16 text-sm">
                 Inga platser ännu. Klicka &ldquo;Lägg till plats&rdquo; för att komma igång.
               </TableCell>
             </TableRow>
@@ -254,12 +254,12 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
             return (
               <TableRow
                 key={spot.id}
-                className="hover:bg-[#f1f4f6] transition-colors group"
+                className="hover:bg-[var(--brf-surface-low)] transition-colors group"
               >
                 {/* Identifier */}
                 <TableCell className="px-4 sm:px-8 py-4 sm:py-6">
                   <span
-                    className="text-base sm:text-lg font-bold text-[#2b3437]"
+                    className="text-base sm:text-lg font-bold text-[var(--brf-on-surface)]"
                     style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                   >
                     {spot.identifier}
@@ -267,7 +267,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                   {spot.map_x === null && (
                     <a
                       href="/dashboard/map/editor"
-                      className="block text-[11px] text-[#abb3b7] hover:text-[#0053db] mt-0.5 transition-colors"
+                      className="block text-[11px] text-[var(--brf-muted)] hover:text-[var(--brf-primary)] mt-0.5 transition-colors"
                     >
                       Ej på karta →
                     </a>
@@ -276,8 +276,8 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
 
                 {/* Type — hidden on mobile */}
                 <TableCell className="hidden sm:table-cell px-8 py-6">
-                  <div className="flex items-center gap-2 text-[#586064]">
-                    <span className="material-symbols-outlined text-[#abb3b7] text-[18px]">
+                  <div className="flex items-center gap-2 text-[var(--brf-on-surface-muted)]">
+                    <span className="material-symbols-outlined text-[var(--brf-muted)] text-[18px]">
                       {spot.map_type === "mc" ? "two_wheeler" : "directions_car"}
                     </span>
                     <span className="text-sm font-medium">
@@ -296,11 +296,11 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 {/* Resident — hidden on mobile */}
                 <TableCell className="hidden md:table-cell px-8 py-6">
                   {spot.resident_name ? (
-                    <span className="text-sm font-semibold text-[#2b3437]">
+                    <span className="text-sm font-semibold text-[var(--brf-on-surface)]">
                       {spot.resident_name}
                     </span>
                   ) : (
-                    <span className="text-sm text-[#abb3b7]">—</span>
+                    <span className="text-sm text-[var(--brf-muted)]">—</span>
                   )}
                 </TableCell>
 
@@ -313,11 +313,11 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                     onClick={() => canToggle && !busy && patch(spot.id, { available: !spot.available })}
                     disabled={!canToggle || busy}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-                      spot.available ? "bg-[#0053db]" : "bg-[#abb3b7]"
+                      spot.available ? "bg-[var(--brf-primary)]" : "bg-[var(--brf-muted)]"
                     } ${!canToggle ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     <span
-                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-[var(--brf-surface)] shadow transition-transform ${
                         spot.available ? "translate-x-[18px]" : "translate-x-[3px]"
                       }`}
                     />
@@ -330,7 +330,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                     <div className="flex items-center gap-1.5">
                       <input
                         type="date"
-                        className="border border-[#abb3b7] rounded-lg px-2 py-1 text-sm text-[#2b3437] focus:outline-none focus:border-[#0053db]"
+                        className="border border-[var(--brf-muted)] rounded-lg px-2 py-1 text-sm text-[var(--brf-on-surface)] bg-[var(--brf-surface)] focus:outline-none focus:border-[var(--brf-primary)]"
                         value={noticeDate}
                         min={new Date().toISOString().slice(0, 10)}
                         onChange={e => setNoticeDate(e.target.value)}
@@ -347,7 +347,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                       {formatEndingAt(spot.ending_at)}
                     </span>
                   ) : (
-                    <span className="text-sm text-[#abb3b7]">—</span>
+                    <span className="text-sm text-[var(--brf-muted)]">—</span>
                   )}
                 </TableCell>
 
@@ -378,7 +378,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                         ) : (
                           <button
                             type="button"
-                            className="p-2 rounded-lg text-[#0053db] hover:bg-[#dbe1ff] transition-all"
+                            className="p-2 rounded-lg text-[var(--brf-primary)] hover:bg-[var(--brf-primary-tint)] transition-all"
                             onClick={() => sendOffer(spot.id)}
                             disabled={busy}
                             title="Skicka erbjudande till nästa i kön"
@@ -391,7 +391,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                       {(spot.status === "occupied" || spot.status === "upcoming") && !isEditing && (
                         <button
                           type="button"
-                          className="p-2 rounded-lg text-[#586064] hover:text-[#0053db] hover:bg-[#eaeff1] transition-all"
+                          className="p-2 rounded-lg text-[var(--brf-on-surface-muted)] hover:text-[var(--brf-primary)] hover:bg-[var(--brf-surface-high)] transition-all"
                           onClick={() => {
                             setEditingNotice(spot.id);
                             setNoticeDate(spot.ending_at ? isoToDateInput(spot.ending_at) : "");
@@ -406,7 +406,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                       {spot.ending_at && !isEditing && (
                         <button
                           type="button"
-                          className="p-2 rounded-lg text-[#abb3b7] hover:text-[#586064] hover:bg-[#eaeff1] transition-all"
+                          className="p-2 rounded-lg text-[var(--brf-muted)] hover:text-[var(--brf-on-surface-muted)] hover:bg-[var(--brf-surface-high)] transition-all"
                           onClick={() => patch(spot.id, { ending_at: null })}
                           disabled={busy}
                           title="Rensa datum"
@@ -418,7 +418,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                       {isDeletable(spot) && (
                         <button
                           type="button"
-                          className="p-2 rounded-lg text-[#abb3b7] hover:text-[#9f403d] hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                          className="p-2 rounded-lg text-[var(--brf-muted)] hover:text-[#9f403d] hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
                           onClick={() => setConfirmDelete(spot.id)}
                           disabled={busy}
                           title="Ta bort plats"
@@ -438,13 +438,13 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
 
       {/* Add spot form (shown when sub-header button is clicked) */}
       {showAdd && (
-        <div className="border-t border-[#eaeff1] bg-[#f8f9fa] px-8 py-6">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#586064] mb-4">
+        <div className="border-t border-[var(--brf-surface-high)] bg-[var(--brf-surface-hover)] px-8 py-6">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] mb-4">
             Ny plats
           </p>
           <form onSubmit={addSpot} className="flex flex-wrap items-end gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="add-identifier" className="text-[10px] font-bold uppercase tracking-widest text-[#586064]">
+              <Label htmlFor="add-identifier" className="text-[10px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
                 Identifierare
               </Label>
               <Input
@@ -452,17 +452,17 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 placeholder="t.ex. A12"
                 value={addIdentifier}
                 onChange={e => setAddIdentifier(e.target.value)}
-                className="w-36 border-2 border-[#abb3b7]/30 focus-visible:border-[#0053db] focus-visible:ring-0 rounded-xl"
+                className="w-36 border-2 border-[var(--brf-muted)]/30 focus-visible:border-[#0053db] focus-visible:ring-0 rounded-xl"
                 autoFocus
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="add-type" className="text-[10px] font-bold uppercase tracking-widest text-[#586064]">
+              <Label htmlFor="add-type" className="text-[10px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
                 Typ
               </Label>
               <Select value={addType} onValueChange={v => setAddType(v as "car" | "mc")}>
-                <SelectTrigger id="add-type" className="w-28 border-2 border-[#abb3b7]/30 focus:ring-0 rounded-xl">
+                <SelectTrigger id="add-type" className="w-28 border-2 border-[var(--brf-muted)]/30 focus:ring-0 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -476,7 +476,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
               type="submit"
               disabled={!addIdentifier.trim() || loading === "add"}
               className="px-6 py-2.5 rounded-full font-bold text-sm text-white disabled:opacity-50 transition-all"
-              style={{ background: "linear-gradient(135deg, #0053db 0%, #0048c1 100%)" }}
+              style={{ background: "linear-gradient(135deg, var(--brf-primary) 0%, var(--brf-primary-dim) 100%)" }}
             >
               {loading === "add" ? "Sparar…" : "Lägg till"}
             </button>
@@ -485,7 +485,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
               variant="ghost"
               onClick={() => { setAddIdentifier(""); setAddType("car"); onCloseAdd?.(); }}
               disabled={loading === "add"}
-              className="text-[#586064]"
+              className="text-[var(--brf-on-surface-muted)]"
             >
               Avbryt
             </Button>
@@ -495,9 +495,9 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
 
       {/* Footer: count */}
       {!showAdd && spots.length > 0 && (
-        <div className="px-8 py-4 bg-[#f1f4f6] border-t border-[#eaeff1]">
-          <p className="text-xs text-[#586064] font-medium">
-            Visar <span className="font-bold text-[#2b3437]">{spots.length}</span>{" "}
+        <div className="px-8 py-4 bg-[var(--brf-surface-low)] border-t border-[var(--brf-surface-high)]">
+          <p className="text-xs text-[var(--brf-on-surface-muted)] font-medium">
+            Visar <span className="font-bold text-[var(--brf-on-surface)]">{spots.length}</span>{" "}
             {spots.length === 1 ? "plats" : "platser"}
           </p>
         </div>

@@ -48,6 +48,22 @@
 }
 
 :root {
+  /* BRF design tokens — light */
+  --brf-bg: #f8f9fa;
+  --brf-surface: #ffffff;
+  --brf-surface-low: #f1f4f6;
+  --brf-surface-high: #e2e9ec;
+  --brf-surface-hover: #f1f4f6;
+  --brf-on-surface: #2b3437;
+  --brf-on-surface-muted: #586064;
+  --brf-primary: #0053db;
+  --brf-primary-dim: #0048c1;
+  --brf-primary-tint: #dbe1ff;
+  --brf-primary-tint-text: #0048bf;
+  --brf-muted: #abb3b7;
+  --brf-border: rgba(43,52,55,0.08);
+  --brf-divider: rgba(171,179,183,0.12);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -83,6 +99,22 @@
 }
 
 .dark {
+  /* BRF design tokens — dark (from Stitch) */
+  --brf-bg: #0e1416;
+  --brf-surface: #1a2123;
+  --brf-surface-low: #161d1f;
+  --brf-surface-high: #252b2d;
+  --brf-surface-hover: rgba(255,255,255,0.06);
+  --brf-on-surface: #dee3e6;
+  --brf-on-surface-muted: #8d909f;
+  --brf-primary: #b0c6ff;
+  --brf-primary-dim: #5b8fff;
+  --brf-primary-tint: #001945;
+  --brf-primary-tint-text: #b0c6ff;
+  --brf-muted: #424653;
+  --brf-border: rgba(255,255,255,0.06);
+  --brf-divider: rgba(255,255,255,0.05);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

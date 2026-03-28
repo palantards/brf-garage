@@ -106,12 +106,12 @@ export default async function AuditLogPage({
       {/* Header */}
       <header>
         <h2
-          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#2b3437] leading-none mb-2"
+          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--brf-on-surface)] leading-none mb-2"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Händelselogg
         </h2>
-        <p className="text-sm text-[#586064]">
+        <p className="text-sm text-[var(--brf-on-surface-muted)]">
           Fullständig historik över alla händelser i systemet.
         </p>
       </header>
@@ -123,13 +123,13 @@ export default async function AuditLogPage({
           page={page}
           totalPages={totalPages}
         >
-          <div className="bg-white rounded-xl overflow-hidden">
+          <div className="bg-[var(--brf-surface)] rounded-xl overflow-hidden">
             {events.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <span className="material-symbols-outlined text-[#abb3b7] mb-4" style={{ fontSize: 48 }}>
+                <span className="material-symbols-outlined text-[var(--brf-muted)] mb-4" style={{ fontSize: 48 }}>
                   history
                 </span>
-                <p className="text-[#586064] font-medium">Inga händelser att visa.</p>
+                <p className="text-[var(--brf-on-surface-muted)] font-medium">Inga händelser att visa.</p>
               </div>
             ) : (
               <>
@@ -139,30 +139,30 @@ export default async function AuditLogPage({
                   return (
                     <div
                       key={event.id}
-                      className="flex items-center justify-between py-4 px-5 hover:bg-[#f8f9fa] transition-colors"
+                      className="flex items-center justify-between py-4 px-5 hover:bg-[var(--brf-surface-hover)] transition-colors"
                       style={{
-                        borderBottom: i < events.length - 1 ? "1px solid rgba(171,179,183,0.12)" : "none",
+                        borderBottom: i < events.length - 1 ? "1px solid var(--brf-divider)" : "none",
                       }}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-9 h-9 rounded-full bg-[#0053db]/10 flex items-center justify-center text-[#0053db] shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-[var(--brf-primary-tint)] flex items-center justify-center text-[var(--brf-primary)] shrink-0">
                           <span className="material-symbols-outlined text-[18px]">{meta.icon}</span>
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#2b3437]">{meta.label}</p>
-                          <p className="text-xs text-[#586064]">{actor}</p>
+                          <p className="text-sm font-semibold text-[var(--brf-on-surface)]">{meta.label}</p>
+                          <p className="text-xs text-[var(--brf-on-surface-muted)]">{actor}</p>
                         </div>
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-[#586064] whitespace-nowrap ml-4">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)] whitespace-nowrap ml-4">
                         {formatDate(event.created_at)}
                       </span>
                     </div>
                   );
                 })}
-                <div className="px-5 py-3 border-t border-[#abb3b7]/10 bg-[#f8f9fa]">
-                  <p className="text-xs text-[#586064]">
-                    Visar <span className="font-bold text-[#2b3437]">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, countResult)}</span> av{" "}
-                    <span className="font-bold text-[#2b3437]">{countResult}</span> händelser
+                <div className="px-5 py-3 border-t border-[var(--brf-divider)] bg-[var(--brf-surface-hover)]">
+                  <p className="text-xs text-[var(--brf-on-surface-muted)]">
+                    Visar <span className="font-bold text-[var(--brf-on-surface)]">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, countResult)}</span> av{" "}
+                    <span className="font-bold text-[var(--brf-on-surface)]">{countResult}</span> händelser
                   </p>
                 </div>
               </>
