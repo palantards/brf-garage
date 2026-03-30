@@ -219,22 +219,154 @@ export default function LandingPage() {
                   backgroundColor: c.surfaceContainerLow,
                   borderRadius: 24,
                   padding: 16,
-                  boxShadow:
-                    "0 25px 50px -12px rgba(0,0,0,0.25)",
+                  boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
                 }}
               >
-                <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfekCCit6tKMqAXTyZgtjWh7sKk_jD7fBmcwyiQH-LrvyVEDyCsxCkxWsE9U7B_0HeQnBoZmGM5HI8uSVqNHURIjBAKCUvkj3bK0TbcFaEwBaAqRAvziQg5OJ-93l-HtXYlsGpN6ItE5rzsnBMIHFLmzUfKaMSjw6S895ZITT4OWbXYkNZfRTleVs3juJ7qljW3orpI2DVoct_S9ARoCobogzdb0XLce_0d-8EPKTDRpYl_DqtoakpjaVhArsM1QN7mH1GhSrf8l8"
-                  alt="Garage map dashboard"
+                {/* Illustrative garage dashboard mockup */}
+                <svg
+                  viewBox="0 0 480 360"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="Garage map dashboard"
                   style={{
                     borderRadius: 16,
                     width: "100%",
                     height: "auto",
-                    aspectRatio: "4/3",
-                    objectFit: "cover",
                     display: "block",
+                    backgroundColor: "#eef1f6",
                   }}
-                />
+                >
+                  {[60, 120, 180, 240, 300].map((y) => (
+                    <line
+                      key={y}
+                      x1="0"
+                      y1={y}
+                      x2="480"
+                      y2={y}
+                      stroke="#d5dbe5"
+                      strokeWidth="0.5"
+                    />
+                  ))}
+                  {[40, 120, 200, 280, 360].map((x, i) => (
+                    <g key={`r1-${x}`}>
+                      <rect
+                        x={x}
+                        y={60}
+                        width={72}
+                        height={50}
+                        rx={6}
+                        fill={
+                          i === 2 ? "#dbe1ff" : i === 4 ? "#bbf7d0" : "#ffffff"
+                        }
+                        stroke={i === 2 ? c.primary : "#c3c6d7"}
+                        strokeWidth={i === 2 ? 2 : 1}
+                      />
+                      <text
+                        x={x + 36}
+                        y={90}
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight="700"
+                        fill={i === 2 ? c.primary : "#434655"}
+                      >{`A${i + 1}`}</text>
+                    </g>
+                  ))}
+                  {[40, 120, 200, 280, 360].map((x, i) => (
+                    <g key={`r2-${x}`}>
+                      <rect
+                        x={x}
+                        y={140}
+                        width={72}
+                        height={50}
+                        rx={6}
+                        fill={i === 0 || i === 3 ? "#bbf7d0" : "#ffffff"}
+                        stroke="#c3c6d7"
+                        strokeWidth={1}
+                      />
+                      <text
+                        x={x + 36}
+                        y={170}
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight="700"
+                        fill="#434655"
+                      >{`B${i + 1}`}</text>
+                    </g>
+                  ))}
+                  <rect
+                    x={40}
+                    y={230}
+                    width={10}
+                    height={10}
+                    rx={2}
+                    fill="#bbf7d0"
+                  />
+                  <text x={56} y={239} fontSize="11" fill="#434655">
+                    Uthyrd
+                  </text>
+                  <rect
+                    x={120}
+                    y={230}
+                    width={10}
+                    height={10}
+                    rx={2}
+                    fill="#dbe1ff"
+                  />
+                  <text x={136} y={239} fontSize="11" fill="#434655">
+                    Erbjuden
+                  </text>
+                  <rect
+                    x={210}
+                    y={230}
+                    width={10}
+                    height={10}
+                    rx={2}
+                    fill="#ffffff"
+                    stroke="#c3c6d7"
+                    strokeWidth={1}
+                  />
+                  <text x={226} y={239} fontSize="11" fill="#434655">
+                    Ledig
+                  </text>
+                  <rect
+                    x={40}
+                    y={270}
+                    width={400}
+                    height={40}
+                    rx={8}
+                    fill="#ffffff"
+                    stroke="#c3c6d7"
+                    strokeWidth={1}
+                  />
+                  <text
+                    x={60}
+                    y={295}
+                    fontSize="12"
+                    fontWeight="600"
+                    fill="#434655"
+                  >
+                    Kö: 12 boende
+                  </text>
+                  <rect
+                    x={300}
+                    y={280}
+                    width={120}
+                    height={22}
+                    rx={6}
+                    fill={c.primary}
+                  />
+                  <text
+                    x={360}
+                    y={295}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="600"
+                    fill="#ffffff"
+                  >
+                    Skicka erbjudande
+                  </text>
+                </svg>
               </div>
               {/* Floating spot card */}
               <div
@@ -277,7 +409,9 @@ export default function LandingPage() {
                     </span>
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700 }}>Plats 42</div>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>
+                      Plats A5
+                    </div>
                     <div style={{ fontSize: 12, color: c.onSurfaceVariant }}>
                       Status: Ledig
                     </div>
@@ -478,9 +612,7 @@ export default function LandingPage() {
 
         {/* Target audience / CTA */}
         <section style={{ padding: "96px 24px", backgroundColor: c.surface }}>
-          <div
-            style={{ maxWidth: 768, margin: "0 auto", textAlign: "center" }}
-          >
+          <div style={{ maxWidth: 768, margin: "0 auto", textAlign: "center" }}>
             <div
               style={{
                 display: "inline-flex",
@@ -523,9 +655,9 @@ export default function LandingPage() {
                 marginBottom: 48,
               }}
             >
-              Oavsett om ni har 10 eller 500 platser så automatiserar BRF
-              Garage den tråkigaste biten av styrelsearbetet. Ni betalar en
-              fast månadsavgift baserat på föreningens storlek. Inga dolda
+              Oavsett om ni har 10 eller 500 platser så automatiserar BRF Garage
+              den tråkigaste biten av styrelsearbetet. Ni betalar en fast
+              månadsavgift baserat på föreningens storlek. Inga dolda
               startavgifter eller bindningstider.
             </p>
             <button
