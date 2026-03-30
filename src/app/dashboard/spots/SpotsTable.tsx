@@ -69,7 +69,7 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
   const [noticeDate, setNoticeDate] = useState<string>("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [addIdentifier, setAddIdentifier] = useState("");
-  const [addType, setAddType] = useState<"car" | "mc">("car");
+  const [addType, setAddType] = useState<"car" | "mc" | "electric">("car");
   const [offeringSent, setOfferingSent] = useState<string | null>(null);
 
   async function sendOffer(spotId: string) {
@@ -278,10 +278,10 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
                 <TableCell className="hidden sm:table-cell px-8 py-6">
                   <div className="flex items-center gap-2 text-[var(--brf-on-surface-muted)]">
                     <span className="material-symbols-outlined text-[var(--brf-muted)] text-[18px]">
-                      {spot.map_type === "mc" ? "two_wheeler" : "directions_car"}
+                      {spot.map_type === "mc" ? "two_wheeler" : spot.map_type === "electric" ? "ev_station" : "directions_car"}
                     </span>
                     <span className="text-sm font-medium">
-                      {spot.map_type === "mc" ? "MC" : "Normalstor"}
+                      {spot.map_type === "mc" ? "MC" : spot.map_type === "electric" ? "Elbil" : "Bil"}
                     </span>
                   </div>
                 </TableCell>
@@ -461,13 +461,14 @@ export default function SpotsTable({ initialSpots, showAdd = false, onCloseAdd }
               <Label htmlFor="add-type" className="text-[10px] font-bold uppercase tracking-widest text-[var(--brf-on-surface-muted)]">
                 Typ
               </Label>
-              <Select value={addType} onValueChange={v => setAddType(v as "car" | "mc")}>
+              <Select value={addType} onValueChange={v => setAddType(v as "car" | "mc" | "electric")}>
                 <SelectTrigger id="add-type" className="w-28 border-2 border-[var(--brf-muted)]/30 focus:ring-0 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="car">Bil</SelectItem>
                   <SelectItem value="mc">MC</SelectItem>
+                  <SelectItem value="electric">Elbil</SelectItem>
                 </SelectContent>
               </Select>
             </div>

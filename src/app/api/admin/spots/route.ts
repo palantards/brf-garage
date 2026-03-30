@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json() as { identifier?: string; type?: string };
   const identifier = body.identifier?.trim();
-  const type = body.type === "mc" ? "mc" : "car";
+  const type = body.type === "mc" ? "mc" : body.type === "electric" ? "electric" : "car";
 
   if (!identifier) {
     return NextResponse.json({ error: "identifier krävs" }, { status: 400 });

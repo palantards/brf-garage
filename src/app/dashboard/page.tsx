@@ -30,6 +30,7 @@ const eventMeta: Record<string, { label: string; icon: string }> = {
   "user.activated":            { label: "Konto aktiverat",            icon: "person_add" },
   "user.invite_withdrawn":     { label: "Inbjudan återkallad",        icon: "mail_off" },
   "user.removed":              { label: "Boende borttagen",           icon: "person_off" },
+  "settings.updated":          { label: "Inställning ändrad",         icon: "settings" },
 };
 
 function formatEventDate(dateStr: string): string {
@@ -54,6 +55,10 @@ export default async function DashboardPage() {
   const [queueEntry] = await sql<{ id: string; joined_at: string }[]>`
     SELECT id, joined_at FROM queue_entries
     WHERE user_id = ${user.id} AND association_id = ${user.associationId} AND left_at IS NULL
+  `;
+
+  const [userRecord] = await sql<{ vehicle_type: string }[]>`
+    SELECT vehicle_type FROM users WHERE id = ${user.id}
   `;
 
   const queuePosition = queueEntry
@@ -391,6 +396,7 @@ export default async function DashboardPage() {
                 hasAssignment={false}
                 upcomingSpots={upcomingSpots}
                 userPreferences={userPreferences}
+                vehicleType={(userRecord?.vehicle_type as "car" | "mc" | "electric_car") ?? "car"}
               />
             </CardContent>
           </Card>

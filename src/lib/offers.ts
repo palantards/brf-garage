@@ -4,7 +4,13 @@ import { sendAssignmentConfirmationEmail, sendOfferEmail, sendOfferExpiredEmail,
 /**
  * Find the next eligible person in queue for a given spot.
  *
- * Priority:
+ * Vehicle-type matching:
+ * - MC spot → only users with vehicle_type = 'mc'
+ * - Electric spot + ev_priority_only → try electric_car users first, fall back to any car user
+ * - Electric spot + !ev_priority_only → any car user (no EV priority)
+ * - Standard (car) spot → any car or electric_car user (not MC)
+ *
+ * Priority within eligible users:
  * 1. Users who have a spot_preference for this spot — ordered by queue position (FIFO)
  * 2. Fall back to pure FIFO if nobody expressed a preference
  *
@@ -14,13 +20,57 @@ export async function findNextEligible(
   spotId: string,
   assocId: string,
 ): Promise<{ userId: string; queueEntryId: string } | null> {
-  // First: try users with a preference for this spot, ordered by queue position
+  // Get spot type and association EV setting
+  const [spot] = await sql<{ map_type: string }[]>`
+    SELECT map_type FROM spots WHERE id = ${spotId}
+  `;
+  if (!spot) return null;
+
+  const [assoc] = await sql<{ ev_priority_only: boolean }[]>`
+    SELECT ev_priority_only FROM associations WHERE id = ${assocId}
+  `;
+
+  const spotType = spot.map_type; // 'car', 'mc', or 'electric'
+  const evPriority = assoc?.ev_priority_only ?? true;
+
+  // Build vehicle type filter based on spot type
+  // MC spots: only MC users. Standard/electric spots: only car/electric_car users.
+  let vehicleTypes: string[];
+  if (spotType === "mc") {
+    vehicleTypes = ["mc"];
+  } else {
+    // Both 'car' and 'electric' spots accept car and electric_car users
+    vehicleTypes = ["car", "electric_car"];
+  }
+
+  // For electric spots with EV priority, try EV users first
+  if (spotType === "electric" && evPriority) {
+    const evResult = await findWithVehicleFilter(spotId, assocId, ["electric_car"]);
+    if (evResult) return evResult;
+    // Fall through to all car users (including electric_car)
+  }
+
+  return findWithVehicleFilter(spotId, assocId, vehicleTypes);
+}
+
+/**
+ * Internal: find next eligible user filtered by allowed vehicle types.
+ * Checks spot_preferences first (FIFO among preferrers), then pure FIFO.
+ */
+async function findWithVehicleFilter(
+  spotId: string,
+  assocId: string,
+  vehicleTypes: string[],
+): Promise<{ userId: string; queueEntryId: string } | null> {
+  // Priority 1: users with a preference for this spot, matching vehicle type
   const [preferred] = await sql<{ user_id: string; queue_entry_id: string }[]>`
     SELECT qe.user_id, qe.id AS queue_entry_id
     FROM queue_entries qe
     JOIN spot_preferences sp ON sp.user_id = qe.user_id AND sp.spot_id = ${spotId}
+    JOIN users u ON u.id = qe.user_id
     WHERE qe.association_id = ${assocId}
       AND qe.left_at IS NULL
+      AND u.vehicle_type = ANY(${vehicleTypes})
       AND NOT EXISTS (
         SELECT 1 FROM spot_offers so
         WHERE so.user_id = qe.user_id AND so.status = 'pending'
@@ -33,12 +83,14 @@ export async function findNextEligible(
     return { userId: preferred.user_id, queueEntryId: preferred.queue_entry_id };
   }
 
-  // Fallback: pure FIFO
+  // Priority 2: pure FIFO with vehicle type filter
   const [next] = await sql<{ user_id: string; queue_entry_id: string }[]>`
     SELECT qe.user_id, qe.id AS queue_entry_id
     FROM queue_entries qe
+    JOIN users u ON u.id = qe.user_id
     WHERE qe.association_id = ${assocId}
       AND qe.left_at IS NULL
+      AND u.vehicle_type = ANY(${vehicleTypes})
       AND NOT EXISTS (
         SELECT 1 FROM spot_offers so
         WHERE so.user_id = qe.user_id AND so.status = 'pending'

@@ -11,12 +11,21 @@ type UpcomingSpot = {
   ending_at: string;
 };
 
+type VehicleType = "car" | "mc" | "electric_car";
+
 type Props = {
   position: number | null;    // null = not in queue
   joinedAt: string | null;    // ISO string
   hasAssignment: boolean;
   upcomingSpots: UpcomingSpot[];
   userPreferences: string[];  // spot IDs the user has expressed interest in
+  vehicleType: VehicleType;
+};
+
+const VEHICLE_LABELS: Record<VehicleType, string> = {
+  car: "Bil",
+  mc: "MC",
+  electric_car: "Elbil",
 };
 
 export default function QueueCard({
@@ -25,11 +34,13 @@ export default function QueueCard({
   hasAssignment,
   upcomingSpots,
   userPreferences,
+  vehicleType: initialVehicleType,
 }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>(initialVehicleType);
 
   // Preference state — optimistically updated on toggle
   const [preferences, setPreferences] = useState<Set<string>>(new Set(userPreferences));
@@ -39,7 +50,11 @@ export default function QueueCard({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/queue/join", { method: "POST" });
+      const res = await fetch("/api/queue/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vehicleType: selectedVehicle }),
+      });
       if (!res.ok) {
         const data = await res.json() as { error?: string };
         throw new Error(data.error ?? "Något gick fel");
@@ -120,12 +135,52 @@ export default function QueueCard({
     return <p className="text-sm text-gray-500">Du har redan en tilldelad plats.</p>;
   }
 
+  async function updateVehicle(vt: VehicleType) {
+    setSelectedVehicle(vt);
+    try {
+      const res = await fetch("/api/user/vehicle-type", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vehicleType: vt }),
+      });
+      if (!res.ok) {
+        setSelectedVehicle(initialVehicleType);
+        const data = await res.json() as { error?: string };
+        setError(data.error ?? "Något gick fel");
+      }
+    } catch {
+      setSelectedVehicle(initialVehicleType);
+      setError("Något gick fel");
+    }
+  }
+
   if (position !== null && joinedAt) {
     return (
       <div className="space-y-4">
         <div>
           <p className="text-2xl font-bold text-gray-900">#{position}</p>
           <p className="text-sm text-gray-500">i kön sedan {joinedDate}</p>
+        </div>
+
+        <div className="space-y-1">
+          <p className="text-xs font-medium text-gray-500">Fordonstyp</p>
+          <div className="flex gap-2">
+            {(["car", "mc", "electric_car"] as VehicleType[]).map(vt => (
+              <button
+                key={vt}
+                type="button"
+                onClick={() => updateVehicle(vt)}
+                className={[
+                  "px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors",
+                  selectedVehicle === vt
+                    ? "bg-[var(--brf-primary)] text-white border-[var(--brf-primary)]"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-400",
+                ].join(" ")}
+              >
+                {VEHICLE_LABELS[vt]}
+              </button>
+            ))}
+          </div>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
@@ -183,7 +238,7 @@ export default function QueueCard({
                   return (
                     <tr key={s.spot_id} className="border-t border-gray-50">
                       <td className="py-1.5 font-mono font-semibold text-gray-800">{s.identifier}</td>
-                      <td className="py-1.5 text-gray-500">{s.map_type === "mc" ? "MC" : "Bil"}</td>
+                      <td className="py-1.5 text-gray-500">{s.map_type === "mc" ? "MC" : s.map_type === "electric" ? "Elbil" : "Bil"}</td>
                       <td className="py-1.5 text-orange-600">
                         {new Date(s.ending_at).toLocaleDateString("sv-SE", {
                           month: "long",
@@ -220,6 +275,26 @@ export default function QueueCard({
     <div className="space-y-3">
       <p className="text-sm text-gray-500">Du står inte i kön just nu.</p>
       {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-gray-500">Fordonstyp</p>
+        <div className="flex gap-2">
+          {(["car", "mc", "electric_car"] as VehicleType[]).map(vt => (
+            <button
+              key={vt}
+              type="button"
+              onClick={() => setSelectedVehicle(vt)}
+              className={[
+                "px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors",
+                selectedVehicle === vt
+                  ? "bg-[var(--brf-primary)] text-white border-[var(--brf-primary)]"
+                  : "bg-white text-gray-600 border-gray-300 hover:border-gray-400",
+              ].join(" ")}
+            >
+              {VEHICLE_LABELS[vt]}
+            </button>
+          ))}
+        </div>
+      </div>
       <Button type="button" size="sm" onClick={join} disabled={loading}>
         {loading ? "Anmäler…" : "Gå med i kön"}
       </Button>
