@@ -63,6 +63,7 @@
   --brf-muted: #abb3b7;
   --brf-border: rgba(43,52,55,0.08);
   --brf-divider: rgba(171,179,183,0.12);
+  --brf-spot-occupied: #bbf7d0;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -114,6 +115,7 @@
   --brf-muted: #424653;
   --brf-border: rgba(255,255,255,0.06);
   --brf-divider: rgba(255,255,255,0.05);
+  --brf-spot-occupied: #1a4a2e;
 
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -1,19 +1,20 @@
 import Link from "next/link";
 
-// Stitch design tokens — BRF Garage landing page
+// Map to CSS custom properties so light/dark mode works automatically
 const c = {
-  primary: "#004ac6",
-  primaryContainer: "#2563eb",
-  primaryFixed: "#dbe1ff",
+  primary: "var(--brf-primary)",
+  primaryDim: "var(--brf-primary-dim)",
+  primaryTint: "var(--brf-primary-tint)",
+  primaryTintText: "var(--brf-primary-tint-text)",
   onPrimary: "#ffffff",
-  onPrimaryFixedVariant: "#003ea8",
-  onSurface: "#191c1e",
-  onSurfaceVariant: "#434655",
-  surface: "#f7f9fb",
-  surfaceContainerLow: "#f2f4f6",
-  surfaceContainerLowest: "#ffffff",
-  surfaceContainerHigh: "#e6e8ea",
-  outlineVariant: "#c3c6d7",
+  onSurface: "var(--brf-on-surface)",
+  onSurfaceVariant: "var(--brf-on-surface-muted)",
+  surface: "var(--brf-bg)",
+  surfaceLow: "var(--brf-surface-low)",
+  surfaceCard: "var(--brf-surface)",
+  surfaceHigh: "var(--brf-surface-high)",
+  muted: "var(--brf-muted)",
+  border: "var(--brf-border)",
 };
 
 const features = [
@@ -93,7 +94,7 @@ export default function LandingPage() {
           top: 0,
           width: "100%",
           zIndex: 50,
-          backgroundColor: "rgba(247,249,251,0.8)",
+          backgroundColor: "color-mix(in srgb, var(--brf-bg) 80%, transparent)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
@@ -183,7 +184,7 @@ export default function LandingPage() {
                   href="/login"
                   style={{
                     padding: "16px 32px",
-                    background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryContainer} 100%)`,
+                    background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryDim} 100%)`,
                     color: c.onPrimary,
                     fontWeight: 600,
                     borderRadius: 12,
@@ -198,7 +199,7 @@ export default function LandingPage() {
                   href="/login"
                   style={{
                     padding: "16px 32px",
-                    border: `2px solid ${c.outlineVariant}`,
+                    border: `2px solid ${c.muted}`,
                     color: c.onSurface,
                     fontWeight: 600,
                     borderRadius: 12,
@@ -216,7 +217,7 @@ export default function LandingPage() {
             <div style={{ position: "relative" }}>
               <div
                 style={{
-                  backgroundColor: c.surfaceContainerLow,
+                  backgroundColor: c.surfaceLow,
                   borderRadius: 24,
                   padding: 16,
                   boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
@@ -234,7 +235,7 @@ export default function LandingPage() {
                     width: "100%",
                     height: "auto",
                     display: "block",
-                    backgroundColor: "#eef1f6",
+                    backgroundColor: c.surfaceLow,
                   }}
                 >
                   {[60, 120, 180, 240, 300].map((y) => (
@@ -244,7 +245,7 @@ export default function LandingPage() {
                       y1={y}
                       x2="480"
                       y2={y}
-                      stroke="#d5dbe5"
+                      stroke="var(--brf-surface-high)"
                       strokeWidth="0.5"
                     />
                   ))}
@@ -257,9 +258,9 @@ export default function LandingPage() {
                         height={50}
                         rx={6}
                         fill={
-                          i === 2 ? "#dbe1ff" : i === 4 ? "#bbf7d0" : "#ffffff"
+                          i === 2 ? "var(--brf-primary-tint)" : i === 4 ? "var(--brf-spot-occupied)" : "var(--brf-surface)"
                         }
-                        stroke={i === 2 ? c.primary : "#c3c6d7"}
+                        stroke={i === 2 ? c.primary : "var(--brf-muted)"}
                         strokeWidth={i === 2 ? 2 : 1}
                       />
                       <text
@@ -268,7 +269,7 @@ export default function LandingPage() {
                         textAnchor="middle"
                         fontSize="13"
                         fontWeight="700"
-                        fill={i === 2 ? c.primary : "#434655"}
+                        fill={i === 2 ? c.primary : "var(--brf-on-surface-muted)"}
                       >{`A${i + 1}`}</text>
                     </g>
                   ))}
@@ -280,8 +281,8 @@ export default function LandingPage() {
                         width={72}
                         height={50}
                         rx={6}
-                        fill={i === 0 || i === 3 ? "#bbf7d0" : "#ffffff"}
-                        stroke="#c3c6d7"
+                        fill={i === 0 || i === 3 ? "var(--brf-spot-occupied)" : "var(--brf-surface)"}
+                        stroke="var(--brf-muted)"
                         strokeWidth={1}
                       />
                       <text
@@ -290,7 +291,7 @@ export default function LandingPage() {
                         textAnchor="middle"
                         fontSize="13"
                         fontWeight="700"
-                        fill="#434655"
+                        fill="var(--brf-on-surface-muted)"
                       >{`B${i + 1}`}</text>
                     </g>
                   ))}
@@ -300,9 +301,9 @@ export default function LandingPage() {
                     width={10}
                     height={10}
                     rx={2}
-                    fill="#bbf7d0"
+                    fill="var(--brf-spot-occupied)"
                   />
-                  <text x={56} y={239} fontSize="11" fill="#434655">
+                  <text x={56} y={239} fontSize="11" fill="var(--brf-on-surface-muted)">
                     Uthyrd
                   </text>
                   <rect
@@ -311,9 +312,9 @@ export default function LandingPage() {
                     width={10}
                     height={10}
                     rx={2}
-                    fill="#dbe1ff"
+                    fill="var(--brf-primary-tint)"
                   />
-                  <text x={136} y={239} fontSize="11" fill="#434655">
+                  <text x={136} y={239} fontSize="11" fill="var(--brf-on-surface-muted)">
                     Erbjuden
                   </text>
                   <rect
@@ -322,11 +323,11 @@ export default function LandingPage() {
                     width={10}
                     height={10}
                     rx={2}
-                    fill="#ffffff"
-                    stroke="#c3c6d7"
+                    fill="var(--brf-surface)"
+                    stroke="var(--brf-muted)"
                     strokeWidth={1}
                   />
-                  <text x={226} y={239} fontSize="11" fill="#434655">
+                  <text x={226} y={239} fontSize="11" fill="var(--brf-on-surface-muted)">
                     Ledig
                   </text>
                   <rect
@@ -335,8 +336,8 @@ export default function LandingPage() {
                     width={400}
                     height={40}
                     rx={8}
-                    fill="#ffffff"
-                    stroke="#c3c6d7"
+                    fill="var(--brf-surface)"
+                    stroke="var(--brf-muted)"
                     strokeWidth={1}
                   />
                   <text
@@ -344,7 +345,7 @@ export default function LandingPage() {
                     y={295}
                     fontSize="12"
                     fontWeight="600"
-                    fill="#434655"
+                    fill="var(--brf-on-surface-muted)"
                   >
                     Kö: 12 boende
                   </text>
@@ -362,7 +363,7 @@ export default function LandingPage() {
                     textAnchor="middle"
                     fontSize="11"
                     fontWeight="600"
-                    fill="#ffffff"
+                    fill="var(--brf-bg)"
                   >
                     Skicka erbjudande
                   </text>
@@ -374,7 +375,7 @@ export default function LandingPage() {
                   position: "absolute",
                   bottom: -24,
                   left: -24,
-                  backgroundColor: c.surfaceContainerLowest,
+                  backgroundColor: c.surfaceCard,
                   padding: 24,
                   borderRadius: 16,
                   boxShadow:
@@ -394,7 +395,7 @@ export default function LandingPage() {
                       width: 40,
                       height: 40,
                       borderRadius: "50%",
-                      backgroundColor: c.primaryFixed,
+                      backgroundColor: c.primaryTint,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -419,8 +420,8 @@ export default function LandingPage() {
                 </div>
                 <div
                   style={{
-                    backgroundColor: c.primaryFixed,
-                    color: c.onPrimaryFixedVariant,
+                    backgroundColor: c.primaryTint,
+                    color: c.primaryTintText,
                     padding: "4px 12px",
                     borderRadius: 9999,
                     fontSize: 12,
@@ -438,7 +439,7 @@ export default function LandingPage() {
         {/* Features */}
         <section
           style={{
-            backgroundColor: c.surfaceContainerLow,
+            backgroundColor: c.surfaceLow,
             padding: "96px 48px",
           }}
         >
@@ -476,7 +477,7 @@ export default function LandingPage() {
                 <div
                   key={f.title}
                   style={{
-                    backgroundColor: c.surfaceContainerLowest,
+                    backgroundColor: c.surfaceCard,
                     padding: 32,
                     borderRadius: 16,
                   }}
@@ -555,7 +556,7 @@ export default function LandingPage() {
                   left: "calc(16.66% + 12px)",
                   right: "calc(16.66% + 12px)",
                   height: 1,
-                  backgroundColor: c.surfaceContainerHigh,
+                  backgroundColor: c.surfaceHigh,
                 }}
               />
               {steps.map((step) => (
@@ -568,7 +569,7 @@ export default function LandingPage() {
                       width: 80,
                       height: 80,
                       borderRadius: "50%",
-                      backgroundColor: c.primaryContainer,
+                      backgroundColor: c.primaryDim,
                       color: c.onPrimary,
                       fontFamily: "var(--font-manrope), sans-serif",
                       fontWeight: 700,
@@ -618,8 +619,8 @@ export default function LandingPage() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
-                backgroundColor: c.primaryFixed,
-                color: c.onPrimaryFixedVariant,
+                backgroundColor: c.primaryTint,
+                color: c.primaryTintText,
                 padding: "6px 16px",
                 borderRadius: 9999,
                 fontSize: 14,
@@ -683,8 +684,8 @@ export default function LandingPage() {
       <footer
         style={{
           padding: "48px 0",
-          backgroundColor: "#f8fafc",
-          borderTop: "1px solid #e2e8f0",
+          backgroundColor: c.surfaceLow,
+          borderTop: `1px solid ${c.surfaceHigh}`,
         }}
       >
         <div
@@ -712,7 +713,7 @@ export default function LandingPage() {
               style={{
                 fontFamily: "var(--font-manrope), sans-serif",
                 fontSize: 14,
-                color: "#64748b",
+                color: c.onSurfaceVariant,
               }}
             >
               © 2025 BRF Garage
@@ -723,7 +724,7 @@ export default function LandingPage() {
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
               fontSize: 14,
-              color: "#64748b",
+              color: c.onSurfaceVariant,
               textDecoration: "underline",
               textUnderlineOffset: 4,
             }}
