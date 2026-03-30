@@ -12,6 +12,10 @@
 - [x] Spot management + upcoming availability
 - [x] Spot preferences (queue member interest + admin interest count)
 - [x] Offer flow (trigger, accept/decline, auto-cascade, cron expiry)
+- [x] Vehicle types + EV spot priority (MC hard filter, EV-first soft priority)
+- [x] Admin settings page (offer deadline, EV priority toggle)
+- [x] Dark mode (dashboard + landing page)
+- [x] Landing page (public, inline SVG hero, CSP-compliant)
 
 ---
 
@@ -98,7 +102,7 @@ CREATE TABLE spot_preferences (
 - [x] Resident: view upcoming spots + toggle preference (want / don't want) — QueueCard upcoming table with optimistic toggle
 - [x] API: POST/DELETE `/api/queue/preferences` — idempotent via `ON CONFLICT DO NOTHING`, scoped DELETE
 - [x] Admin: see interest count per spot in spots table (`preference_count` column)
-- [ ] Offer trigger: prefer highest-queue-position preferring the spot; fall back to FIFO (part of Prio 5)
+- [x] Offer trigger: prefer highest-queue-position preferring the spot; fall back to FIFO (implemented in Prio 5, enhanced with vehicle type filtering)
 
 ---
 
@@ -125,7 +129,7 @@ If declined or expired → next in queue.
 
 ---
 
-## Prio 6 — Email Notifications
+## Prio 6 — Email Notifications ✅
 
 **Goal:** Residents get emails for key events.
 
@@ -139,7 +143,7 @@ If declined or expired → next in queue.
 
 ---
 
-## Prio 7 — Audit Log View (Admin)
+## Prio 7 — Audit Log View (Admin) ✅
 
 **Goal:** Admin can see a full history of queue events for transparency.
 
@@ -151,13 +155,39 @@ If declined or expired → next in queue.
 
 ---
 
-## Prio 8 — Security Hardening
+## Prio 8 — Security Hardening ✅
 
 **Tasks:**
 
 - [x] Add Content-Security-Policy headers in `next.config.ts` before go-live
 - [x] Review all API routes for missing auth checks
 - [x] Ensure rate limiting on auth endpoints (login, invite)
+
+---
+
+## Prio 8.5 — Vehicle Types + Admin Settings ✅
+
+**Goal:** MC spots only offered to MC owners, EV spots prioritise EV owners (configurable).
+
+**Tasks:**
+
+- [x] DB: `users.vehicle_type` ('car' | 'mc' | 'electric_car'), `associations.ev_priority_only` (boolean)
+- [x] Spots: 'electric' added as `map_type` option (alongside 'car', 'mc')
+- [x] Offer logic: MC hard filter, EV-first soft priority with fallback
+- [x] Resident: vehicle type selector at queue join + changeable while in queue
+- [x] Admin: settings page (`/dashboard/settings`) — offer deadline + EV priority toggle
+- [x] Dark mode: landing page converted to CSS custom properties
+
+---
+
+## Prio 8.6 — Landing Page ✅
+
+**Tasks:**
+
+- [x] Public landing page (middleware allows `/` without auth)
+- [x] Inline SVG hero illustration (no external images, CSP-compliant)
+- [x] Dark mode support via CSS variables
+- [x] Blob proxy: forward Content-Length, stale-while-revalidate caching
 
 ---
 
