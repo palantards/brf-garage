@@ -9,12 +9,13 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+      const isPublic = nextUrl.pathname === "/";
       const isAuthRoute =
         nextUrl.pathname.startsWith("/login") ||
         nextUrl.pathname.startsWith("/invite");
       const isApiAuth = nextUrl.pathname.startsWith("/api/auth");
 
-      if (isAuthRoute || isApiAuth) return true;
+      if (isPublic || isAuthRoute || isApiAuth) return true;
       if (!isLoggedIn) return false;
       return true;
     },
