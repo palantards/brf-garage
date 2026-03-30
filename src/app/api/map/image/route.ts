@@ -19,10 +19,13 @@ export async function GET() {
 
   if (!res.ok) return new NextResponse("Blob not found", { status: 404 });
 
-  return new NextResponse(res.body, {
-    headers: {
-      "Content-Type": res.headers.get("Content-Type") ?? "image/png",
-      "Cache-Control": "private, max-age=3600",
-    },
-  });
+  const headers: Record<string, string> = {
+    "Content-Type": res.headers.get("Content-Type") ?? "image/png",
+    "Cache-Control": "private, max-age=3600, stale-while-revalidate=86400",
+  };
+
+  const contentLength = res.headers.get("Content-Length");
+  if (contentLength) headers["Content-Length"] = contentLength;
+
+  return new NextResponse(res.body, { headers });
 }
