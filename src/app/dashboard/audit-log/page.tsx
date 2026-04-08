@@ -31,6 +31,8 @@ const EVENT_META: Record<string, { label: string; icon: string }> = {
   "user.activated":             { label: "Konto aktiverat",             icon: "person_add" },
   "user.invite_withdrawn":      { label: "Inbjudan återkallad",         icon: "mail_off" },
   "user.removed":               { label: "Boende borttagen",            icon: "person_off" },
+  // Settings
+  "settings.updated":           { label: "Inställning ändrad",          icon: "settings" },
 };
 
 const FILTER_EVENT_TYPES: Record<string, string[]> = {
