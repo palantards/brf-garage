@@ -47,6 +47,8 @@ interface Props {
   isAdmin?: boolean;
   imageUrl?: string;
   aspectRatio?: number;
+  mode?: "view" | "picker";
+  onSpotPick?: (spot: Spot) => void;
 }
 
 export default function GarageMap({
@@ -54,8 +56,11 @@ export default function GarageMap({
   isAdmin = false,
   imageUrl,
   aspectRatio = 52.69,
+  mode = "view",
+  onSpotPick,
 }: Props) {
   const [selected, setSelected] = useState<Spot | null>(null);
+  const isPicker = mode === "picker";
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 sm:items-start">
@@ -81,10 +86,14 @@ export default function GarageMap({
         >
           {spots.map((spot) => {
             const isSelected = selected?.id === spot.id;
+            const disabled = isPicker && spot.status !== "free";
             return (
               <div
                 key={spot.id}
-                onClick={() => setSelected(isSelected ? null : spot)}
+                onClick={() => {
+                  if (disabled) return;
+                  setSelected(isSelected ? null : spot);
+                }}
                 style={{
                   position: "absolute",
                   left: `${spot.x}%`,
@@ -94,13 +103,13 @@ export default function GarageMap({
                   transform: `rotate(${spot.rotation ?? 0}deg)`,
                   transformOrigin: "center center",
                   backgroundColor: STATUS_COLOR[spot.status],
-                  opacity: isSelected ? 0.95 : 0.8,
+                  opacity: disabled ? 0.35 : isSelected ? 0.95 : 0.8,
                   border: isSelected
                     ? "2px solid #fff"
                     : "1px solid rgba(255,255,255,0.5)",
                   boxShadow: isSelected ? "0 0 0 2px var(--brf-primary)" : undefined,
                   borderRadius: "2px",
-                  cursor: "pointer",
+                  cursor: disabled ? "not-allowed" : "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -179,6 +188,18 @@ export default function GarageMap({
                   })}
                 </p>
               </div>
+            )}
+
+            {isPicker && selected.status === "free" && (
+              <button
+                onClick={() => onSpotPick?.(selected)}
+                className="mt-5 w-full text-white font-semibold py-3 rounded-full text-sm transition-all active:scale-[0.98]"
+                style={{
+                  background: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)",
+                }}
+              >
+                Välj denna plats
+              </button>
             )}
           </>
         ) : (

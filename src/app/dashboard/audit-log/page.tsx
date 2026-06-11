@@ -33,6 +33,11 @@ const EVENT_META: Record<string, { label: string; icon: string }> = {
   "user.removed":               { label: "Boende borttagen",            icon: "person_off" },
   // Settings
   "settings.updated":           { label: "Inställning ändrad",          icon: "settings" },
+  // Applications
+  "application.created":        { label: "Ansökan skapad",              icon: "description" },
+  "application.submitted":      { label: "Ansökan inskickad",           icon: "send" },
+  "application.approved":       { label: "Ansökan godkänd",             icon: "check_circle" },
+  "application.rejected":       { label: "Ansökan avslagen",            icon: "cancel" },
 };
 
 const FILTER_EVENT_TYPES: Record<string, string[]> = {
@@ -40,6 +45,7 @@ const FILTER_EVENT_TYPES: Record<string, string[]> = {
   offers: ["offer.created", "offer.accepted", "offer.declined", "offer.expired"],
   spots:  ["spot.created", "spot.deleted", "spot.resigned", "spot.assigned", "spot.assignment_ended", "spot.ending_at_set", "spot.availability_changed"],
   users:  ["user.invited", "user.activated", "user.invite_withdrawn", "user.removed"],
+  applications: ["application.created", "application.submitted", "application.approved", "application.rejected"],
 };
 
 function formatDate(dateStr: string) {

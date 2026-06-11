@@ -191,9 +191,114 @@ If declined or expired → next in queue.
 
 ---
 
-## Prio 9 — Production Deploy
+---
 
-**Tasks:**
+# CRM Pivot (2026-06-11)
+
+After meeting with BRF Krickan's styrelse, the product is pivoting to an **admin-only CRM**.
+Residents interact via email; admins manage everything in-app. The existing self-service
+features are kept — each association will eventually choose its mode (`admin_only` or `self_service`).
+
+Source: `FEEDBACK.md`
+
+---
+
+## Prio 10 — Application Form Flow 📋
+
+**Goal:** Admin creates an application for a resident, system emails them a form link,
+resident fills it, admin reviews and approves (add to queue or assign spot) or rejects.
+
+**Database:**
+- New `applications` table (token-protected, full lifecycle tracking)
+- Add `agreement_type` column on `spot_assignments` (permanent / temporary)
+
+**New pages:**
+- `/apply/[token]` — public form (no login, token-protected)
+- `/dashboard/applications` — admin list + create sheet
+- `/dashboard/applications/[id]` — admin review + approve/reject
+
+**Application statuses:** `form_sent` → `submitted` → `approved` / `rejected` / `cancelled`
+
+**Approve actions:** "Lägg till i kö" (creates user + queue entry) or "Tilldela plats direkt" (creates user + spot assignment)
+
+**Emails:** form link (to resident), submitted notification (to admin), decision (to resident)
+
+**Audit events:** `application.created`, `application.submitted`, `application.approved`, `application.rejected`
+
+---
+
+## Prio 11 — Resignation Form Flow
+
+**Goal:** Same pattern as applications but for leaving. Admin sends resignation form link,
+resident confirms, notice period starts based on agreement type.
+
+- Regular agreements: 3 month notice
+- Temporary agreements: 1 month notice
+- New `resignations` table or similar
+- `/resign/[token]` public form
+
+---
+
+## Prio 12 — Association Mode Config
+
+**Goal:** Per-association mode flag so some BRFs use admin-only CRM while others keep
+resident self-service.
+
+- Add `mode` column to `associations` (`admin_only` | `self_service`)
+- Gate resident-facing features (login, queue join, dashboard) per mode
+- Default to `admin_only` for new associations
+
+---
+
+## Prio 13 — Boendelista Import
+
+**Goal:** Admin uploads a resident list (CSV/Excel) to bulk-create resident records
+and map them to spots.
+
+- Upload page with column mapping UI
+- Create/update user records in bulk
+- Optionally assign spots during import
+
+---
+
+## Prio 14 — GDPR Compliance
+
+**Must-have** per customer feedback.
+
+- Data retention policies
+- Right-to-be-forgotten (anonymize/delete resident data)
+- Export personal data on request
+- Consent tracking
+
+---
+
+## Prio 15 — 2FA for Admin Login
+
+- TOTP-based 2FA (authenticator app)
+- Required for admin role
+- Setup flow in settings page
+
+---
+
+## Prio 16 — Custom Domains
+
+**Goal:** Each BRF serves the app under their own path (e.g. `brfkrickan.se/garage`).
+
+- Multi-domain routing in middleware
+- Map domain → association_id
+- Vercel custom domains or reverse proxy setup
+
+---
+
+## Prio 17 — E-Sign Integration (nice-to-have)
+
+- Free e-signature via elektronisksignering.se or similar
+- Attach signed agreements to spot assignments
+- Not a blocker for launch
+
+---
+
+## Production Deploy
 
 - [ ] Set up Vercel project, connect repo
 - [ ] Configure production env vars

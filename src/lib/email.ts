@@ -283,3 +283,126 @@ export async function sendOfferReminderEmail({
 
   if (error) throw new Error(`Resend error: ${error.message}`);
 }
+
+export async function sendApplicationFormEmail({
+  to,
+  associationName,
+  applyUrl,
+}: {
+  to: string;
+  associationName: string;
+  applyUrl: string;
+}) {
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `Ansök om garageplats – ${associationName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Ansök om garageplats</h2>
+        <p>
+          ${associationName} har bjudit in dig att ansöka om en garageplats.
+        </p>
+        <p>Klicka på knappen nedan för att fylla i din ansökan.</p>
+        <a href="${applyUrl}" style="
+          display: inline-block;
+          margin: 24px 0;
+          padding: 12px 24px;
+          background: #0053db;
+          color: white;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+        ">Fyll i ansökan</a>
+        <p style="color: #6b7280; font-size: 14px;">
+          Om du inte förväntade dig detta mejl kan du ignorera det.
+        </p>
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+export async function sendApplicationSubmittedEmail({
+  to,
+  applicantName,
+  applicantEmail,
+}: {
+  to: string;
+  applicantName: string;
+  applicantEmail: string;
+}) {
+  const dashboardUrl = `${process.env.AUTH_URL}/dashboard/applications`;
+
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `Ny ansökan mottagen från ${applicantName || applicantEmail} – BRF Garage`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Ny ansökan mottagen</h2>
+        <p>
+          <strong>${applicantName || applicantEmail}</strong> har skickat in en ansökan om garageplats.
+        </p>
+        <a href="${dashboardUrl}" style="
+          display: inline-block;
+          margin: 24px 0;
+          padding: 12px 24px;
+          background: #0053db;
+          color: white;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+        ">Granska ansökan</a>
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+export async function sendApplicationDecisionEmail({
+  to,
+  associationName,
+  applicantName,
+  approved,
+}: {
+  to: string;
+  associationName: string;
+  applicantName: string;
+  approved: boolean;
+}) {
+  const subject = approved
+    ? `Din ansökan har godkänts – ${associationName}`
+    : `Din ansökan har avslagits – ${associationName}`;
+
+  const body = approved
+    ? `
+      <h2>Din ansökan har godkänts!</h2>
+      <p>
+        Hej ${applicantName}, din ansökan om garageplats i ${associationName} har godkänts.
+        Du kommer att kontaktas med mer information.
+      </p>
+    `
+    : `
+      <h2>Din ansökan har avslagits</h2>
+      <p>
+        Hej ${applicantName}, tyvärr har din ansökan om garageplats
+        i ${associationName} avslagits. Kontakta styrelsen för mer information.
+      </p>
+    `;
+
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        ${body}
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 type Props = {
   open: boolean;
   onClose: () => void;
+  adminOnly?: boolean;
 };
 
 const c = {
@@ -26,12 +27,12 @@ const c = {
   outlineVariant: "#abb3b7",
 };
 
-export default function InviteSheet({ open, onClose }: Props) {
+export default function InviteSheet({ open, onClose, adminOnly = false }: Props) {
   const [state, formAction, pending] = useActionState(
     inviteResidentAction,
     undefined
   );
-  const [role, setRole] = useState<"resident" | "admin">("resident");
+  const [role, setRole] = useState<"resident" | "admin">(adminOnly ? "admin" : "resident");
 
   useEffect(() => {
     if (state?.success) {
@@ -52,7 +53,7 @@ export default function InviteSheet({ open, onClose }: Props) {
             className="text-xl font-bold text-[#2b3437]"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
-            Bjud in ny boende
+            {adminOnly ? "Bjud in ny admin" : "Bjud in ny boende"}
           </SheetTitle>
           <p className="text-sm text-[#586064] mt-1">
             Fyll i uppgifterna nedan. Den inbjudna personen får ett
@@ -99,38 +100,40 @@ export default function InviteSheet({ open, onClose }: Props) {
             />
           </div>
 
-          {/* Role toggle */}
-          <div className="space-y-2">
-            <span className="block text-[11px] font-bold uppercase tracking-widest text-[#586064]">
-              Roll
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setRole("resident")}
-                className="flex-1 py-2.5 rounded-full text-sm font-semibold border-2 transition-all"
-                style={
-                  role === "resident"
-                    ? { background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryDim} 100%)`, color: c.onPrimary, borderColor: "transparent" }
-                    : { background: "transparent", color: c.onSurface, borderColor: `${c.outlineVariant}66` }
-                }
-              >
-                Boende
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("admin")}
-                className="flex-1 py-2.5 rounded-full text-sm font-semibold border-2 transition-all"
-                style={
-                  role === "admin"
-                    ? { background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryDim} 100%)`, color: c.onPrimary, borderColor: "transparent" }
-                    : { background: "transparent", color: c.onSurface, borderColor: `${c.outlineVariant}66` }
-                }
-              >
-                Administratör
-              </button>
+          {/* Role toggle — hidden when adminOnly */}
+          {!adminOnly && (
+            <div className="space-y-2">
+              <span className="block text-[11px] font-bold uppercase tracking-widest text-[#586064]">
+                Roll
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRole("resident")}
+                  className="flex-1 py-2.5 rounded-full text-sm font-semibold border-2 transition-all"
+                  style={
+                    role === "resident"
+                      ? { background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryDim} 100%)`, color: c.onPrimary, borderColor: "transparent" }
+                      : { background: "transparent", color: c.onSurface, borderColor: `${c.outlineVariant}66` }
+                  }
+                >
+                  Boende
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("admin")}
+                  className="flex-1 py-2.5 rounded-full text-sm font-semibold border-2 transition-all"
+                  style={
+                    role === "admin"
+                      ? { background: `linear-gradient(135deg, ${c.primary} 0%, ${c.primaryDim} 100%)`, color: c.onPrimary, borderColor: "transparent" }
+                      : { background: "transparent", color: c.onSurface, borderColor: `${c.outlineVariant}66` }
+                  }
+                >
+                  Administratör
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Feedback */}
           {state?.error && (

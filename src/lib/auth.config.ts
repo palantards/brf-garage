@@ -12,7 +12,8 @@ export const authConfig: NextAuthConfig = {
       const isPublic = nextUrl.pathname === "/";
       const isAuthRoute =
         nextUrl.pathname.startsWith("/login") ||
-        nextUrl.pathname.startsWith("/invite");
+        nextUrl.pathname.startsWith("/invite") ||
+        nextUrl.pathname.startsWith("/apply");
       const isApiAuth = nextUrl.pathname.startsWith("/api/auth");
 
       if (isPublic || isAuthRoute || isApiAuth) return true;

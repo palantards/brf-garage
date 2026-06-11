@@ -9,7 +9,7 @@ export default function ResidentsClient({ children }: { children: React.ReactNod
 
   useRegisterHeaderConfig({
     searchPlaceholder: "Sök boende eller e-post…",
-    actionLabel: "Bjud in boende",
+    actionLabel: "Bjud in admin",
     actionIcon: "person_add",
     onAction: () => setSheetOpen(true),
   });
@@ -17,7 +17,7 @@ export default function ResidentsClient({ children }: { children: React.ReactNod
   return (
     <>
       {children}
-      <InviteSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
+      <InviteSheet open={sheetOpen} onClose={() => setSheetOpen(false)} adminOnly />
     </>
   );
 }
