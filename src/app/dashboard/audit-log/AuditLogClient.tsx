@@ -10,6 +10,7 @@ const FILTERS = [
   { key: "spots",  label: "Platser" },
   { key: "users",  label: "Boende" },
   { key: "applications", label: "Ansökningar" },
+  { key: "resignations", label: "Uppsägningar" },
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]["key"];

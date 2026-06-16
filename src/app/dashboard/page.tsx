@@ -35,6 +35,10 @@ const eventMeta: Record<string, { label: string; icon: string }> = {
   "application.submitted":     { label: "Ansökan inskickad",          icon: "send" },
   "application.approved":      { label: "Ansökan godkänd",            icon: "check_circle" },
   "application.rejected":      { label: "Ansökan avslagen",           icon: "cancel" },
+  "resignation.created":       { label: "Uppsägning skapad",          icon: "exit_to_app" },
+  "resignation.confirmed":     { label: "Uppsägning bekräftad",       icon: "check" },
+  "resignation.approved":      { label: "Uppsägning godkänd",         icon: "check_circle" },
+  "resignation.rejected":      { label: "Uppsägning avslagen",        icon: "cancel" },
 };
 
 function formatEventDate(dateStr: string): string {
@@ -127,7 +131,7 @@ export default async function DashboardPage() {
   `;
 
   // Admin-only queries
-  const [spotStats, queueCount, residentCount, offerCount, applicationPendingCount, recentEvents] = isAdmin
+  const [spotStats, queueCount, residentCount, offerCount, applicationPendingCount, resignationPendingCount, recentEvents] = isAdmin
     ? await Promise.all([
         sql<{ total: number; free: number }[]>`
           SELECT
@@ -159,13 +163,18 @@ export default async function DashboardPage() {
           WHERE association_id = ${user.associationId} AND status IN ('submitted', 'in_review')
         `.then((rows) => Number(rows[0]?.count ?? 0)),
 
+        sql<{ count: number }[]>`
+          SELECT COUNT(*) AS count FROM resignations
+          WHERE association_id = ${user.associationId} AND status = 'confirmed'
+        `.then((rows) => Number(rows[0]?.count ?? 0)),
+
         sql<{ id: string; event_type: string; created_at: string }[]>`
           SELECT id, event_type, created_at FROM audit_log
           WHERE association_id = ${user.associationId}
           ORDER BY created_at DESC LIMIT 8
         `,
       ])
-    : [null, 0, 0, 0, 0, [] as { id: string; event_type: string; created_at: string }[]];
+    : [null, 0, 0, 0, 0, 0, [] as { id: string; event_type: string; created_at: string }[]];
 
   // ── Admin view ──────────────────────────────────────────────────────────────
   if (isAdmin) {
@@ -318,6 +327,28 @@ export default async function DashboardPage() {
               </div>
               <Button variant="link" className="px-0 mt-4 text-[var(--brf-primary)] font-semibold h-auto" render={<Link href="/dashboard/applications" />}>
                 Granska ansökningar
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Uppsägningar */}
+          <Card className="rounded-xl border-none shadow-none bg-[var(--brf-surface)]">
+            <CardHeader className="pb-0">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--brf-on-surface-muted)] font-[var(--font-inter)]">
+                Uppsägningar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="flex justify-between items-start">
+                <p className="font-[var(--font-manrope)] text-4xl font-bold text-[var(--brf-on-surface)]">
+                  {resignationPendingCount} väntar
+                </p>
+                <div className="w-12 h-12 rounded-full bg-[var(--brf-surface-low)] flex items-center justify-center text-[var(--brf-primary)]">
+                  <span className="material-symbols-outlined">exit_to_app</span>
+                </div>
+              </div>
+              <Button variant="link" className="px-0 mt-4 text-[var(--brf-primary)] font-semibold h-auto" render={<Link href="/dashboard/resignations" />}>
+                Granska uppsägningar
               </Button>
             </CardContent>
           </Card>

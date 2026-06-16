@@ -9,6 +9,7 @@ const adminItems = [
   { href: "/dashboard/queue", icon: "format_list_numbered", label: "Kö" },
   { href: "/dashboard/residents", icon: "group", label: "Boende" },
   { href: "/dashboard/applications", icon: "description", label: "Ansökningar" },
+  { href: "/dashboard/resignations", icon: "exit_to_app", label: "Uppsägningar" },
   { href: "/dashboard/spots", icon: "directions_car", label: "Platser" },
   { href: "/dashboard/map", icon: "map", label: "Garageplan" },
   { href: "/dashboard/audit-log", icon: "history", label: "Händelselogg" },

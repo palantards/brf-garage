@@ -406,3 +406,131 @@ export async function sendApplicationDecisionEmail({
 
   if (error) throw new Error(`Resend error: ${error.message}`);
 }
+
+export async function sendResignationFormEmail({
+  to,
+  associationName,
+  spotIdentifier,
+  resignUrl,
+}: {
+  to: string;
+  associationName: string;
+  spotIdentifier: string;
+  resignUrl: string;
+}) {
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `Bekräfta uppsägning av plats ${spotIdentifier} – ${associationName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Bekräfta din uppsägning</h2>
+        <p>
+          ${associationName} har tagit emot din begäran om att säga upp
+          garageplats <strong>${spotIdentifier}</strong>.
+        </p>
+        <p>Klicka på knappen nedan för att bekräfta uppsägningen.</p>
+        <a href="${resignUrl}" style="
+          display: inline-block;
+          margin: 24px 0;
+          padding: 12px 24px;
+          background: #0053db;
+          color: white;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+        ">Bekräfta uppsägning</a>
+        <p style="color: #6b7280; font-size: 14px;">
+          Om du inte vill säga upp din plats kan du ignorera detta mejl.
+        </p>
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+export async function sendResignationConfirmedEmail({
+  to,
+  residentName,
+  spotIdentifier,
+}: {
+  to: string;
+  residentName: string;
+  spotIdentifier: string;
+}) {
+  const dashboardUrl = `${process.env.AUTH_URL}/dashboard/resignations`;
+
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject: `Uppsägning bekräftad av ${residentName} – plats ${spotIdentifier}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2>Uppsägning bekräftad</h2>
+        <p>
+          <strong>${residentName}</strong> har bekräftat sin uppsägning av
+          garageplats <strong>${spotIdentifier}</strong>.
+        </p>
+        <a href="${dashboardUrl}" style="
+          display: inline-block;
+          margin: 24px 0;
+          padding: 12px 24px;
+          background: #0053db;
+          color: white;
+          text-decoration: none;
+          border-radius: 6px;
+          font-weight: bold;
+        ">Granska uppsägningen</a>
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}
+
+export async function sendResignationDecisionEmail({
+  to,
+  associationName,
+  spotIdentifier,
+  approved,
+}: {
+  to: string;
+  associationName: string;
+  spotIdentifier: string;
+  approved: boolean;
+}) {
+  const subject = approved
+    ? `Din uppsägning av plats ${spotIdentifier} har godkänts – ${associationName}`
+    : `Din uppsägning av plats ${spotIdentifier} har avslagits – ${associationName}`;
+
+  const body = approved
+    ? `
+      <h2>Uppsägningen har godkänts</h2>
+      <p>
+        Din uppsägning av garageplats <strong>${spotIdentifier}</strong>
+        i ${associationName} har godkänts. Uppsägningstiden har börjat löpa.
+        Du kommer att kontaktas med mer information.
+      </p>
+    `
+    : `
+      <h2>Uppsägningen har avslagits</h2>
+      <p>
+        Din uppsägning av garageplats <strong>${spotIdentifier}</strong>
+        i ${associationName} har avslagits. Kontakta styrelsen för mer information.
+      </p>
+    `;
+
+  const { error } = await resend.emails.send({
+    from,
+    to,
+    subject,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        ${body}
+      </div>
+    `,
+  });
+
+  if (error) throw new Error(`Resend error: ${error.message}`);
+}

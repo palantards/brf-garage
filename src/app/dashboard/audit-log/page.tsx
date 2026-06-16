@@ -38,6 +38,11 @@ const EVENT_META: Record<string, { label: string; icon: string }> = {
   "application.submitted":      { label: "Ansökan inskickad",           icon: "send" },
   "application.approved":       { label: "Ansökan godkänd",             icon: "check_circle" },
   "application.rejected":       { label: "Ansökan avslagen",            icon: "cancel" },
+  // Resignations
+  "resignation.created":        { label: "Uppsägning skapad",           icon: "exit_to_app" },
+  "resignation.confirmed":      { label: "Uppsägning bekräftad",        icon: "check" },
+  "resignation.approved":       { label: "Uppsägning godkänd",          icon: "check_circle" },
+  "resignation.rejected":       { label: "Uppsägning avslagen",         icon: "cancel" },
 };
 
 const FILTER_EVENT_TYPES: Record<string, string[]> = {
@@ -46,6 +51,7 @@ const FILTER_EVENT_TYPES: Record<string, string[]> = {
   spots:  ["spot.created", "spot.deleted", "spot.resigned", "spot.assigned", "spot.assignment_ended", "spot.ending_at_set", "spot.availability_changed"],
   users:  ["user.invited", "user.activated", "user.invite_withdrawn", "user.removed"],
   applications: ["application.created", "application.submitted", "application.approved", "application.rejected"],
+  resignations: ["resignation.created", "resignation.confirmed", "resignation.approved", "resignation.rejected"],
 };
 
 function formatDate(dateStr: string) {
